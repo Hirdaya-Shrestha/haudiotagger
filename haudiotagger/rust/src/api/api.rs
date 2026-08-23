@@ -26,11 +26,12 @@ fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
 /// Returns a `TaggedFile` from in-memory bytes.
 fn get_file_from_bytes(bytes: &[u8]) -> Result<TaggedFile, HaudiotaggerError> {
     let mut cursor = Cursor::new(bytes);
-    let probe = Probe::new(&mut cursor)
-        .guess_file_type()
-        .map_err(|e| HaudiotaggerError::OpenFile {
-            message: e.to_string(),
-        })?;
+    let probe =
+        Probe::new(&mut cursor)
+            .guess_file_type()
+            .map_err(|e| HaudiotaggerError::OpenFile {
+                message: e.to_string(),
+            })?;
     probe.read().map_err(|e| HaudiotaggerError::OpenFile {
         message: e.to_string(),
     })
@@ -52,7 +53,10 @@ fn tag_from_file(file: &TaggedFile) -> Result<Tag, HaudiotaggerError> {
     Ok(tag)
 }
 
-fn apply_tag_to_lofty_tag(tag: &Tag, lo_tag: &mut lofty::tag::Tag) -> Result<(), HaudiotaggerError> {
+fn apply_tag_to_lofty_tag(
+    tag: &Tag,
+    lo_tag: &mut lofty::tag::Tag,
+) -> Result<(), HaudiotaggerError> {
     if let Some(title) = &tag.title {
         lo_tag.insert_text(ItemKey::TrackTitle, title.clone());
     }
@@ -92,8 +96,8 @@ fn apply_tag_to_lofty_tag(tag: &Tag, lo_tag: &mut lofty::tag::Tag) -> Result<(),
         lo_tag.insert_text(ItemKey::Genre, genre.clone());
     }
     for (i, picture) in tag.pictures.iter().enumerate() {
-        let mut builder =
-            lofty::picture::Picture::unchecked(picture.bytes.clone()).pic_type(picture.picture_type.clone().into());
+        let mut builder = lofty::picture::Picture::unchecked(picture.bytes.clone())
+            .pic_type(picture.picture_type.clone().into());
         if let Some(mime_type) = &picture.mime_type {
             builder = builder.mime_type(mime_type.clone().into());
         }
@@ -157,11 +161,12 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
 pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerError> {
     let mut file = {
         let mut cursor = Cursor::new(&bytes);
-        let probe = Probe::new(&mut cursor)
-            .guess_file_type()
-            .map_err(|e| HaudiotaggerError::OpenFile {
-                message: e.to_string(),
-            })?;
+        let probe =
+            Probe::new(&mut cursor)
+                .guess_file_type()
+                .map_err(|e| HaudiotaggerError::OpenFile {
+                    message: e.to_string(),
+                })?;
         probe.read().map_err(|e| HaudiotaggerError::OpenFile {
             message: e.to_string(),
         })?
