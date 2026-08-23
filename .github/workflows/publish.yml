@@ -8,43 +8,63 @@ permissions:
   contents: write
 
 jobs:
-  publish_to_release:
-    name: Publish Artifacts to Release
-    runs-on: ubuntu-latest
+  build_and_upload:
+    name: Build and Upload Artifacts
+    strategy:
+      matrix:
+        include:
+          - target: linux
+            os: ubuntu-22.04
+            path: haudiotagger/linux/libhaudiotagger.so
+          - target: android
+            os: ubuntu-latest
+            path: |
+              haudiotagger/android/src/main/jniLibs/arm64-v8a/libhaudiotagger.so
+              haudiotagger/android/src/main/jniLibs/armeabi-v7a/libhaudiotagger.so
+              haudiotagger/android/src/main/jniLibs/x86_64/libhaudiotagger.so
+              haudiotagger/android/src/main/jniLibs/x86/libhaudiotagger.so
+          - target: windows
+            os: windows-latest
+            path: haudiotagger/windows/haudiotagger.dll
+          - target: macos
+            os: macos-latest
+            path: haudiotagger/macos/Frameworks/haudiotagger.xcframework
+          - target: ios
+            os: macos-latest
+            path: haudiotagger/ios/Frameworks/haudiotagger.xcframework
+    runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
-
-      - name: Get CI run SHA
-        id: ci
+      - uses: ./.github/actions/setup_build
+      - name: Install MUSL dependencies
+        if: ${{ matrix.target == 'linux' }}
         run: |
-          SHA=$(git rev-parse HEAD)
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-
-      - name: Download CI build artifacts
-        uses: dawidd6/action-download-artifact@v6
+          sudo apt install musl-tools
+      - name: Build
+        run: dart run cli build ${{ matrix.target }} -v
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          workflow: ci.yml
-          commit: ${{ steps.ci.outputs.sha }}
-          if_no_artifact_found: warn
-          path: ci-artifacts
+          name: ${{ matrix.target }}
+          path: ${{ matrix.path }}
 
-      - name: Prepare release files
+  publish_to_release:
+    name: Publish Artifacts to Release
+    needs: build_and_upload
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+      - name: Create Archives
         run: |
-          # Linux
-          tar -C ci-artifacts/linux -czvf linux.tar.gz .
-          # Android
-          tar -C ci-artifacts/android -czvf android.tar.gz .
-          # Windows
-          tar -C ci-artifacts/windows -czvf windows.tar.gz .
-          # macOS
-          zip -j macos.zip ci-artifacts/macos/*
-          # iOS
-          cd ci-artifacts/ios && zip -r ../../ios.zip . && cd ../..
-          # Web
-          zip -j web.zip ci-artifacts/web/haudiotagger_bg.wasm ci-artifacts/web/haudiotagger.js
-
+          tar -C linux -czvf linux.tar.gz .
+          tar -C android -czvf android.tar.gz .
+          tar -C windows -czvf windows.tar.gz .
+          zip -j macos.zip macos/*
+          cd ios && zip -r ios.zip ./* && cd .. && mv ios/ios.zip .
       - name: Add to Release
         uses: softprops/action-gh-release@v3
         with:
@@ -54,4 +74,3 @@ jobs:
             windows.tar.gz
             macos.zip
             ios.zip
-            web.zip
