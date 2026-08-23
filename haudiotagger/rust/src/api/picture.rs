@@ -74,7 +74,7 @@ macro_rules! impl_enum_from
 // Almost the same as lofty's PictureType except without
 // the undefined type.
 /// The type of picture of the song.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum PictureType {
     Other,
     Icon,
@@ -129,7 +129,7 @@ impl_enum_from!(
 // The same as lofty's MimeType.
 // TODO: Support unknown type (code gen doesn't work for it) https://github.com/fzyzcjy/flutter_rust_bridge/issues/1073
 /// The MIME type of the picture.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum MimeType {
     Png,
     Jpeg,
