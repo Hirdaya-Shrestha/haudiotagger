@@ -1,0 +1,11 @@
+.dart_tool/
+.packages
+build/
+.pub/
+pubspec.lock
+target/
+.fvm/
+.mason/
+!cli/commands/build/
+rename.sh
+*.sh
