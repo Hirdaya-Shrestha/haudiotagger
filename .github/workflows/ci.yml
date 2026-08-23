@@ -74,14 +74,23 @@ jobs:
         include:
           - target: linux
             os: ubuntu-22.04
+            path: haudiotagger/linux/libhaudiotagger.so
           - target: android
             os: ubuntu-latest
+            path: |
+              haudiotagger/android/src/main/jniLibs/arm64-v8a/libhaudiotagger.so
+              haudiotagger/android/src/main/jniLibs/armeabi-v7a/libhaudiotagger.so
+              haudiotagger/android/src/main/jniLibs/x86_64/libhaudiotagger.so
+              haudiotagger/android/src/main/jniLibs/x86/libhaudiotagger.so
           - target: windows
             os: windows-latest
+            path: haudiotagger/windows/haudiotagger.dll
           - target: macos
             os: macos-latest
+            path: haudiotagger/macos/Frameworks/haudiotagger.xcframework
           - target: ios
             os: macos-latest
+            path: haudiotagger/ios/Frameworks/haudiotagger.xcframework
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -93,3 +102,36 @@ jobs:
           sudo apt install musl-tools
       - name: Build
         run: dart run cli build ${{ matrix.target }} -v
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: ${{ matrix.path }}
+          retention-days: 7
+
+  build_web:
+    name: Build Web WASM
+    needs: [rust_lint, dart_lint, dart_cli_lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Cache Rust WASM build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: haudiotagger/rust
+          key: wasm
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM
+        run: cd haudiotagger/rust && wasm-pack build --target web --release
+      - name: Upload Web Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: |
+            haudiotagger/rust/pkg/haudiotagger_bg.wasm
+            haudiotagger/rust/pkg/haudiotagger.js
+          retention-days: 7
