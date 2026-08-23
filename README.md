@@ -63,25 +63,13 @@ flutter pub get
 
 ### Web Setup
 
-For web support, copy the WASM build artifacts into your `web/` directory:
-
-```bash
-cp -r .dart_tool/package_config.json ... 
-```
-
-Or manually copy from `web/wasm/`:
-
-```bash
-mkdir -p web/pkg
-cp haudiotagger/web/wasm/haudiotagger_bg.wasm web/pkg/
-cp haudiotagger/web/wasm/haudiotagger.js web/pkg/
-```
-
-Then add to your `web/index.html` (before `main.dart.js`):
+Add one line to `web/index.html` before `main.dart.js`:
 
 ```html
-<script src="pkg/haudiotagger.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/Hirdaya-Shrestha/haudiotagger@1.0.1/haudiotagger/web/wasm/haudiotagger.js"></script>
 ```
+
+That's it. The JS glue auto-loads the WASM from the same CDN path. No files to copy, no build step needed.
 
 ## Usage
 
