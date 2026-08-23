@@ -1,3 +1,13 @@
+## 1.0.1
+
+- Add web/WASM support — read and write metadata in the browser
+- Add `readFromBytes()` and `writeToBytes()` for byte-based I/O (works on all platforms including web)
+- Fixed BPM and tag field unwrap panics in Rust
+- Fixed Dart init race condition (concurrent `RustLib.init()` calls)
+- Improved error messages (human-readable `HaudiotaggerError` display)
+- Added `Clone` derive to `PictureType` and `MimeType`
+- Example app rewritten as cross-platform metadata editor
+
 ## 1.0.0
 
 - Initial release
