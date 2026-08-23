@@ -15,8 +15,21 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 - **Read** metadata from audio files (title, artist, album, year, genre, cover art, lyrics, BPM, and more)
 - **Write** metadata back to audio files
 - **Cover art** support — read and write embedded images
-- **Cross-platform** — Android, iOS, Linux, macOS, Windows
+- **Cross-platform** — Android, iOS, Linux, macOS, Windows, and **Web**
 - **Blazing fast** — Rust-powered native library via [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge)
+
+## Supported Platforms
+
+| Platform | Native Binary | WASM |
+|----------|:---:|:---:|
+| Android | ✅ | — |
+| iOS | ✅ | — |
+| Linux | ✅ | — |
+| macOS | ✅ | — |
+| Windows | ✅ | — |
+| Web | — | ✅ |
+
+> **Web**: Uses a WASM-compiled Rust binary. No native compilation needed — just add the JS/WASM files to your `web/` directory. See [Web Setup](#web-setup) below.
 
 ## Supported Formats
 
@@ -39,7 +52,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.0.0
+  haudiotagger: ^1.0.1
 ```
 
 Then run:
@@ -48,9 +61,31 @@ Then run:
 flutter pub get
 ```
 
+### Web Setup
+
+For web support, copy the WASM build artifacts into your `web/` directory:
+
+```bash
+cp -r .dart_tool/package_config.json ... 
+```
+
+Or manually copy from `web/wasm/`:
+
+```bash
+mkdir -p web/pkg
+cp haudiotagger/web/wasm/haudiotagger_bg.wasm web/pkg/
+cp haudiotagger/web/wasm/haudiotagger.js web/pkg/
+```
+
+Then add to your `web/index.html` (before `main.dart.js`):
+
+```html
+<script src="pkg/haudiotagger.js"></script>
+```
+
 ## Usage
 
-### Read Metadata
+### Read Metadata (file path — native only)
 
 ```dart
 import 'package:haudiotagger/haudiotagger.dart';
@@ -72,6 +107,17 @@ if (tag != null) {
     print(picture.bytes);       // Uint8List
   }
 }
+```
+
+### Read Metadata from Bytes (works on web + native)
+
+```dart
+import 'dart:typed_data';
+import 'package:haudiotagger/haudiotagger.dart';
+
+// From a file loaded as bytes (e.g., via FilePicker)
+final Uint8List fileBytes = /* ... */;
+final tag = await Haudiotagger.readFromBytes(fileBytes);
 ```
 
 ### Write Metadata
@@ -97,7 +143,14 @@ final tag = Tag(
   ],
 );
 
+// Native: write to file path
 await Haudiotagger.write('/path/to/song.mp3', tag);
+```
+
+### Write Metadata from Bytes (works on web + native)
+
+```dart
+final Uint8List modifiedBytes = await Haudiotagger.writeToBytes(fileBytes, tag);
 ```
 
 ### Error Handling
@@ -132,14 +185,20 @@ No additional setup required.
 
 No additional setup required.
 
+### Web
+
+Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-setup) above). The WASM binary is ~1.1 MB.
+
 ## API Reference
 
 ### `Haudiotagger`
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `read(String path)` | `Future<Tag?>` | Read metadata from a file. Returns `null` if no tags found. |
-| `write(String path, Tag tag)` | `Future<void>` | Write metadata to a file. Replaces existing tags. |
+| `read(String path)` | `Future<Tag?>` | Read metadata from a file path (native only). Returns `null` if no tags found. |
+| `readFromBytes(Uint8List bytes)` | `Future<Tag?>` | Read metadata from in-memory bytes (web + native). Returns `null` if no tags found. |
+| `write(String path, Tag tag)` | `Future<void>` | Write metadata to a file path. Replaces existing tags. |
+| `writeToBytes(Uint8List bytes, Tag tag)` | `Future<Uint8List>` | Write metadata to in-memory bytes. Returns modified bytes. |
 
 ### `Tag`
 
