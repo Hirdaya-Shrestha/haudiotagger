@@ -51,9 +51,35 @@ jobs:
           name: ${{ matrix.target }}
           path: ${{ matrix.path }}
 
+  build_web:
+    name: Build Web WASM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM
+        run: cd haudiotagger/rust && wasm-pack build --target web --release
+      - name: Rename artifacts
+        run: |
+          mv haudiotagger/rust/pkg/haudiotagger_bg.wasm .
+          mv haudiotagger/rust/pkg/haudiotagger.js .
+      - name: Upload Web Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: |
+            haudiotagger_bg.wasm
+            haudiotagger.js
+
   publish_to_release:
     name: Publish Artifacts to Release
-    needs: build_and_upload
+    needs: [build_and_upload, build_web]
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifacts
@@ -74,3 +100,5 @@ jobs:
             windows.tar.gz
             macos.zip
             ios.zip
+            web/haudiotagger_bg.wasm
+            web/haudiotagger.js
