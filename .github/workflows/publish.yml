@@ -35,7 +35,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
       - uses: ./.github/actions/setup_build
@@ -46,7 +46,7 @@ jobs:
       - name: Build
         run: dart run cli build ${{ matrix.target }} -v
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.5.0
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.target }}
           path: ${{ matrix.path }}
@@ -56,9 +56,8 @@ jobs:
     needs: build_and_upload
     runs-on: ubuntu-latest
     steps:
-      # Downloading unzips the artifacts so they have to be rezipped.
       - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v8
       - name: Create Archives
         run: |
           tar -C linux -czvf linux.tar.gz .
@@ -67,7 +66,7 @@ jobs:
           zip -j macos.zip macos/*
           cd ios && zip -r ios.zip ./* && cd .. && mv ios/ios.zip .
       - name: Add to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             linux.tar.gz
