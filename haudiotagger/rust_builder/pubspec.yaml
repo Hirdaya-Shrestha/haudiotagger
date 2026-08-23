@@ -1,7 +1,8 @@
 name: rust_lib_haudiotagger
-description: "Utility to build Rust code"
-version: 0.0.1
-publish_to: none
+description: "Rust native library builder for haudiotagger — compiles lofty-based audio metadata reader/writer for Flutter."
+version: 1.0.0
+homepage: https://github.com/Hirdaya-Shrestha/haudiotagger
+repository: https://github.com/Hirdaya-Shrestha/haudiotagger
 
 environment:
   sdk: '>=3.6.0 <4.0.0'

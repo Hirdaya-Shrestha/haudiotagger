@@ -15,10 +15,9 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   ffi: ^2.0.1
-  flutter_rust_bridge: 2.12.0
+  flutter_rust_bridge: ^2.12.0
   freezed_annotation: ^2.4.1
-  rust_lib_haudiotagger:
-    path: rust_builder
+  rust_lib_haudiotagger: ^1.0.0
 
 dev_dependencies:
   flutter_test:
