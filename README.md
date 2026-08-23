@@ -63,16 +63,13 @@ flutter pub get
 
 ### Web Setup
 
-Add one script tag to `web/index.html` before `main.dart.js`:
+Add one line to `web/index.html` before `main.dart.js`:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/Hirdaya-Shrestha/haudiotagger@main/haudiotagger/web/bootstrap.js" data-version="1.0.1"></script>
+<script type="module" src="assets/packages/haudiotagger/web/wasm/haudiotagger.js"></script>
 ```
 
-**How it works:**
-- It automatically downloads `haudiotagger_bg.wasm` and `haudiotagger.js` from the GitHub Release for version `data-version`.
-- It caches them locally in the browser's Cache API — so the download only happens on first load. Subsequent loads are instant.
-- No files to copy, no local WASM builds, no asset bundling needed. Completely automatic.
+The WASM files are bundled automatically as Flutter assets — no files to copy. The JS glue loads the WASM from the asset path.
 
 ## Usage
 
