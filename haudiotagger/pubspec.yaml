@@ -1,0 +1,45 @@
+name: haudiotagger
+description: Read and write audio metadata in Flutter. Supports multiple formats.
+version: 1.0.0
+homepage: https://github.com/Hirdaya-Shrestha/haudiotagger
+repository: https://github.com/Hirdaya-Shrestha/haudiotagger
+
+resolution: workspace
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  ffi: ^2.0.1
+  flutter_rust_bridge: 2.12.0
+  freezed_annotation: ^2.4.1
+  rust_lib_haudiotagger:
+    path: rust_builder
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  ffigen: ^9.0.1
+  build_runner: ^2.4.6
+  freezed: ^2.4.2
+  analyzer: ^6.4.1
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.ha.nep.haudiotagger
+        pluginClass: HaudiotaggerPlugin
+      ios:
+        pluginClass: HaudiotaggerPlugin
+      linux:
+        pluginClass: HaudiotaggerPlugin
+      macos:
+        pluginClass: HaudiotaggerPlugin
+      windows:
+        pluginClass: HaudiotaggerPluginCApi
