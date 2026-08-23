@@ -1,0 +1,16 @@
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    require_trailing_commas: true
+    prefer_double_quotes: true
+    prefer_relative_imports: true

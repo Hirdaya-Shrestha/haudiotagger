@@ -1,0 +1,7 @@
+haudiotagger.dll
+libhaudiotagger.so
+liblibhaudiotagger.a
+ios/Frameworks/haudiotagger.xcframework
+*.zip
+*.tar.gz
+samples

@@ -1,0 +1,33 @@
+group 'com.ha.nep.haudiotagger'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'com.ha.nep.haudiotagger'
+    compileSdkVersion 37
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main.jniLibs.srcDirs = ['src/main/jniLibs']
+    }
+
+    defaultConfig {
+        minSdkVersion 24
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
