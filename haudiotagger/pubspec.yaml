@@ -28,6 +28,8 @@ dev_dependencies:
   freezed: ^2.4.2
   analyzer: ^6.4.1
 
+resolution: workspace
+
 flutter:
   plugin:
     platforms:
