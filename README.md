@@ -1,6 +1,6 @@
 # hAudiotagger
 
-![Haudiotagger](https://raw.githubusercontent.com/Hirdaya-Shrestha/haudiotagger/main/haudiotagger/cover.png)
+![Haudiotagger](https://raw.githubusercontent.com/Hirdaya-Shrestha/haudiotagger/main/haudiotagger/cover.png?)
 
 [![pub package](https://img.shields.io/pub/v/haudiotagger.svg)](https://pub.dev/packages/haudiotagger)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
