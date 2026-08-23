@@ -66,10 +66,10 @@ flutter pub get
 Add one line to `web/index.html` before `main.dart.js`:
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/gh/Hirdaya-Shrestha/haudiotagger@1.0.1/haudiotagger/web/wasm/haudiotagger.js"></script>
+<script type="module" src="assets/packages/haudiotagger/web/wasm/haudiotagger.js"></script>
 ```
 
-That's it. The JS glue auto-loads the WASM from the same CDN path. No files to copy, no build step needed.
+The WASM files are bundled automatically as Flutter assets — no files to copy. The JS glue loads the WASM from the same asset path.
 
 ## Usage
 
