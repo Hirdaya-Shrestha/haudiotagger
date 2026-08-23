@@ -44,3 +44,6 @@ flutter:
         pluginClass: HaudiotaggerPlugin
       windows:
         pluginClass: HaudiotaggerPluginCApi
+  assets:
+    - web/wasm/haudiotagger_bg.wasm
+    - web/wasm/haudiotagger.js
