@@ -1,4 +1,4 @@
-# Haudiotagger
+# hAudiotagger
 
 ![Haudiotagger](https://raw.githubusercontent.com/Hirdaya-Shrestha/haudiotagger/main/haudiotagger/cover.png)
 
