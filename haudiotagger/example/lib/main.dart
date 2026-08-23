@@ -61,8 +61,17 @@ class _MyAppState extends State<MyApp> {
       withData: true,
       type: FileType.custom,
       allowedExtensions: [
-        'mp3', 'flac', 'ogg', 'opus', 'wav', 'aiff',
-        'mp4', 'm4a', 'aac', 'wma', 'alac',
+        'mp3',
+        'flac',
+        'ogg',
+        'opus',
+        'wav',
+        'aiff',
+        'mp4',
+        'm4a',
+        'aac',
+        'wma',
+        'alac',
       ],
     );
     if (r == null) return;
@@ -135,7 +144,9 @@ class _MyAppState extends State<MyApp> {
   void _downloadBytesWeb(Uint8List bytes, String name) {
     // Web download is handled via anchor element
     // For now, show success - users can save the modified file
-    setState(() => _result = "Write succeeded! Modified file: ${bytes.length} bytes.");
+    setState(
+      () => _result = "Write succeeded! Modified file: ${bytes.length} bytes.",
+    );
   }
 
   void _saveNative(Uint8List bytes) {
@@ -146,10 +157,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Haudiotagger Web Demo',
-      theme: ThemeData(
-        colorSchemeSeed: Colors.deepPurple,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(colorSchemeSeed: Colors.deepPurple, useMaterial3: true),
       home: Scaffold(
         appBar: AppBar(title: const Text('Audio Metadata Editor')),
         body: SingleChildScrollView(
@@ -176,13 +184,17 @@ class _MyAppState extends State<MyApp> {
                               ),
                               const SizedBox(width: 12),
                               ElevatedButton.icon(
-                                onPressed: _fileBytes == null ? null : _readMetadata,
+                                onPressed: _fileBytes == null
+                                    ? null
+                                    : _readMetadata,
                                 icon: const Icon(Icons.book),
                                 label: const Text('Read'),
                               ),
                               const SizedBox(width: 12),
                               ElevatedButton.icon(
-                                onPressed: _fileBytes == null ? null : _writeMetadata,
+                                onPressed: _fileBytes == null
+                                    ? null
+                                    : _writeMetadata,
                                 icon: const Icon(Icons.save),
                                 label: const Text('Write'),
                               ),
@@ -210,8 +222,10 @@ class _MyAppState extends State<MyApp> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Edit Metadata',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              'Edit Metadata',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             _field('Title', _titleCtrl),
             _field('Artist', _artistCtrl),
