@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _pickFile() async {
-    FilePickerResult? r = await FilePicker.platform.pickFiles(
+    FilePickerResult? r = await FilePicker.pickFiles(
       withData: true,
       type: FileType.custom,
       allowedExtensions: [
