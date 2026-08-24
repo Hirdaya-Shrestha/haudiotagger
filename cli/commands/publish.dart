@@ -1,6 +1,5 @@
 import "dart:io";
 
-import "package:collection/collection.dart";
 import "package:github/github.dart";
 import "package:io/io.dart";
 import "package:pub_updater/pub_updater.dart";
@@ -77,15 +76,16 @@ class PublishCommand extends CliCommand
       "macos.zip",
     ];
 
-    if (release.assets == null ||
-        releaseAssetsNames == null ||
-        !UnorderedIterableEquality<String>().equals(
-          releaseAssetsNames,
-          expectedAssets,
-        )) {
+    final List<String> found = releaseAssetsNames ?? const [];
+    final List<String> missing = expectedAssets
+        .where((asset) => !found.contains(asset))
+        .toList();
+
+    if (release.assets == null || releaseAssetsNames == null || missing.isNotEmpty) {
       logger.err("""Not all release assets are published.
 Expected: $expectedAssets
-Found: $releaseAssetsNames""");
+Missing: $missing
+Found: $found""");
       github.dispose();
       return ExitCode.unavailable.code;
     }
