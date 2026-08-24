@@ -3,9 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:haudiotagger/haudiotagger.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await RustLib.init();
+void main() {
   runApp(const MyApp());
 }
 
@@ -184,15 +182,17 @@ class _MyAppState extends State<MyApp> {
                               ),
                               const SizedBox(width: 12),
                               ElevatedButton.icon(
-                                onPressed:
-                                    _fileBytes == null ? null : _readMetadata,
+                                onPressed: _fileBytes == null
+                                    ? null
+                                    : _readMetadata,
                                 icon: const Icon(Icons.book),
                                 label: const Text('Read'),
                               ),
                               const SizedBox(width: 12),
                               ElevatedButton.icon(
-                                onPressed:
-                                    _fileBytes == null ? null : _writeMetadata,
+                                onPressed: _fileBytes == null
+                                    ? null
+                                    : _writeMetadata,
                                 icon: const Icon(Icons.save),
                                 label: const Text('Write'),
                               ),
