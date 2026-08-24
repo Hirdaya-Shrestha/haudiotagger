@@ -77,11 +77,12 @@ class PublishCommand extends CliCommand
     ];
 
     final List<String> found = releaseAssetsNames ?? const [];
-    final List<String> missing = expectedAssets
-        .where((asset) => !found.contains(asset))
-        .toList();
+    final List<String> missing =
+        expectedAssets.where((asset) => !found.contains(asset)).toList();
 
-    if (release.assets == null || releaseAssetsNames == null || missing.isNotEmpty) {
+    if (release.assets == null ||
+        releaseAssetsNames == null ||
+        missing.isNotEmpty) {
       logger.err("""Not all release assets are published.
 Expected: $expectedAssets
 Missing: $missing
