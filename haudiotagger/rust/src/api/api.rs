@@ -145,11 +145,11 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
                 message: format!("Could not open file for tag removal: {e}"),
             })?;
         for tag_type in tag_types {
-            tag_type.remove_from(&mut handle, WriteOptions::new()).map_err(|e| {
-                HaudiotaggerError::Write {
+            tag_type
+                .remove_from(&mut handle, WriteOptions::new())
+                .map_err(|e| HaudiotaggerError::Write {
                     message: format!("Could not remove existing tag: {e:?}"),
-                }
-            })?;
+                })?;
         }
     }
 
@@ -179,11 +179,12 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
 pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerError> {
     let tag_types: Vec<lofty::tag::TagType> = {
         let mut cursor = Cursor::new(&bytes);
-        let probe = Probe::new(&mut cursor)
-            .guess_file_type()
-            .map_err(|e| HaudiotaggerError::OpenFile {
-                message: e.to_string(),
-            })?;
+        let probe =
+            Probe::new(&mut cursor)
+                .guess_file_type()
+                .map_err(|e| HaudiotaggerError::OpenFile {
+                    message: e.to_string(),
+                })?;
         probe
             .read()
             .map_err(|e| HaudiotaggerError::OpenFile {
@@ -216,11 +217,12 @@ pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, Haudiotagger
 
     let mut file = {
         let mut cursor = Cursor::new(&cleared_bytes);
-        let probe = Probe::new(&mut cursor)
-            .guess_file_type()
-            .map_err(|e| HaudiotaggerError::OpenFile {
-                message: e.to_string(),
-            })?;
+        let probe =
+            Probe::new(&mut cursor)
+                .guess_file_type()
+                .map_err(|e| HaudiotaggerError::OpenFile {
+                    message: e.to_string(),
+                })?;
         probe.read().map_err(|e| HaudiotaggerError::OpenFile {
             message: e.to_string(),
         })?
