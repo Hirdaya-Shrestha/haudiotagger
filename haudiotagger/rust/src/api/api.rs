@@ -6,17 +6,21 @@ use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::probe::Probe;
 use lofty::tag::items::Timestamp;
-use lofty::tag::{Accessor, ItemKey, TagExt};
+use lofty::tag::{Accessor, ItemKey};
 
 /// Returns a `TaggedFile` at the given path.
 fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
-    match Probe::open(path) {
-        Ok(probe) => match probe.read() {
-            Ok(file) => Ok(file),
-            Err(err) => Err(HaudiotaggerError::OpenFile {
-                message: err.to_string(),
-            }),
-        },
+    let probe = Probe::open(path)
+        .map_err(|err| HaudiotaggerError::OpenFile {
+            message: err.to_string(),
+        })?
+        .guess_file_type()
+        .map_err(|err| HaudiotaggerError::OpenFile {
+            message: err.to_string(),
+        })?;
+
+    match probe.read() {
+        Ok(file) => Ok(file),
         Err(err) => Err(HaudiotaggerError::OpenFile {
             message: err.to_string(),
         }),
@@ -128,13 +132,29 @@ pub fn read_from_bytes(bytes: Vec<u8>) -> Result<Tag, HaudiotaggerError> {
 pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
     let mut file = get_file(&path)?;
 
-    for tag in file.tags() {
-        if let Err(err) = tag.remove_from_path(&path, WriteOptions::new()) {
-            return Err(HaudiotaggerError::Write {
-                message: format!("Could not remove existing tag. {err:?}"),
-            });
+    // Remove every existing tag from the file so the new tag fully replaces them.
+    // `TagType::remove_from` is used (not `remove_from_path`) because the latter
+    // opens a probe without guessing the file type and fails with `format: None`.
+    let tag_types: Vec<lofty::tag::TagType> = file.tags().iter().map(|t| t.tag_type()).collect();
+    if !tag_types.is_empty() {
+        let mut handle = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .map_err(|e| HaudiotaggerError::Write {
+                message: format!("Could not open file for tag removal: {e}"),
+            })?;
+        for tag_type in tag_types {
+            tag_type.remove_from(&mut handle, WriteOptions::new()).map_err(|e| {
+                HaudiotaggerError::Write {
+                    message: format!("Could not remove existing tag: {e:?}"),
+                }
+            })?;
         }
     }
+
+    // Drop the stale in-memory tags, then write the new one (if any).
+    file.clear();
 
     if data.is_empty() {
         return Ok(());
@@ -149,33 +169,64 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
 
     apply_tag_to_lofty_tag(&data, lo_tag)?;
 
-    match file.save_to_path(path, WriteOptions::new()) {
-        Ok(_) => Ok(()),
-        Err(err) => Err(HaudiotaggerError::Write {
-            message: format!("Failed to write tag to file. {err:?}"),
-        }),
-    }
+    file.save_to_path(&path, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to write tag to file. {e:?}"),
+        })
 }
 
 /// Write metadata to in-memory bytes, returns modified bytes (for web/WASM).
 pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerError> {
-    let mut file = {
+    let tag_types: Vec<lofty::tag::TagType> = {
         let mut cursor = Cursor::new(&bytes);
-        let probe =
-            Probe::new(&mut cursor)
-                .guess_file_type()
-                .map_err(|e| HaudiotaggerError::OpenFile {
-                    message: e.to_string(),
+        let probe = Probe::new(&mut cursor)
+            .guess_file_type()
+            .map_err(|e| HaudiotaggerError::OpenFile {
+                message: e.to_string(),
+            })?;
+        probe
+            .read()
+            .map_err(|e| HaudiotaggerError::OpenFile {
+                message: e.to_string(),
+            })?
+            .tags()
+            .iter()
+            .map(|t| t.tag_type())
+            .collect()
+    };
+
+    // Strip existing tags from the bytes before writing the new tag.
+    let cleared_bytes = if tag_types.is_empty() {
+        bytes
+    } else {
+        let mut handle = Cursor::new(bytes);
+        for tag_type in tag_types {
+            tag_type
+                .remove_from(&mut handle, WriteOptions::new())
+                .map_err(|e| HaudiotaggerError::Write {
+                    message: format!("Could not remove existing tag: {e:?}"),
                 })?;
+        }
+        handle.into_inner()
+    };
+
+    if data.is_empty() {
+        return Ok(cleared_bytes);
+    }
+
+    let mut file = {
+        let mut cursor = Cursor::new(&cleared_bytes);
+        let probe = Probe::new(&mut cursor)
+            .guess_file_type()
+            .map_err(|e| HaudiotaggerError::OpenFile {
+                message: e.to_string(),
+            })?;
         probe.read().map_err(|e| HaudiotaggerError::OpenFile {
             message: e.to_string(),
         })?
     };
 
-    if data.is_empty() {
-        return Ok(bytes);
-    }
-
+    file.clear();
     file.insert_tag(lofty::tag::Tag::new(file.primary_tag_type()));
     let lo_tag = file
         .primary_tag_mut()
