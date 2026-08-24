@@ -5,7 +5,7 @@ import "package:yaml_edit/yaml_edit.dart";
 import "../cli_command.dart";
 
 mixin PackageInfo on CliCommand {
-  String get frbVersion => "2.12.0";
+  String get frbVersion => "2.13.0";
 
   String get packageName => _packageName;
   static final String _packageName = "haudiotagger";

@@ -13,20 +13,19 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   ffi: ^2.0.1
-  flutter_rust_bridge: ^2.12.0
-  freezed_annotation: ^2.4.1
-
+  flutter_rust_bridge: ^2.13.0
+  freezed_annotation: ^3.1.0
   rust_lib_haudiotagger:
     path: rust_builder
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-  ffigen: ^9.0.1
+  flutter_lints: ^6.0.0
+  ffigen: ^21.0.0
   build_runner: ^2.4.6
-  freezed: ^2.4.2
-  analyzer: ^6.4.1
+  freezed: ^4.0.0
+  analyzer: ^13.3.0
 
 resolution: workspace
 
