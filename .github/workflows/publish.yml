@@ -1,8 +1,9 @@
 name: Publish
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 permissions:
   contents: write
@@ -54,6 +55,10 @@ jobs:
   build_web:
     name: Build Web WASM
     runs-on: ubuntu-latest
+    # `id-token: write` lets Dart exchange the GitHub OIDC token for a
+    # short-lived pub.dev credential — no long-lived PUB_TOKEN secret needed.
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -61,14 +66,24 @@ jobs:
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-unknown-unknown
+      - name: Cache Rust WASM build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: haudiotagger/rust
+          key: wasm
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM
         run: cd haudiotagger/rust && wasm-pack build --target web --release
-      - name: Rename artifacts
+      - name: Stage WASM artifacts
         run: |
-          mv haudiotagger/rust/pkg/haudiotagger_bg.wasm .
-          mv haudiotagger/rust/pkg/haudiotagger.js .
+          # Place the freshly built wasm/js where the package ships them from
+          # (haudiotagger/web/wasm/ is declared as an asset in pubspec.yaml),
+          # and keep root copies for the GitHub Release upload below.
+          cp haudiotagger/rust/pkg/haudiotagger_bg.wasm haudiotagger/web/wasm/
+          cp haudiotagger/rust/pkg/haudiotagger.js haudiotagger/web/wasm/
+          cp haudiotagger/rust/pkg/haudiotagger_bg.wasm .
+          cp haudiotagger/rust/pkg/haudiotagger.js .
       - name: Upload Web Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -76,6 +91,16 @@ jobs:
           path: |
             haudiotagger_bg.wasm
             haudiotagger.js
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+      - name: Publish to pub.dev
+        working-directory: haudiotagger
+        run: |
+          flutter pub get
+          echo "y" | flutter pub publish
 
   publish_to_release:
     name: Publish Artifacts to Release

@@ -5,5 +5,6 @@ ios/Frameworks/haudiotagger.xcframework
 *.zip
 *.tar.gz
 samples
+rust/samples
 ./rust_builder/
 ./rust/
