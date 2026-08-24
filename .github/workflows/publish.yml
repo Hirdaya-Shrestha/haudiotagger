@@ -17,6 +17,7 @@ jobs:
           - target: linux
             os: ubuntu-22.04
             path: haudiotagger/linux/libhaudiotagger.so
+
           - target: android
             os: ubuntu-latest
             path: |
@@ -24,66 +25,91 @@ jobs:
               haudiotagger/android/src/main/jniLibs/armeabi-v7a/libhaudiotagger.so
               haudiotagger/android/src/main/jniLibs/x86_64/libhaudiotagger.so
               haudiotagger/android/src/main/jniLibs/x86/libhaudiotagger.so
+
           - target: windows
             os: windows-latest
             path: haudiotagger/windows/haudiotagger.dll
+
           - target: macos
             os: macos-latest
             path: haudiotagger/macos/Frameworks/haudiotagger.xcframework
+
           - target: ios
             os: macos-latest
             path: haudiotagger/ios/Frameworks/haudiotagger.xcframework
+
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
+
       - uses: ./.github/actions/setup_build
+
       - name: Install MUSL dependencies
         if: ${{ matrix.target == 'linux' }}
         run: |
           sudo apt install musl-tools
+
       - name: Build
         run: dart run cli build ${{ matrix.target }} -v
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target }}
           path: ${{ matrix.path }}
 
+
   build_web:
     name: Build Web WASM
     runs-on: ubuntu-latest
-    # `id-token: write` lets Dart exchange the GitHub OIDC token for a
-    # short-lived pub.dev credential — no long-lived PUB_TOKEN secret needed.
+
+    # Required for pub.dev OIDC authentication
     permissions:
       id-token: write
+
     steps:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}
+
+      # ---------------------------------------------------------
+      # Dart OIDC authentication
+      # ---------------------------------------------------------
+      # IMPORTANT:
+      # This is what exchanges GitHub's OIDC identity for the
+      # temporary pub.dev publishing credential.
+      - uses: dart-lang/setup-dart@v1
+
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-unknown-unknown
+
       - name: Cache Rust WASM build
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: haudiotagger/rust
           key: wasm
+
       - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Build WASM
-        run: cd haudiotagger/rust && wasm-pack build --target web --release
+        run: |
+          cd haudiotagger/rust
+          wasm-pack build --target web --release
+
       - name: Stage WASM artifacts
         run: |
-          # Place the freshly built wasm/js where the package ships them from
-          # (haudiotagger/web/wasm/ is declared as an asset in pubspec.yaml),
-          # and keep root copies for the GitHub Release upload below.
           cp haudiotagger/rust/pkg/haudiotagger_bg.wasm haudiotagger/web/wasm/
           cp haudiotagger/rust/pkg/haudiotagger.js haudiotagger/web/wasm/
+
           cp haudiotagger/rust/pkg/haudiotagger_bg.wasm .
           cp haudiotagger/rust/pkg/haudiotagger.js .
+
       - name: Upload Web Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -91,35 +117,70 @@ jobs:
           path: |
             haudiotagger_bg.wasm
             haudiotagger.js
+
+      # ---------------------------------------------------------
+      # Flutter
+      # ---------------------------------------------------------
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: "stable"
+          channel: stable
           cache: true
+
+      # ---------------------------------------------------------
+      # Publish
+      # ---------------------------------------------------------
       - name: Publish to pub.dev
         working-directory: haudiotagger
         run: |
           flutter pub get
-          # pub.dev rejects `path:` dependencies; disable the local rust builder for publish only
-          sed -i -e 's|^  rust_lib_haudiotagger:|  # rust_lib_haudiotagger:|' -e 's|^    path: rust_builder|    # path: rust_builder|' pubspec.yaml
-          echo "y" | flutter pub publish
-          # restore for local-dev consistency (CI checkout is ephemeral, but keep it clean)
+
+          # pub.dev rejects path dependencies.
+          # Disable the local Rust builder only for publishing.
+          sed -i \
+            -e 's|^  rust_lib_haudiotagger:|  # rust_lib_haudiotagger:|' \
+            -e 's|^    path: rust_builder|    # path: rust_builder|' \
+            pubspec.yaml
+
+          # Verify the package before publishing.
+          flutter pub publish --dry-run
+
+          # Publish using the OIDC credential configured by setup-dart.
+          flutter pub publish --force
+
+          # Restore the original pubspec.
           git checkout -- pubspec.yaml
+
 
   publish_to_release:
     name: Publish Artifacts to Release
-    needs: [build_and_upload, build_web]
+
+    needs:
+      - build_and_upload
+      - build_web
+
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
+
       - name: Create Archives
         run: |
           tar -C linux -czvf linux.tar.gz .
           tar -C android -czvf android.tar.gz .
           tar -C windows -czvf windows.tar.gz .
+
           zip -j macos.zip macos/*
-          cd ios && zip -r ios.zip ./* && cd .. && mv ios/ios.zip .
+
+          cd ios
+          zip -r ios.zip ./*
+          cd ..
+          mv ios/ios.zip .
+
       - name: Add to Release
         uses: softprops/action-gh-release@v3
         with:
