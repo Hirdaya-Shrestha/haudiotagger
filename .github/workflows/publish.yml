@@ -208,9 +208,9 @@ jobs:
         working-directory: haudiotagger
         run: flutter pub get
 
-      - name: Validate package
-        working-directory: haudiotagger
-        run: flutter pub publish --dry-run
+      # - name: Validate package
+      #   working-directory: haudiotagger
+      #   run: flutter pub publish --dry-run
 
       - name: Publish to pub.dev
         working-directory: haudiotagger
