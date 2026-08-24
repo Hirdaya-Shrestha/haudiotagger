@@ -100,7 +100,11 @@ jobs:
         working-directory: haudiotagger
         run: |
           flutter pub get
+          # pub.dev rejects `path:` dependencies; disable the local rust builder for publish only
+          sed -i -e 's|^  rust_lib_haudiotagger:|  # rust_lib_haudiotagger:|' -e 's|^    path: rust_builder|    # path: rust_builder|' pubspec.yaml
           echo "y" | flutter pub publish
+          # restore for local-dev consistency (CI checkout is ephemeral, but keep it clean)
+          git checkout -- pubspec.yaml
 
   publish_to_release:
     name: Publish Artifacts to Release
