@@ -194,15 +194,15 @@ jobs:
 
       - name: Get dependencies
         working-directory: haudiotagger
-        run: dart pub get
+        run: flutter pub get
 
       - name: Validate package
         working-directory: haudiotagger
-        run: dart pub publish --dry-run
+        run: flutter pub publish --dry-run
 
       - name: Publish to pub.dev
         working-directory: haudiotagger
-        run: dart pub publish --force
+        run: flutter pub publish --force
 
   # ============================================================
   # GITHUB RELEASE
