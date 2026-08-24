@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
-  ffi: ^2.0.1
+  plugin_platform_interface: ^2.1.8
+  ffi: ^2.2.0
   flutter_rust_bridge: ^2.13.0
   freezed_annotation: ^3.1.0
   rust_lib_haudiotagger:
