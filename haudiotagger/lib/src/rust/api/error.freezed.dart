@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'error.dart';
@@ -9,54 +9,47 @@ part of 'error.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$HaudiotaggerError {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() invalidPath,
-    required TResult Function() noTags,
-    required TResult Function(String message) openFile,
-    required TResult Function(String message) write,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? invalidPath,
-    TResult? Function()? noTags,
-    TResult? Function(String message)? openFile,
-    TResult? Function(String message)? write,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? invalidPath,
-    TResult Function()? noTags,
-    TResult Function(String message)? openFile,
-    TResult Function(String message)? write,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HaudiotaggerError_InvalidPath value) invalidPath,
-    required TResult Function(HaudiotaggerError_NoTags value) noTags,
-    required TResult Function(HaudiotaggerError_OpenFile value) openFile,
-    required TResult Function(HaudiotaggerError_Write value) write,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult? Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult? Function(HaudiotaggerError_Write value)? write,
-  }) =>
-      throw _privateConstructorUsedError;
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is HaudiotaggerError);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() {
+    return 'HaudiotaggerError()';
+  }
+}
+
+/// @nodoc
+class $HaudiotaggerErrorCopyWith<$Res> {
+  $HaudiotaggerErrorCopyWith(
+      HaudiotaggerError _, $Res Function(HaudiotaggerError) __);
+}
+
+/// Adds pattern-matching-related methods to [HaudiotaggerError].
+extension HaudiotaggerErrorPatterns on HaudiotaggerError {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(HaudiotaggerError_InvalidPath value)? invalidPath,
@@ -64,446 +57,293 @@ mixin _$HaudiotaggerError {
     TResult Function(HaudiotaggerError_OpenFile value)? openFile,
     TResult Function(HaudiotaggerError_Write value)? write,
     required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+  }) {
+    final _that = this;
+    switch (_that) {
+      case HaudiotaggerError_InvalidPath() when invalidPath != null:
+        return invalidPath(_that);
+      case HaudiotaggerError_NoTags() when noTags != null:
+        return noTags(_that);
+      case HaudiotaggerError_OpenFile() when openFile != null:
+        return openFile(_that);
+      case HaudiotaggerError_Write() when write != null:
+        return write(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(HaudiotaggerError_InvalidPath value) invalidPath,
+    required TResult Function(HaudiotaggerError_NoTags value) noTags,
+    required TResult Function(HaudiotaggerError_OpenFile value) openFile,
+    required TResult Function(HaudiotaggerError_Write value) write,
+  }) {
+    final _that = this;
+    switch (_that) {
+      case HaudiotaggerError_InvalidPath():
+        return invalidPath(_that);
+      case HaudiotaggerError_NoTags():
+        return noTags(_that);
+      case HaudiotaggerError_OpenFile():
+        return openFile(_that);
+      case HaudiotaggerError_Write():
+        return write(_that);
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(HaudiotaggerError_InvalidPath value)? invalidPath,
+    TResult? Function(HaudiotaggerError_NoTags value)? noTags,
+    TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
+    TResult? Function(HaudiotaggerError_Write value)? write,
+  }) {
+    final _that = this;
+    switch (_that) {
+      case HaudiotaggerError_InvalidPath() when invalidPath != null:
+        return invalidPath(_that);
+      case HaudiotaggerError_NoTags() when noTags != null:
+        return noTags(_that);
+      case HaudiotaggerError_OpenFile() when openFile != null:
+        return openFile(_that);
+      case HaudiotaggerError_Write() when write != null:
+        return write(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? invalidPath,
+    TResult Function()? noTags,
+    TResult Function(String message)? openFile,
+    TResult Function(String message)? write,
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case HaudiotaggerError_InvalidPath() when invalidPath != null:
+        return invalidPath();
+      case HaudiotaggerError_NoTags() when noTags != null:
+        return noTags();
+      case HaudiotaggerError_OpenFile() when openFile != null:
+        return openFile(_that.message);
+      case HaudiotaggerError_Write() when write != null:
+        return write(_that.message);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() invalidPath,
+    required TResult Function() noTags,
+    required TResult Function(String message) openFile,
+    required TResult Function(String message) write,
+  }) {
+    final _that = this;
+    switch (_that) {
+      case HaudiotaggerError_InvalidPath():
+        return invalidPath();
+      case HaudiotaggerError_NoTags():
+        return noTags();
+      case HaudiotaggerError_OpenFile():
+        return openFile(_that.message);
+      case HaudiotaggerError_Write():
+        return write(_that.message);
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? invalidPath,
+    TResult? Function()? noTags,
+    TResult? Function(String message)? openFile,
+    TResult? Function(String message)? write,
+  }) {
+    final _that = this;
+    switch (_that) {
+      case HaudiotaggerError_InvalidPath() when invalidPath != null:
+        return invalidPath();
+      case HaudiotaggerError_NoTags() when noTags != null:
+        return noTags();
+      case HaudiotaggerError_OpenFile() when openFile != null:
+        return openFile(_that.message);
+      case HaudiotaggerError_Write() when write != null:
+        return write(_that.message);
+      case _:
+        return null;
+    }
+  }
 }
 
 /// @nodoc
-abstract class $HaudiotaggerErrorCopyWith<$Res> {
-  factory $HaudiotaggerErrorCopyWith(
-          HaudiotaggerError value, $Res Function(HaudiotaggerError) then) =
-      _$HaudiotaggerErrorCopyWithImpl<$Res, HaudiotaggerError>;
-}
 
-/// @nodoc
-class _$HaudiotaggerErrorCopyWithImpl<$Res, $Val extends HaudiotaggerError>
-    implements $HaudiotaggerErrorCopyWith<$Res> {
-  _$HaudiotaggerErrorCopyWithImpl(this._value, this._then);
+class HaudiotaggerError_InvalidPath extends HaudiotaggerError {
+  const HaudiotaggerError_InvalidPath() : super._();
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-}
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is HaudiotaggerError_InvalidPath);
+  }
 
-/// @nodoc
-abstract class _$$HaudiotaggerError_InvalidPathImplCopyWith<$Res> {
-  factory _$$HaudiotaggerError_InvalidPathImplCopyWith(
-          _$HaudiotaggerError_InvalidPathImpl value,
-          $Res Function(_$HaudiotaggerError_InvalidPathImpl) then) =
-      __$$HaudiotaggerError_InvalidPathImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$HaudiotaggerError_InvalidPathImplCopyWithImpl<$Res>
-    extends _$HaudiotaggerErrorCopyWithImpl<$Res,
-        _$HaudiotaggerError_InvalidPathImpl>
-    implements _$$HaudiotaggerError_InvalidPathImplCopyWith<$Res> {
-  __$$HaudiotaggerError_InvalidPathImplCopyWithImpl(
-      _$HaudiotaggerError_InvalidPathImpl _value,
-      $Res Function(_$HaudiotaggerError_InvalidPathImpl) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$HaudiotaggerError_InvalidPathImpl
-    extends HaudiotaggerError_InvalidPath {
-  const _$HaudiotaggerError_InvalidPathImpl() : super._();
+  @override
+  int get hashCode => runtimeType.hashCode;
 
   @override
   String toString() {
     return 'HaudiotaggerError.invalidPath()';
   }
+}
+
+/// @nodoc
+
+class HaudiotaggerError_NoTags extends HaudiotaggerError {
+  const HaudiotaggerError_NoTags() : super._();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HaudiotaggerError_InvalidPathImpl);
+        (other.runtimeType == runtimeType && other is HaudiotaggerError_NoTags);
   }
 
   @override
   int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() invalidPath,
-    required TResult Function() noTags,
-    required TResult Function(String message) openFile,
-    required TResult Function(String message) write,
-  }) {
-    return invalidPath();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? invalidPath,
-    TResult? Function()? noTags,
-    TResult? Function(String message)? openFile,
-    TResult? Function(String message)? write,
-  }) {
-    return invalidPath?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? invalidPath,
-    TResult Function()? noTags,
-    TResult Function(String message)? openFile,
-    TResult Function(String message)? write,
-    required TResult orElse(),
-  }) {
-    if (invalidPath != null) {
-      return invalidPath();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HaudiotaggerError_InvalidPath value) invalidPath,
-    required TResult Function(HaudiotaggerError_NoTags value) noTags,
-    required TResult Function(HaudiotaggerError_OpenFile value) openFile,
-    required TResult Function(HaudiotaggerError_Write value) write,
-  }) {
-    return invalidPath(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult? Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult? Function(HaudiotaggerError_Write value)? write,
-  }) {
-    return invalidPath?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult Function(HaudiotaggerError_Write value)? write,
-    required TResult orElse(),
-  }) {
-    if (invalidPath != null) {
-      return invalidPath(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HaudiotaggerError_InvalidPath extends HaudiotaggerError {
-  const factory HaudiotaggerError_InvalidPath() =
-      _$HaudiotaggerError_InvalidPathImpl;
-  const HaudiotaggerError_InvalidPath._() : super._();
-}
-
-/// @nodoc
-abstract class _$$HaudiotaggerError_NoTagsImplCopyWith<$Res> {
-  factory _$$HaudiotaggerError_NoTagsImplCopyWith(
-          _$HaudiotaggerError_NoTagsImpl value,
-          $Res Function(_$HaudiotaggerError_NoTagsImpl) then) =
-      __$$HaudiotaggerError_NoTagsImplCopyWithImpl<$Res>;
-}
-
-/// @nodoc
-class __$$HaudiotaggerError_NoTagsImplCopyWithImpl<$Res>
-    extends _$HaudiotaggerErrorCopyWithImpl<$Res,
-        _$HaudiotaggerError_NoTagsImpl>
-    implements _$$HaudiotaggerError_NoTagsImplCopyWith<$Res> {
-  __$$HaudiotaggerError_NoTagsImplCopyWithImpl(
-      _$HaudiotaggerError_NoTagsImpl _value,
-      $Res Function(_$HaudiotaggerError_NoTagsImpl) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$HaudiotaggerError_NoTagsImpl extends HaudiotaggerError_NoTags {
-  const _$HaudiotaggerError_NoTagsImpl() : super._();
 
   @override
   String toString() {
     return 'HaudiotaggerError.noTags()';
   }
+}
+
+/// @nodoc
+
+class HaudiotaggerError_OpenFile extends HaudiotaggerError {
+  const HaudiotaggerError_OpenFile({required this.message}) : super._();
+
+  final String message;
+
+  /// Create a copy of HaudiotaggerError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $HaudiotaggerError_OpenFileCopyWith<HaudiotaggerError_OpenFile>
+      get copyWith =>
+          _$HaudiotaggerError_OpenFileCopyWithImpl<HaudiotaggerError_OpenFile>(
+              this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HaudiotaggerError_NoTagsImpl);
+            other is HaudiotaggerError_OpenFile &&
+            (identical(other.message, message) || other.message == message));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() invalidPath,
-    required TResult Function() noTags,
-    required TResult Function(String message) openFile,
-    required TResult Function(String message) write,
-  }) {
-    return noTags();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? invalidPath,
-    TResult? Function()? noTags,
-    TResult? Function(String message)? openFile,
-    TResult? Function(String message)? write,
-  }) {
-    return noTags?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? invalidPath,
-    TResult Function()? noTags,
-    TResult Function(String message)? openFile,
-    TResult Function(String message)? write,
-    required TResult orElse(),
-  }) {
-    if (noTags != null) {
-      return noTags();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HaudiotaggerError_InvalidPath value) invalidPath,
-    required TResult Function(HaudiotaggerError_NoTags value) noTags,
-    required TResult Function(HaudiotaggerError_OpenFile value) openFile,
-    required TResult Function(HaudiotaggerError_Write value) write,
-  }) {
-    return noTags(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult? Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult? Function(HaudiotaggerError_Write value)? write,
-  }) {
-    return noTags?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult Function(HaudiotaggerError_Write value)? write,
-    required TResult orElse(),
-  }) {
-    if (noTags != null) {
-      return noTags(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HaudiotaggerError_NoTags extends HaudiotaggerError {
-  const factory HaudiotaggerError_NoTags() = _$HaudiotaggerError_NoTagsImpl;
-  const HaudiotaggerError_NoTags._() : super._();
-}
-
-/// @nodoc
-abstract class _$$HaudiotaggerError_OpenFileImplCopyWith<$Res> {
-  factory _$$HaudiotaggerError_OpenFileImplCopyWith(
-          _$HaudiotaggerError_OpenFileImpl value,
-          $Res Function(_$HaudiotaggerError_OpenFileImpl) then) =
-      __$$HaudiotaggerError_OpenFileImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String message});
-}
-
-/// @nodoc
-class __$$HaudiotaggerError_OpenFileImplCopyWithImpl<$Res>
-    extends _$HaudiotaggerErrorCopyWithImpl<$Res,
-        _$HaudiotaggerError_OpenFileImpl>
-    implements _$$HaudiotaggerError_OpenFileImplCopyWith<$Res> {
-  __$$HaudiotaggerError_OpenFileImplCopyWithImpl(
-      _$HaudiotaggerError_OpenFileImpl _value,
-      $Res Function(_$HaudiotaggerError_OpenFileImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? message = null,
-  }) {
-    return _then(_$HaudiotaggerError_OpenFileImpl(
-      message: null == message
-          ? _value.message
-          : message // ignore: cast_nullable_to_non_nullable
-              as String,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$HaudiotaggerError_OpenFileImpl extends HaudiotaggerError_OpenFile {
-  const _$HaudiotaggerError_OpenFileImpl({required this.message}) : super._();
-
-  @override
-  final String message;
+  int get hashCode => Object.hash(runtimeType, message);
 
   @override
   String toString() {
     return 'HaudiotaggerError.openFile(message: $message)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$HaudiotaggerError_OpenFileImpl &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HaudiotaggerError_OpenFileImplCopyWith<_$HaudiotaggerError_OpenFileImpl>
-      get copyWith => __$$HaudiotaggerError_OpenFileImplCopyWithImpl<
-          _$HaudiotaggerError_OpenFileImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() invalidPath,
-    required TResult Function() noTags,
-    required TResult Function(String message) openFile,
-    required TResult Function(String message) write,
-  }) {
-    return openFile(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? invalidPath,
-    TResult? Function()? noTags,
-    TResult? Function(String message)? openFile,
-    TResult? Function(String message)? write,
-  }) {
-    return openFile?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? invalidPath,
-    TResult Function()? noTags,
-    TResult Function(String message)? openFile,
-    TResult Function(String message)? write,
-    required TResult orElse(),
-  }) {
-    if (openFile != null) {
-      return openFile(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HaudiotaggerError_InvalidPath value) invalidPath,
-    required TResult Function(HaudiotaggerError_NoTags value) noTags,
-    required TResult Function(HaudiotaggerError_OpenFile value) openFile,
-    required TResult Function(HaudiotaggerError_Write value) write,
-  }) {
-    return openFile(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult? Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult? Function(HaudiotaggerError_Write value)? write,
-  }) {
-    return openFile?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult Function(HaudiotaggerError_Write value)? write,
-    required TResult orElse(),
-  }) {
-    if (openFile != null) {
-      return openFile(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class HaudiotaggerError_OpenFile extends HaudiotaggerError {
-  const factory HaudiotaggerError_OpenFile({required final String message}) =
-      _$HaudiotaggerError_OpenFileImpl;
-  const HaudiotaggerError_OpenFile._() : super._();
-
-  String get message;
-  @JsonKey(ignore: true)
-  _$$HaudiotaggerError_OpenFileImplCopyWith<_$HaudiotaggerError_OpenFileImpl>
-      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$HaudiotaggerError_WriteImplCopyWith<$Res> {
-  factory _$$HaudiotaggerError_WriteImplCopyWith(
-          _$HaudiotaggerError_WriteImpl value,
-          $Res Function(_$HaudiotaggerError_WriteImpl) then) =
-      __$$HaudiotaggerError_WriteImplCopyWithImpl<$Res>;
+abstract mixin class $HaudiotaggerError_OpenFileCopyWith<$Res>
+    implements $HaudiotaggerErrorCopyWith<$Res> {
+  factory $HaudiotaggerError_OpenFileCopyWith(HaudiotaggerError_OpenFile value,
+          $Res Function(HaudiotaggerError_OpenFile) _then) =
+      _$HaudiotaggerError_OpenFileCopyWithImpl;
   @useResult
   $Res call({String message});
 }
 
 /// @nodoc
-class __$$HaudiotaggerError_WriteImplCopyWithImpl<$Res>
-    extends _$HaudiotaggerErrorCopyWithImpl<$Res, _$HaudiotaggerError_WriteImpl>
-    implements _$$HaudiotaggerError_WriteImplCopyWith<$Res> {
-  __$$HaudiotaggerError_WriteImplCopyWithImpl(
-      _$HaudiotaggerError_WriteImpl _value,
-      $Res Function(_$HaudiotaggerError_WriteImpl) _then)
-      : super(_value, _then);
+class _$HaudiotaggerError_OpenFileCopyWithImpl<$Res>
+    implements $HaudiotaggerError_OpenFileCopyWith<$Res> {
+  _$HaudiotaggerError_OpenFileCopyWithImpl(this._self, this._then);
 
+  final HaudiotaggerError_OpenFile _self;
+  final $Res Function(HaudiotaggerError_OpenFile) _then;
+
+  /// Create a copy of HaudiotaggerError
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
-  @override
   $Res call({
     Object? message = null,
   }) {
-    return _then(_$HaudiotaggerError_WriteImpl(
+    return _then(HaudiotaggerError_OpenFile(
       message: null == message
-          ? _value.message
+          ? _self.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
     ));
@@ -512,117 +352,67 @@ class __$$HaudiotaggerError_WriteImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$HaudiotaggerError_WriteImpl extends HaudiotaggerError_Write {
-  const _$HaudiotaggerError_WriteImpl({required this.message}) : super._();
+class HaudiotaggerError_Write extends HaudiotaggerError {
+  const HaudiotaggerError_Write({required this.message}) : super._();
 
-  @override
   final String message;
 
-  @override
-  String toString() {
-    return 'HaudiotaggerError.write(message: $message)';
-  }
+  /// Create a copy of HaudiotaggerError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $HaudiotaggerError_WriteCopyWith<HaudiotaggerError_Write> get copyWith =>
+      _$HaudiotaggerError_WriteCopyWithImpl<HaudiotaggerError_Write>(
+          this, _$identity);
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HaudiotaggerError_WriteImpl &&
+            other is HaudiotaggerError_Write &&
             (identical(other.message, message) || other.message == message));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, message);
 
-  @JsonKey(ignore: true)
   @override
+  String toString() {
+    return 'HaudiotaggerError.write(message: $message)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $HaudiotaggerError_WriteCopyWith<$Res>
+    implements $HaudiotaggerErrorCopyWith<$Res> {
+  factory $HaudiotaggerError_WriteCopyWith(HaudiotaggerError_Write value,
+          $Res Function(HaudiotaggerError_Write) _then) =
+      _$HaudiotaggerError_WriteCopyWithImpl;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class _$HaudiotaggerError_WriteCopyWithImpl<$Res>
+    implements $HaudiotaggerError_WriteCopyWith<$Res> {
+  _$HaudiotaggerError_WriteCopyWithImpl(this._self, this._then);
+
+  final HaudiotaggerError_Write _self;
+  final $Res Function(HaudiotaggerError_Write) _then;
+
+  /// Create a copy of HaudiotaggerError
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
-  _$$HaudiotaggerError_WriteImplCopyWith<_$HaudiotaggerError_WriteImpl>
-      get copyWith => __$$HaudiotaggerError_WriteImplCopyWithImpl<
-          _$HaudiotaggerError_WriteImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() invalidPath,
-    required TResult Function() noTags,
-    required TResult Function(String message) openFile,
-    required TResult Function(String message) write,
+  $Res call({
+    Object? message = null,
   }) {
-    return write(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? invalidPath,
-    TResult? Function()? noTags,
-    TResult? Function(String message)? openFile,
-    TResult? Function(String message)? write,
-  }) {
-    return write?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? invalidPath,
-    TResult Function()? noTags,
-    TResult Function(String message)? openFile,
-    TResult Function(String message)? write,
-    required TResult orElse(),
-  }) {
-    if (write != null) {
-      return write(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(HaudiotaggerError_InvalidPath value) invalidPath,
-    required TResult Function(HaudiotaggerError_NoTags value) noTags,
-    required TResult Function(HaudiotaggerError_OpenFile value) openFile,
-    required TResult Function(HaudiotaggerError_Write value) write,
-  }) {
-    return write(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult? Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult? Function(HaudiotaggerError_Write value)? write,
-  }) {
-    return write?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(HaudiotaggerError_InvalidPath value)? invalidPath,
-    TResult Function(HaudiotaggerError_NoTags value)? noTags,
-    TResult Function(HaudiotaggerError_OpenFile value)? openFile,
-    TResult Function(HaudiotaggerError_Write value)? write,
-    required TResult orElse(),
-  }) {
-    if (write != null) {
-      return write(this);
-    }
-    return orElse();
+    return _then(HaudiotaggerError_Write(
+      message: null == message
+          ? _self.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
   }
 }
 
-abstract class HaudiotaggerError_Write extends HaudiotaggerError {
-  const factory HaudiotaggerError_Write({required final String message}) =
-      _$HaudiotaggerError_WriteImpl;
-  const HaudiotaggerError_Write._() : super._();
-
-  String get message;
-  @JsonKey(ignore: true)
-  _$$HaudiotaggerError_WriteImplCopyWith<_$HaudiotaggerError_WriteImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
+// dart format on

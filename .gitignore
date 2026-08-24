@@ -8,3 +8,6 @@ target/
 .mason/
 !cli/commands/build/
 rename.sh
+
+# flutter linux build artifact
+haudiotagger/linux/linux.tar.gz
