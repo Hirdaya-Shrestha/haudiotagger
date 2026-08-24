@@ -154,7 +154,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # This is REQUIRED by pub.dev OIDC publishing.
     permissions:
       id-token: write
 
@@ -164,40 +163,16 @@ jobs:
         with:
           ref: ${{ github.ref_name }}
 
-      # ----------------------------------------------------------
-      # Install Dart and configure pub.dev OIDC authentication.
-      # ----------------------------------------------------------
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
 
-      # ----------------------------------------------------------
-      # Install Flutter.
-      # ----------------------------------------------------------
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      # ----------------------------------------------------------
-      # Download generated WASM.
-      # ----------------------------------------------------------
       - name: Download package WASM
         uses: actions/download-artifact@v4
         with:
           name: package-wasm
           path: haudiotagger/web/wasm
 
-      # ----------------------------------------------------------
-      # Remove local path dependency BEFORE pub get.
-      #
-      # pub.dev cannot publish packages containing a path
-      # dependency such as:
-      #
-      # rust_lib_haudiotagger:
-      #   path: rust_builder
-      # ----------------------------------------------------------
-      - name: Prepare package for publishing
+      - name: Remove local Rust dependency
         working-directory: haudiotagger
         shell: bash
         run: |
@@ -207,50 +182,27 @@ jobs:
           path = Path("pubspec.yaml")
           text = path.read_text()
 
-          old = """  rust_lib_haudiotagger:
-            path: rust_builder
-          """
-
-          if old not in text:
-              raise SystemExit(
-                  "Could not find rust_lib_haudiotagger path dependency."
-              )
-
-          text = text.replace(old, "")
+          text = text.replace(
+              """  rust_lib_haudiotagger:
+              path: rust_builder
+          """,
+              ""
+          )
 
           path.write_text(text)
           PY
 
-          echo "Package pubspec after modification:"
-          cat pubspec.yaml
-
-      # ----------------------------------------------------------
-      # Resolve dependencies AFTER modifying pubspec.
-      # ----------------------------------------------------------
       - name: Get dependencies
         working-directory: haudiotagger
-        run: |
-          flutter pub get
+        run: dart pub get
 
-      # ----------------------------------------------------------
-      # Verify exactly what is going to be published.
-      # ----------------------------------------------------------
       - name: Validate package
         working-directory: haudiotagger
-        run: |
-          flutter pub publish --dry-run
+        run: dart pub publish --dry-run
 
-      # ----------------------------------------------------------
-      # Publish.
-      #
-      # setup-dart configured the temporary OIDC credential.
-      # No PUB_TOKEN secret is required.
-      # ----------------------------------------------------------
       - name: Publish to pub.dev
         working-directory: haudiotagger
-        run: |
-          flutter pub publish --force
-
+        run: dart pub publish --force
 
   # ============================================================
   # GITHUB RELEASE
