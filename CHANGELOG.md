@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Fixed Android build failure (`Inconsistent JVM Target Compatibility`): replaced the removed legacy `kotlinOptions` with a Kotlin JVM toolchain (`jvmToolchain(17)`), aligning the Kotlin and Java compile targets so `flutter build apk` succeeds.
+
 ## 1.0.4
 
 - Added Swift Package Manager support for iOS and macOS: committed `ios/haudiotagger/Package.swift`, `macos/haudiotagger/Package.swift`, and the prebuilt `haudiotagger.xcframework`, clearing the pub.dev SPM warning.
