@@ -1,0 +1,50 @@
+name: Build Frameworks
+
+# Builds the iOS/macOS xcframework on GitHub's macOS runner and commits it
+# back into the repo so Swift Package Manager support works (pub.dev wants
+# `ios/haudiotagger/Package.swift` + a committed `Frameworks/*.xcframework`).
+# Run this manually (workflow_dispatch) before tagging a release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-frameworks:
+    name: Build & commit xcframeworks
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup_build
+
+      - name: Build iOS xcframework
+        run: dart run cli build ios -v
+
+      - name: Build macOS xcframework
+        run: dart run cli build macos -v
+
+      # SPM expects the framework under <platform>/<plugin>/Frameworks/, while
+      # the build drops it in <platform>/Frameworks/. Copy it to the SPM path.
+      - name: Stage frameworks for SPM
+        run: |
+          mkdir -p haudiotagger/ios/haudiotagger/Frameworks \
+                   haudiotagger/macos/haudiotagger/Frameworks
+          cp -R haudiotagger/ios/Frameworks/haudiotagger.xcframework \
+                 haudiotagger/ios/haudiotagger/Frameworks/
+          cp -R haudiotagger/macos/Frameworks/haudiotagger.xcframework \
+                 haudiotagger/macos/haudiotagger/Frameworks/
+
+      - name: Commit frameworks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add haudiotagger/ios/haudiotagger/Frameworks \
+                  haudiotagger/macos/haudiotagger/Frameworks
+          if git diff --cached --quiet; then
+            echo "No framework changes to commit"
+          else
+            git commit -m "build: update committed iOS/macOS xcframeworks (SPM)"
+            git push origin HEAD:main
+          fi
