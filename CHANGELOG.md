@@ -1,3 +1,8 @@
+## 1.0.4
+
+- Added Swift Package Manager support for iOS and macOS: committed `ios/haudiotagger/Package.swift`, `macos/haudiotagger/Package.swift`, and the prebuilt `haudiotagger.xcframework`, clearing the pub.dev SPM warning.
+- Removed the legacy `kotlinOptions { jvmTarget = '17' }` block from `android/build.gradle`, clearing the pub.dev legacy Kotlin configuration warning.
+
 ## 1.0.3
 
 - Declared `web` platform support in `pubspec.yaml` (added the `web:` entry under `flutter.plugin.platforms` and `lib/haudiotagger_web.dart` registration shim). pub.dev now lists Web support for the package.
