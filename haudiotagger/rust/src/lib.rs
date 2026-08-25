@@ -180,6 +180,30 @@ mod tests {
     }
 
     #[test]
+    fn write_mp3_extension_routes_to_byte_path() {
+        // A file whose content lofty cannot content-sniff, but which carries a
+        // `.mp3` extension. This is exactly the class of file that previously hit
+        // `FileEncodingError { format: None }`, because detection relied solely on
+        // lofty's probe (it would skip the byte path and call `save_to_path`).
+        // The extension-based check must route it to the byte-level writer.
+        let dir = std::env::temp_dir();
+        let n = SCRATCH_COUNTER.fetch_add(1, Ordering::SeqCst);
+        let name = format!("haudiotagger_ext_{}_{}.mp3", std::process::id(), n);
+        let path = dir.join(name);
+        std::fs::write(&path, b"not real audio, no frame sync here \xFF\xFF").unwrap();
+
+        let mut tag = Tag::default();
+        tag.title = Some("EXT_TITLE".to_string());
+        api::write(path.to_string_lossy().into_owned(), tag)
+            .expect("write must route .mp3 by extension, not lofty probe");
+
+        // The byte-level writer prepends a fresh ID3v2 tag and never goes through
+        // lofty's Mpeg parser, so the result must be ID3v2-prefixed.
+        let out = std::fs::read(&path).unwrap();
+        assert!(out.starts_with(b"ID3"), "expected ID3v2-prefixed output");
+    }
+
+    #[test]
     fn write_replaces_existing_tags_mp4() {
         let path = scratch("samples/test.mp4");
         api::write(path.clone(), full_tag()).expect("Failed to write full tag.");

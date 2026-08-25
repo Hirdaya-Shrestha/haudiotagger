@@ -139,18 +139,38 @@ pub fn read_from_bytes(bytes: Vec<u8>) -> Result<Tag, HaudiotaggerError> {
     tag_from_file(&file)
 }
 
+/// Returns true when `path`/`bytes` should be written via the byte-level MP3
+/// path (`write_mp3_bytes`). lofty's content probe (`guess_file_type`) mis-
+/// identifies some real MP3s (returns non-`Mpeg`), which would otherwise route
+/// them through lofty's writer and abort with `FileEncodingError { format: None }`.
+/// So we additionally key off the `.mp3` extension and a leading "ID3" marker.
+fn is_mp3(path: &str, bytes: &[u8]) -> bool {
+    if path.to_lowercase().ends_with(".mp3") {
+        return true;
+    }
+    if bytes.starts_with(b"ID3") {
+        return true;
+    }
+    Probe::new(Cursor::new(bytes))
+        .guess_file_type()
+        .ok()
+        .and_then(|p| p.file_type())
+        == Some(FileType::Mpeg)
+}
+
 pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
-    let file = get_file(&path)?;
+    let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+        message: format!("Could not read file: {e}"),
+    })?;
 
     // MP3s are often content-sniffed incorrectly by lofty (e.g. embedded/generated
-    // tags), which makes lofty's `remove_from`/`save_to_path` abort with
+    // tags), which makes lofty's `save_to_path` abort with
     // `FileEncodingError { format: None }` on write. We strip the existing tag at the
     // byte level (ID3v2 at the head, ID3v1/APE at the tail) and prepend a freshly
-    // serialized ID3v2, which never re-probes the file.
-    if file.file_type() == FileType::Mpeg {
-        let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
-            message: format!("Could not read file: {e}"),
-        })?;
+    // serialized ID3v2, which never re-probes the file. Detection keys off the
+    // extension / "ID3" marker (not lofty's unreliable content probe) so an MP3 is
+    // never routed through lofty's writer.
+    if is_mp3(&path, &bytes) {
         let out = write_mp3_bytes(bytes, data)?;
         std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
             message: format!("Could not write file: {e}"),
@@ -164,7 +184,7 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
     // `TagType::remove_from`, whose write step re-probes the file format and
     // aborts with `FileEncodingError { format: None }` for some files (and can
     // corrupt others on a second write).
-    let mut file = file;
+    let mut file = get_file(&path)?;
     let mut new_tag = LoftyTag::new(file.primary_tag_type());
     if !data.is_empty() {
         apply_tag_to_lofty_tag(&data, &mut new_tag)?;
@@ -241,15 +261,9 @@ fn write_mp3_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerErr
 
 /// Write metadata to in-memory bytes, returns modified bytes (for web/WASM).
 pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerError> {
-    let is_mpeg = {
-        let guessed = Probe::new(Cursor::new(&bytes))
-            .guess_file_type()
-            .ok()
-            .and_then(|p| p.file_type());
-        guessed == Some(FileType::Mpeg) || bytes.starts_with(b"ID3")
-    };
-
-    if is_mpeg {
+    // Web/WASM has no file path, so extension detection is unavailable; we still
+    // share the same "ID3 prefix or lofty probe" logic via `is_mp3`.
+    if is_mp3("", &bytes) {
         return write_mp3_bytes(bytes, data);
     }
 

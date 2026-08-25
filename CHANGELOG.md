@@ -1,3 +1,7 @@
+## 1.0.8
+
+- Hardened MP3 write detection. `write` previously gated the byte-level ID3v2 path on lofty's content probe (`file.file_type() == Mpeg`), which mis-identifies some real MP3s and routed them through lofty's writer, producing `FileEncodingError { format: None }`. Detection now keys off the `.mp3` extension and a leading `ID3` marker (matching `write_to_bytes`), so MP3s never reach lofty's `save_to_path`/`remove_from`. Added a regression test for an unsniffable-but-`.mp3` file.
+
 ## 1.0.7
 
 - Fixed `write` crashing on MP3/ID3v2 files with `FileEncodingError { format: None }`. lofty's `TagType::remove_from` re-probes the file on write and fails for any file it cannot content-sniff (common on Android). MP3 writes now strip the existing tag at the byte level (ID3v2/ID3v1/APE markers) and prepend a freshly serialized ID3v2, so the new tag fully replaces the old one. Other formats replace the in-memory primary tag and let `save_to_path` rewrite the file (also stripping it when the new tag is empty). Add `pictures: []` to `Tag` when clearing all fields.
