@@ -160,4 +160,39 @@ mod tests {
         let read = api::read(path.clone()).expect("Failed to read tag.");
         assert_eq!(read.lyrics.as_deref(), Some("My Lyrics Line"));
     }
+
+    #[test]
+    fn write_replaces_existing_tags_mp3() {
+        let path = scratch("samples/test.mp3");
+        api::write(path.clone(), full_tag()).expect("Failed to write full tag.");
+
+        // Overwrite with a minimal tag (only a title).
+        let mut minimal = Tag::default();
+        minimal.title = Some("REPLACED_TITLE_XYZ".to_string());
+        api::write(path.clone(), minimal).expect("Failed to write minimal tag.");
+
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        assert_eq!(read.title.as_deref(), Some("REPLACED_TITLE_XYZ"));
+        // Old values must be gone, proving replacement rather than appending.
+        assert!(read.track_artist.is_none(), "old artist should be removed");
+        assert!(read.album.is_none(), "old album should be removed");
+        assert!(read.pictures.is_empty(), "old pictures should be removed");
+    }
+
+    #[test]
+    fn write_replaces_existing_tags_mp4() {
+        let path = scratch("samples/test.mp4");
+        api::write(path.clone(), full_tag()).expect("Failed to write full tag.");
+
+        let mut minimal = Tag::default();
+        minimal.title = Some("REPLACED_TITLE_XYZ".to_string());
+        api::write(path.clone(), minimal).expect("Failed to write minimal tag.");
+
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        assert_eq!(read.title.as_deref(), Some("REPLACED_TITLE_XYZ"));
+        assert!(read.track_artist.is_none(), "old artist should be removed");
+        assert!(read.album.is_none(), "old album should be removed");
+        assert!(read.pictures.is_empty(), "old pictures should be removed");
+    }
 }
+

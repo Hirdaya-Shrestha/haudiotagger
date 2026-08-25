@@ -1,3 +1,7 @@
+## 1.0.7
+
+- Fixed `write` crashing on MP3/ID3v2 files with `FileEncodingError { format: None }`. lofty's `TagType::remove_from` re-probes the file on write and fails for any file it cannot content-sniff (common on Android). MP3 writes now strip the existing tag at the byte level (ID3v2/ID3v1/APE markers) and prepend a freshly serialized ID3v2, so the new tag fully replaces the old one. Other formats replace the in-memory primary tag and let `save_to_path` rewrite the file (also stripping it when the new tag is empty). Add `pictures: []` to `Tag` when clearing all fields.
+
 ## 1.0.6
 
 - Fixed lyrics not persisting for MP3 (ID3v2) files. `ItemKey::Lyrics` is unsupported by ID3v2 (lyrics live in the `USLT` frame, addressed by `ItemKey::UnsyncLyrics`). `write` now uses the ID3v2-correct key and `read` falls back to both keys, so lyrics round-trip on MP3 as well as MP4.
