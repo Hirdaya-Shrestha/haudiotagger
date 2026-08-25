@@ -6,7 +6,7 @@ use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::probe::Probe;
 use lofty::tag::items::Timestamp;
-use lofty::tag::{Accessor, ItemKey};
+use lofty::tag::{Accessor, ItemKey, TagType};
 
 /// Returns a `TaggedFile` at the given path.
 fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
@@ -108,7 +108,15 @@ fn apply_tag_to_lofty_tag(
         lo_tag.set_picture(i, builder.build());
     }
     if let Some(lyrics) = &tag.lyrics {
-        lo_tag.insert_text(ItemKey::Lyrics, lyrics.clone());
+        // ID3v2 (MP3, etc.) has no `ItemKey::Lyrics`; lyrics live in the USLT
+        // frame, addressed by `ItemKey::UnsyncLyrics`. Other formats (MP4,
+        // Vorbis, APE) use `ItemKey::Lyrics`.
+        let key = if lo_tag.tag_type() == TagType::Id3v2 {
+            ItemKey::UnsyncLyrics
+        } else {
+            ItemKey::Lyrics
+        };
+        lo_tag.insert_text(key, lyrics.clone());
     }
     if let Some(bpm) = tag.bpm {
         if !lo_tag.insert_text(ItemKey::Bpm, bpm.to_string()) {
