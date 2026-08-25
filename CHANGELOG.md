@@ -1,3 +1,7 @@
+## 1.0.9
+
+- Fixed Android never picking up native fixes: `android/CMakeLists.txt` pinned the prebuilt `.so` download to `v1.0.1`, so every version still shipped the old buggy binary. Pointed it at the `v1.0.8` release (which contains the fixed `android.tar.gz`). NOTE: the CMake `Version` must be bumped alongside future releases, or Android will keep using an outdated prebuilt.
+
 ## 1.0.8
 
 - Hardened MP3 write detection. `write` previously gated the byte-level ID3v2 path on lofty's content probe (`file.file_type() == Mpeg`), which mis-identifies some real MP3s and routed them through lofty's writer, producing `FileEncodingError { format: None }`. Detection now keys off the `.mp3` extension and a leading `ID3` marker (matching `write_to_bytes`), so MP3s never reach lofty's `save_to_path`/`remove_from`. Added a regression test for an unsniffable-but-`.mp3` file.
