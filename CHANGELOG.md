@@ -1,3 +1,8 @@
+## 1.1.0
+
+- Pointed every platform's prebuilt download at the fixed release. The Android, Linux and Windows `CMakeLists.txt` and the iOS/macOS podspecs all hardcoded `v1.0.1`, so every version still shipped the old buggy native binary. All now download from `v1.1.0`. Also fixed the macOS podscript condition so it actually re-downloads (it previously skipped the download because the committed framework already existed).
+- MP3 write fix (byte-level ID3v2 path, robust `.mp3`/ID3 detection) and MP3 lyrics fix included.
+
 ## 1.0.9
 
 - Fixed Android never picking up native fixes: `android/CMakeLists.txt` pinned the prebuilt `.so` download to `v1.0.1`, so every version still shipped the old buggy binary. Pointed it at the `v1.0.8` release (which contains the fixed `android.tar.gz`). NOTE: the CMake `Version` must be bumped alongside future releases, or Android will keep using an outdated prebuilt.
