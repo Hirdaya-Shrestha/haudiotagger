@@ -219,4 +219,3 @@ mod tests {
         assert!(read.pictures.is_empty(), "old pictures should be removed");
     }
 }
-
