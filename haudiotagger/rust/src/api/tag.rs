@@ -91,7 +91,10 @@ impl From<&lofty::tag::Tag> for Tag {
             track_total: tag.track_total(),
             disc_number: tag.disk(),
             disc_total: tag.disk_total(),
-            lyrics: tag.get_string(ItemKey::Lyrics).map(|e| e.to_string()),
+            lyrics: tag
+                .get_string(ItemKey::Lyrics)
+                .or_else(|| tag.get_string(ItemKey::UnsyncLyrics))
+                .map(|e| e.to_string()),
             pictures,
             duration: None,
             bpm,
