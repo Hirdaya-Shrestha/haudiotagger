@@ -1,3 +1,7 @@
+## 1.0.3
+
+- Declared `web` platform support in `pubspec.yaml` (added the `web:` entry under `flutter.plugin.platforms` and `lib/haudiotagger_web.dart` registration shim). pub.dev now lists Web support for the package.
+
 ## 1.0.2
 
 - Fixed `write()` failing to replace/remove existing tags (`lofty`'s `remove_from_path` opened a probe without guessing the file type and aborted with `format: None`). Tags are now properly removed from disk before the new tag is written, and clearing a tag fully strips it.
