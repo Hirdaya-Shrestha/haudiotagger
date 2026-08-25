@@ -2,11 +2,13 @@ use std::io::Cursor;
 
 use super::{error::HaudiotaggerError, tag::Tag};
 use lofty::config::WriteOptions;
+use lofty::file::FileType;
 use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::probe::Probe;
 use lofty::tag::items::Timestamp;
-use lofty::tag::{Accessor, ItemKey, TagType};
+use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
+use lofty::tag::Tag as LoftyTag;
 
 /// Returns a `TaggedFile` at the given path.
 fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
@@ -138,93 +140,121 @@ pub fn read_from_bytes(bytes: Vec<u8>) -> Result<Tag, HaudiotaggerError> {
 }
 
 pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
-    let mut file = get_file(&path)?;
+    let file = get_file(&path)?;
 
-    // Remove every existing tag from the file so the new tag fully replaces them.
-    // `TagType::remove_from` is used (not `remove_from_path`) because the latter
-    // opens a probe without guessing the file type and fails with `format: None`.
-    let tag_types: Vec<lofty::tag::TagType> = file.tags().iter().map(|t| t.tag_type()).collect();
-    if !tag_types.is_empty() {
-        let mut handle = std::fs::OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(&path)
-            .map_err(|e| HaudiotaggerError::Write {
-                message: format!("Could not open file for tag removal: {e}"),
-            })?;
-        for tag_type in tag_types {
-            tag_type
-                .remove_from(&mut handle, WriteOptions::new())
-                .map_err(|e| HaudiotaggerError::Write {
-                    message: format!("Could not remove existing tag: {e:?}"),
-                })?;
-        }
-    }
-
-    // Drop the stale in-memory tags, then write the new one (if any).
-    file.clear();
-
-    if data.is_empty() {
+    // MP3s are often content-sniffed incorrectly by lofty (e.g. embedded/generated
+    // tags), which makes lofty's `remove_from`/`save_to_path` abort with
+    // `FileEncodingError { format: None }` on write. We strip the existing tag at the
+    // byte level (ID3v2 at the head, ID3v1/APE at the tail) and prepend a freshly
+    // serialized ID3v2, which never re-probes the file.
+    if file.file_type() == FileType::Mpeg {
+        let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+            message: format!("Could not read file: {e}"),
+        })?;
+        let out = write_mp3_bytes(bytes, data)?;
+        std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not write file: {e}"),
+        })?;
         return Ok(());
     }
 
-    file.insert_tag(lofty::tag::Tag::new(file.primary_tag_type()));
-    let lo_tag = file
-        .primary_tag_mut()
-        .ok_or_else(|| HaudiotaggerError::Write {
-            message: "Failed to create primary tag for this format".to_string(),
-        })?;
-
-    apply_tag_to_lofty_tag(&data, lo_tag)?;
+    // Other formats: replace the in-memory primary tag and let lofty's
+    // `save_to_path` rewrite the file. It replaces the existing on-disk tag, and
+    // strips it when the new tag is empty. We deliberately avoid
+    // `TagType::remove_from`, whose write step re-probes the file format and
+    // aborts with `FileEncodingError { format: None }` for some files (and can
+    // corrupt others on a second write).
+    let mut file = file;
+    let mut new_tag = LoftyTag::new(file.primary_tag_type());
+    if !data.is_empty() {
+        apply_tag_to_lofty_tag(&data, &mut new_tag)?;
+    }
+    file.insert_tag(new_tag);
 
     file.save_to_path(&path, WriteOptions::new())
         .map_err(|e| HaudiotaggerError::Write {
-            message: format!("Failed to write tag to file. {e:?}"),
+            message: format!("Failed to write tag to file. {e:#?}"),
         })
+}
+
+/// Strip a leading ID3v2 tag (starts with "ID3", syncsafe size at bytes 6..10).
+fn strip_id3v2(bytes: &[u8]) -> &[u8] {
+    if bytes.len() >= 10 && &bytes[0..3] == b"ID3" {
+        let size = ((bytes[6] as usize & 0x7F) << 21)
+            | ((bytes[7] as usize & 0x7F) << 14)
+            | ((bytes[8] as usize & 0x7F) << 7)
+            | (bytes[9] as usize & 0x7F);
+        let total = 10 + size;
+        if total <= bytes.len() {
+            return &bytes[total..];
+        }
+    }
+    bytes
+}
+
+/// Strip a trailing ID3v1 tag (last 128 bytes start with "TAG").
+fn strip_id3v1(bytes: &[u8]) -> &[u8] {
+    if bytes.len() >= 128 && &bytes[bytes.len() - 128..bytes.len() - 125] == b"TAG" {
+        return &bytes[..bytes.len() - 128];
+    }
+    bytes
+}
+
+/// Strip a trailing APEv2 tag (footer "APETAGEX" at the end; its size field
+/// covers the whole tag including the footer).
+fn strip_ape(bytes: &[u8]) -> &[u8] {
+    if bytes.len() >= 32 && &bytes[bytes.len() - 32..bytes.len() - 24] == b"APETAGEX" {
+        let size = u32::from_le_bytes([
+            bytes[bytes.len() - 20],
+            bytes[bytes.len() - 19],
+            bytes[bytes.len() - 18],
+            bytes[bytes.len() - 17],
+        ]) as usize;
+        if size >= 32 && size <= bytes.len() {
+            return &bytes[..bytes.len() - size];
+        }
+    }
+    bytes
+}
+
+fn write_mp3_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerError> {
+    let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+
+    if data.is_empty() {
+        return Ok(audio.to_vec());
+    }
+
+    let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+    apply_tag_to_lofty_tag(&data, &mut lo_tag)?;
+
+    let mut tag_bytes = Vec::new();
+    lo_tag
+        .dump_to(&mut tag_bytes, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        })?;
+
+    let mut out = tag_bytes;
+    out.extend_from_slice(audio);
+    Ok(out)
 }
 
 /// Write metadata to in-memory bytes, returns modified bytes (for web/WASM).
 pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerError> {
-    let tag_types: Vec<lofty::tag::TagType> = {
-        let mut cursor = Cursor::new(&bytes);
-        let probe =
-            Probe::new(&mut cursor)
-                .guess_file_type()
-                .map_err(|e| HaudiotaggerError::OpenFile {
-                    message: e.to_string(),
-                })?;
-        probe
-            .read()
-            .map_err(|e| HaudiotaggerError::OpenFile {
-                message: e.to_string(),
-            })?
-            .tags()
-            .iter()
-            .map(|t| t.tag_type())
-            .collect()
+    let is_mpeg = {
+        let guessed = Probe::new(Cursor::new(&bytes))
+            .guess_file_type()
+            .ok()
+            .and_then(|p| p.file_type());
+        guessed == Some(FileType::Mpeg) || bytes.starts_with(b"ID3")
     };
 
-    // Strip existing tags from the bytes before writing the new tag.
-    let cleared_bytes = if tag_types.is_empty() {
-        bytes
-    } else {
-        let mut handle = Cursor::new(bytes);
-        for tag_type in tag_types {
-            tag_type
-                .remove_from(&mut handle, WriteOptions::new())
-                .map_err(|e| HaudiotaggerError::Write {
-                    message: format!("Could not remove existing tag: {e:?}"),
-                })?;
-        }
-        handle.into_inner()
-    };
-
-    if data.is_empty() {
-        return Ok(cleared_bytes);
+    if is_mpeg {
+        return write_mp3_bytes(bytes, data);
     }
 
     let mut file = {
-        let mut cursor = Cursor::new(&cleared_bytes);
+        let mut cursor = Cursor::new(&bytes);
         let probe =
             Probe::new(&mut cursor)
                 .guess_file_type()
@@ -236,15 +266,11 @@ pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, Haudiotagger
         })?
     };
 
-    file.clear();
-    file.insert_tag(lofty::tag::Tag::new(file.primary_tag_type()));
-    let lo_tag = file
-        .primary_tag_mut()
-        .ok_or_else(|| HaudiotaggerError::Write {
-            message: "Failed to create primary tag for this format".to_string(),
-        })?;
-
-    apply_tag_to_lofty_tag(&data, lo_tag)?;
+    let mut new_tag = LoftyTag::new(file.primary_tag_type());
+    if !data.is_empty() {
+        apply_tag_to_lofty_tag(&data, &mut new_tag)?;
+    }
+    file.insert_tag(new_tag);
 
     let mut out = Cursor::new(Vec::new());
     file.save_to(&mut out, WriteOptions::new())
