@@ -1,3 +1,7 @@
+## 1.0.6
+
+- Fixed lyrics not persisting for MP3 (ID3v2) files. `ItemKey::Lyrics` is unsupported by ID3v2 (lyrics live in the `USLT` frame, addressed by `ItemKey::UnsyncLyrics`). `write` now uses the ID3v2-correct key and `read` falls back to both keys, so lyrics round-trip on MP3 as well as MP4.
+
 ## 1.0.5
 
 - Fixed Android build failure (`Inconsistent JVM Target Compatibility`): replaced the removed legacy `kotlinOptions` with a Kotlin JVM toolchain (`jvmToolchain(17)`), aligning the Kotlin and Java compile targets so `flutter build apk` succeeds.
