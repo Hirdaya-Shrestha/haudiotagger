@@ -140,4 +140,24 @@ mod tests {
 
         assert!(read_tag(&path).is_ok());
     }
+
+    #[test]
+    fn lyrics_roundtrip_mp3() {
+        let path = scratch("samples/test.mp3");
+        let mut tag = full_tag();
+        tag.lyrics = Some("My Lyrics Line".to_string());
+        api::write(path.clone(), tag).expect("Failed to write tag.");
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        assert_eq!(read.lyrics.as_deref(), Some("My Lyrics Line"));
+    }
+
+    #[test]
+    fn lyrics_roundtrip_mp4() {
+        let path = scratch("samples/test.mp4");
+        let mut tag = full_tag();
+        tag.lyrics = Some("My Lyrics Line".to_string());
+        api::write(path.clone(), tag).expect("Failed to write tag.");
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        assert_eq!(read.lyrics.as_deref(), Some("My Lyrics Line"));
+    }
 }
