@@ -7,8 +7,8 @@ use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::probe::Probe;
 use lofty::tag::items::Timestamp;
-use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
 use lofty::tag::Tag as LoftyTag;
+use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
 
 /// Returns a `TaggedFile` at the given path.
 fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
