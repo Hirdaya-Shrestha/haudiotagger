@@ -1,14 +1,27 @@
-# hAudiotagger
+<p align="center">
+  <img src="haudiotagger/logo.png" alt="HAudioTagger Logo" width="140">
+</p>
 
-![Haudiotagger](https://raw.githubusercontent.com/Hirdaya-Shrestha/haudiotagger/main/haudiotagger/cover.png?)
+<h1 align="center">hAudiotagger</h1>
+
+<p align="center">
+  Powerful audio metadata editing for Flutter
+</p>
+
+**Disclaimer:** This project is not affiliated with, endorsed by, or officially connected to the Rust Foundation or Rust Project.   
+
+<br/>
 
 [![pub package](https://img.shields.io/pub/v/haudiotagger.svg)](https://pub.dev/packages/haudiotagger)
+[![build](https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg)](https://github.com/Hirdaya-Shrestha/haudiotagger/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.0.0-blue.svg)](https://flutter.dev)
 
 Read and write audio metadata in Flutter — powered by Rust. Fast, reliable, and supports every major format.
 
 Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
+
+![Haudiotagger](/haudiotagger/cover.png)
 
 ## Features
 
@@ -223,3 +236,19 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details.
+
+## ❤️ Support
+
+If HAudioTagger helps you build something cool, consider:
+
+- ⭐ Starring the repository
+- 🐛 Reporting bugs
+- 💡 Suggesting improvements
+- 🤝 Contributing code
+- 📦 Sharing the package with other Flutter developers
+
+Every bit of support helps keep the project moving forward.
+
+<p align="center">
+Made with ❤️ and Rust 🦀.
+</p>
