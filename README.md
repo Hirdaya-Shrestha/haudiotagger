@@ -27,6 +27,7 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 
 - **Read** metadata from audio files (title, artist, album, year, genre, cover art, lyrics, BPM, and more)
 - **Write** metadata back to audio files
+- **Read technical audio properties** — duration, bitrate, sample rate, channels, bits per sample, codec, container, lossless flag, and more (read-only, cross-platform)
 - **Cover art** support — read and write embedded images
 - **Cross-platform** — Android, iOS, Linux, macOS, Windows, and **Web**
 - **Blazing fast** — Rust-powered native library via [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge)
@@ -65,7 +66,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.1.0
+  haudiotagger: ^1.1.1
 ```
 
 Then run:
@@ -120,6 +121,31 @@ import 'package:haudiotagger/haudiotagger.dart';
 final Uint8List fileBytes = /* ... */;
 final tag = await Haudiotagger.readFromBytes(fileBytes);
 ```
+
+### Read Audio Properties (technical — read-only)
+
+```dart
+import 'package:haudiotagger/haudiotagger.dart';
+
+// Native: from a file path
+final props = await Haudiotagger.readProperties('/path/to/song.mp3');
+
+// Web + native: from in-memory bytes
+// final props = await Haudiotagger.readPropertiesFromBytes(fileBytes);
+
+print(props.duration);       // Duration(seconds: 240)
+print(props.bitrate);        // 320 (kbps)
+print(props.sampleRate);     // 44100 (Hz)
+print(props.channels);       // 2
+print(props.bitsPerSample);  // 16
+print(props.codec);          // 'MP3'
+print(props.containerFormat); // 'MP3'
+print(props.lossless);       // false
+print(props.bitrateMode);    // BitrateMode.unknown
+print(props.fileSize);       // 8234567 (bytes)
+```
+
+> **Note:** Audio properties are read-only and never affect tags or writing.
 
 ### Write Metadata
 
@@ -200,6 +226,8 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 | `readFromBytes(Uint8List bytes)` | `Future<Tag?>` | Read metadata from in-memory bytes (web + native). Returns `null` if no tags found. |
 | `write(String path, Tag tag)` | `Future<void>` | Write metadata to a file path. Replaces existing tags. |
 | `writeToBytes(Uint8List bytes, Tag tag)` | `Future<Uint8List>` | Write metadata to in-memory bytes. Returns modified bytes. |
+| `readProperties(String path)` | `Future<AudioProperties>` | Read technical audio properties from a file path (native only). |
+| `readPropertiesFromBytes(Uint8List bytes)` | `Future<AudioProperties>` | Read technical audio properties from in-memory bytes (web + native). |
 
 ### `Tag`
 
@@ -227,6 +255,22 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 | `pictureType` | `PictureType` | Image type (cover front, back, artist, etc.) |
 | `mimeType` | `MimeType?` | Image format (JPEG, PNG, etc.) |
 | `bytes` | `Uint8List` | Raw image data |
+
+### `AudioProperties`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `duration` | `Duration?` | Audio duration (convenience getter over `durationMicros`) |
+| `durationMicros` | `int?` | Audio duration in microseconds |
+| `bitrate` | `int?` | Overall bitrate (kbps) |
+| `sampleRate` | `int?` | Sample rate (Hz) |
+| `channels` | `int?` | Number of channels |
+| `bitsPerSample` | `int?` | Bits per sample |
+| `codec` | `String` | Audio codec (ex. `MP3`, `FLAC`, `AAC`) |
+| `containerFormat` | `String` | Container format (ex. `MP3`, `MP4`, `Ogg`) |
+| `lossless` | `bool` | Whether the audio is lossless |
+| `bitrateMode` | `BitrateMode` | `BitrateMode.unknown` / `cbr` / `vbr` |
+| `fileSize` | `BigInt?` | File size in bytes |
 
 ## Requirements
 
