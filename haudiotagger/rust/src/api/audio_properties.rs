@@ -91,9 +91,7 @@ pub fn read_properties(path: String) -> Result<AudioProperties, HaudiotaggerErro
 }
 
 /// Read the technical audio properties from in-memory bytes (for web/WASM).
-pub fn read_properties_from_bytes(
-    bytes: Vec<u8>,
-) -> Result<AudioProperties, HaudiotaggerError> {
+pub fn read_properties_from_bytes(bytes: Vec<u8>) -> Result<AudioProperties, HaudiotaggerError> {
     let file = get_file_from_bytes(&bytes)?;
     Ok(AudioProperties::from_file(&file, Some(bytes.len() as u64)))
 }

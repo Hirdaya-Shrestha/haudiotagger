@@ -75,7 +75,8 @@ class Haudiotagger {
 
   /// Read the technical audio properties from in-memory [bytes].
   /// Read-only; works on web and native.
-  static Future<ap.AudioProperties> readPropertiesFromBytes(Uint8List bytes) async {
+  static Future<ap.AudioProperties> readPropertiesFromBytes(
+      Uint8List bytes) async {
     await _ensureInit();
     return await ap.readPropertiesFromBytes(bytes: bytes);
   }
@@ -91,4 +92,5 @@ extension AudioPropertiesX on ap.AudioProperties {
   }
 }
 
-int _microsToInt(dynamic micros) => micros is BigInt ? micros.toInt() : micros as int;
+int _microsToInt(dynamic micros) =>
+    micros is BigInt ? micros.toInt() : micros as int;
