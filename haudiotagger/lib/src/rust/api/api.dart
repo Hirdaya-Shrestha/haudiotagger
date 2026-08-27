@@ -9,7 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
 import 'tag.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `get_file_from_bytes`, `get_file`, `tag_from_file`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `get_file_from_bytes`, `get_file`, `is_mp3`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
 
 Future<Tag> read({required String path}) =>
     RustLib.instance.api.crateApiApiRead(path: path);
