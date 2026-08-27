@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Added read-only `AudioProperties` model exposing technical audio properties (duration, bitrate, sample rate, channels, bits per sample, codec, container format, lossless flag, bitrate mode, file size). Available via `Haudiotagger.readProperties(path)` (native) and `Haudiotagger.readPropertiesFromBytes(bytes)` (web + native). Does not affect existing read/write behavior.
+
 ## 1.1.0
 
 - Pointed every platform's prebuilt download at the fixed release. The Android, Linux and Windows `CMakeLists.txt` and the iOS/macOS podspecs all hardcoded `v1.0.1`, so every version still shipped the old buggy native binary. All now download from `v1.1.0`. Also fixed the macOS podscript condition so it actually re-downloads (it previously skipped the download because the committed framework already existed).

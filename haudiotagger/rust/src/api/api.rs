@@ -11,7 +11,7 @@ use lofty::tag::Tag as LoftyTag;
 use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
 
 /// Returns a `TaggedFile` at the given path.
-fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
+pub(crate) fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
     let probe = Probe::open(path)
         .map_err(|err| HaudiotaggerError::OpenFile {
             message: err.to_string(),
@@ -30,7 +30,7 @@ fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
 }
 
 /// Returns a `TaggedFile` from in-memory bytes.
-fn get_file_from_bytes(bytes: &[u8]) -> Result<TaggedFile, HaudiotaggerError> {
+pub(crate) fn get_file_from_bytes(bytes: &[u8]) -> Result<TaggedFile, HaudiotaggerError> {
     let mut cursor = Cursor::new(bytes);
     let probe =
         Probe::new(&mut cursor)
