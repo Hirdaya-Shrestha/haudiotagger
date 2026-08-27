@@ -5,10 +5,12 @@ import 'rust/frb_generated.dart';
 import 'rust/api/api.dart' as api;
 import 'rust/api/tag.dart';
 import 'rust/api/error.dart';
+import 'rust/api/audio_properties.dart' as ap;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
 export 'rust/api/error.dart';
+export 'rust/api/audio_properties.dart';
 
 class Haudiotagger {
   static Future<void>? _initFuture;
@@ -63,4 +65,30 @@ class Haudiotagger {
     await _ensureInit();
     return await api.writeToBytes(bytes: bytes, data: tag);
   }
+
+  /// Read the technical audio properties of the file at [path].
+  /// Read-only; works on native.
+  static Future<ap.AudioProperties> readProperties(String path) async {
+    await _ensureInit();
+    return await ap.readProperties(path: path);
+  }
+
+  /// Read the technical audio properties from in-memory [bytes].
+  /// Read-only; works on web and native.
+  static Future<ap.AudioProperties> readPropertiesFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await ap.readPropertiesFromBytes(bytes: bytes);
+  }
 }
+
+/// Convenience accessors for [ap.AudioProperties].
+extension AudioPropertiesX on ap.AudioProperties {
+  /// The audio duration, derived from [ap.AudioProperties.durationMicros].
+  Duration? get duration {
+    final micros = durationMicros;
+    if (micros == null) return null;
+    return Duration(microseconds: _microsToInt(micros));
+  }
+}
+
+int _microsToInt(dynamic micros) => micros is BigInt ? micros.toInt() : micros as int;
