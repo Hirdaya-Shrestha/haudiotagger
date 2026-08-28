@@ -1,4 +1,5 @@
 rust_input: crate::api
 rust_root: rust/
 dart_output: lib/src/rust
+default_dart_async: false
 default_external_library_loader_web_prefix: assets/packages/haudiotagger/pkg/

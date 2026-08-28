@@ -43,7 +43,7 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 | Windows | ✅ | — |
 | Web | — | ✅ |
 
-> **Web**: Uses a WASM-compiled Rust binary. No native compilation needed — the JS/WASM files are bundled automatically as plugin assets. See [Web Setup](#web-setup) below.
+> **Web**: Uses a WASM-compiled Rust binary. No native compilation needed — the JS/WASM files are bundled automatically as plugin assets. See [Web Setup](#web-setup) below. Web calls run synchronously on the main thread; no special server headers (COOP/COEP) are required.
 
 ## Supported Formats
 
@@ -66,7 +66,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.1.3
+  haudiotagger: ^1.1.4
 ```
 
 Then run:
