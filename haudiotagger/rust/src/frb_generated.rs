@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -1577758630;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1345647280;
 
 // Section: executor
 
@@ -47,6 +47,74 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
+fn wire__crate__api__api__clear_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "clear",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_path = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::clear(api_path)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
+        },
+    )
+}
+fn wire__crate__api__api__clear_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "clear_from_bytes",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::clear_from_bytes(api_bytes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
+        },
+    )
+}
 fn wire__crate__api__picture__picture_new_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -225,6 +293,142 @@ fn wire__crate__api__audio_properties__read_properties_from_bytes_impl(
         },
     )
 }
+fn wire__crate__api__api__remove_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "remove",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_path = <String>::sse_decode(&mut deserializer);
+            let api_fields = <Vec<crate::api::tag_field::TagField>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::remove(api_path, api_fields)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
+        },
+    )
+}
+fn wire__crate__api__api__remove_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "remove_from_bytes",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
+            let api_fields = <Vec<crate::api::tag_field::TagField>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::remove_from_bytes(api_bytes, api_fields)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
+        },
+    )
+}
+fn wire__crate__api__tag_changes__tag_changes_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_changes_default",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::tag_changes::TagChanges::default())?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__tag_changes__tag_changes_is_empty_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_changes_is_empty",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <crate::api::tag_changes::TagChanges>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::tag_changes::TagChanges::is_empty(&api_that))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__tag__tag_default_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -286,6 +490,77 @@ fn wire__crate__api__tag__tag_is_empty_impl(
                     let output_ok = Ok::<_, ()>(crate::api::tag::Tag::is_empty(&api_that))?;
                     std::result::Result::Ok(output_ok)
                 })())
+            }
+        },
+    )
+}
+fn wire__crate__api__tag_changes__update_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "update",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_path = <String>::sse_decode(&mut deserializer);
+            let api_changes = <crate::api::tag_changes::TagChanges>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::tag_changes::update(api_path, api_changes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
+        },
+    )
+}
+fn wire__crate__api__tag_changes__update_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "update_from_bytes",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
+            let api_changes = <crate::api::tag_changes::TagChanges>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok =
+                        crate::api::tag_changes::update_from_bytes(api_bytes, api_changes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
             }
         },
     )
@@ -495,6 +770,18 @@ impl SseDecode for Vec<u8> {
     }
 }
 
+impl SseDecode for Vec<crate::api::tag_field::TagField> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::tag_field::TagField>::sse_decode(deserializer));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for crate::api::picture::MimeType {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -576,6 +863,19 @@ impl SseDecode for Option<u64> {
     }
 }
 
+impl SseDecode for Option<Vec<crate::api::picture::Picture>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<Vec<crate::api::picture::Picture>>::sse_decode(
+                deserializer,
+            ));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for crate::api::picture::Picture {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -635,6 +935,7 @@ impl SseDecode for crate::api::tag::Tag {
         let mut var_discNumber = <Option<u32>>::sse_decode(deserializer);
         let mut var_discTotal = <Option<u32>>::sse_decode(deserializer);
         let mut var_lyrics = <Option<String>>::sse_decode(deserializer);
+        let mut var_comment = <Option<String>>::sse_decode(deserializer);
         let mut var_duration = <Option<u32>>::sse_decode(deserializer);
         let mut var_pictures = <Vec<crate::api::picture::Picture>>::sse_decode(deserializer);
         let mut var_bpm = <Option<f32>>::sse_decode(deserializer);
@@ -650,9 +951,71 @@ impl SseDecode for crate::api::tag::Tag {
             disc_number: var_discNumber,
             disc_total: var_discTotal,
             lyrics: var_lyrics,
+            comment: var_comment,
             duration: var_duration,
             pictures: var_pictures,
             bpm: var_bpm,
+        };
+    }
+}
+
+impl SseDecode for crate::api::tag_changes::TagChanges {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_title = <Option<String>>::sse_decode(deserializer);
+        let mut var_trackArtist = <Option<String>>::sse_decode(deserializer);
+        let mut var_album = <Option<String>>::sse_decode(deserializer);
+        let mut var_albumArtist = <Option<String>>::sse_decode(deserializer);
+        let mut var_year = <Option<u32>>::sse_decode(deserializer);
+        let mut var_genre = <Option<String>>::sse_decode(deserializer);
+        let mut var_trackNumber = <Option<u32>>::sse_decode(deserializer);
+        let mut var_trackTotal = <Option<u32>>::sse_decode(deserializer);
+        let mut var_discNumber = <Option<u32>>::sse_decode(deserializer);
+        let mut var_discTotal = <Option<u32>>::sse_decode(deserializer);
+        let mut var_lyrics = <Option<String>>::sse_decode(deserializer);
+        let mut var_comment = <Option<String>>::sse_decode(deserializer);
+        let mut var_pictures =
+            <Option<Vec<crate::api::picture::Picture>>>::sse_decode(deserializer);
+        let mut var_bpm = <Option<f32>>::sse_decode(deserializer);
+        return crate::api::tag_changes::TagChanges {
+            title: var_title,
+            track_artist: var_trackArtist,
+            album: var_album,
+            album_artist: var_albumArtist,
+            year: var_year,
+            genre: var_genre,
+            track_number: var_trackNumber,
+            track_total: var_trackTotal,
+            disc_number: var_discNumber,
+            disc_total: var_discTotal,
+            lyrics: var_lyrics,
+            comment: var_comment,
+            pictures: var_pictures,
+            bpm: var_bpm,
+        };
+    }
+}
+
+impl SseDecode for crate::api::tag_field::TagField {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut inner = <i32>::sse_decode(deserializer);
+        return match inner {
+            0 => crate::api::tag_field::TagField::Title,
+            1 => crate::api::tag_field::TagField::Artist,
+            2 => crate::api::tag_field::TagField::Album,
+            3 => crate::api::tag_field::TagField::AlbumArtist,
+            4 => crate::api::tag_field::TagField::Year,
+            5 => crate::api::tag_field::TagField::Genre,
+            6 => crate::api::tag_field::TagField::TrackNumber,
+            7 => crate::api::tag_field::TagField::TrackTotal,
+            8 => crate::api::tag_field::TagField::DiscNumber,
+            9 => crate::api::tag_field::TagField::DiscTotal,
+            10 => crate::api::tag_field::TagField::Lyrics,
+            11 => crate::api::tag_field::TagField::Comment,
+            12 => crate::api::tag_field::TagField::Bpm,
+            13 => crate::api::tag_field::TagField::Pictures,
+            _ => unreachable!("Invalid variant for TagField: {}", inner),
         };
     }
 }
@@ -692,25 +1055,45 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api__picture__picture_new_impl(port, ptr, rust_vec_len, data_len),
-        2 => wire__crate__api__api__read_impl(port, ptr, rust_vec_len, data_len),
-        3 => wire__crate__api__api__read_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__audio_properties__read_properties_impl(
+        1 => wire__crate__api__api__clear_impl(port, ptr, rust_vec_len, data_len),
+        2 => wire__crate__api__api__clear_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__picture__picture_new_impl(port, ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__api__read_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__api__read_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__audio_properties__read_properties_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        5 => wire__crate__api__audio_properties__read_properties_from_bytes_impl(
+        7 => wire__crate__api__audio_properties__read_properties_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        6 => wire__crate__api__tag__tag_default_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__tag__tag_is_empty_impl(port, ptr, rust_vec_len, data_len),
-        8 => wire__crate__api__api__write_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire__crate__api__api__write_to_bytes_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire__crate__api__api__remove_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__api__api__remove_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__api__tag_changes__tag_changes_default_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        11 => wire__crate__api__tag_changes__tag_changes_is_empty_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        12 => wire__crate__api__tag__tag_default_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__api__tag__tag_is_empty_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__api__tag_changes__update_impl(port, ptr, rust_vec_len, data_len),
+        15 => {
+            wire__crate__api__tag_changes__update_from_bytes_impl(port, ptr, rust_vec_len, data_len)
+        }
+        16 => wire__crate__api__api__write_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__api__write_to_bytes_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -904,6 +1287,7 @@ impl flutter_rust_bridge::IntoDart for crate::api::tag::Tag {
             self.disc_number.into_into_dart().into_dart(),
             self.disc_total.into_into_dart().into_dart(),
             self.lyrics.into_into_dart().into_dart(),
+            self.comment.into_into_dart().into_dart(),
             self.duration.into_into_dart().into_dart(),
             self.pictures.into_into_dart().into_dart(),
             self.bpm.into_into_dart().into_dart(),
@@ -914,6 +1298,72 @@ impl flutter_rust_bridge::IntoDart for crate::api::tag::Tag {
 impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive for crate::api::tag::Tag {}
 impl flutter_rust_bridge::IntoIntoDart<crate::api::tag::Tag> for crate::api::tag::Tag {
     fn into_into_dart(self) -> crate::api::tag::Tag {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::tag_changes::TagChanges {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [
+            self.title.into_into_dart().into_dart(),
+            self.track_artist.into_into_dart().into_dart(),
+            self.album.into_into_dart().into_dart(),
+            self.album_artist.into_into_dart().into_dart(),
+            self.year.into_into_dart().into_dart(),
+            self.genre.into_into_dart().into_dart(),
+            self.track_number.into_into_dart().into_dart(),
+            self.track_total.into_into_dart().into_dart(),
+            self.disc_number.into_into_dart().into_dart(),
+            self.disc_total.into_into_dart().into_dart(),
+            self.lyrics.into_into_dart().into_dart(),
+            self.comment.into_into_dart().into_dart(),
+            self.pictures.into_into_dart().into_dart(),
+            self.bpm.into_into_dart().into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::tag_changes::TagChanges
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::tag_changes::TagChanges>
+    for crate::api::tag_changes::TagChanges
+{
+    fn into_into_dart(self) -> crate::api::tag_changes::TagChanges {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::tag_field::TagField {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            Self::Title => 0.into_dart(),
+            Self::Artist => 1.into_dart(),
+            Self::Album => 2.into_dart(),
+            Self::AlbumArtist => 3.into_dart(),
+            Self::Year => 4.into_dart(),
+            Self::Genre => 5.into_dart(),
+            Self::TrackNumber => 6.into_dart(),
+            Self::TrackTotal => 7.into_dart(),
+            Self::DiscNumber => 8.into_dart(),
+            Self::DiscTotal => 9.into_dart(),
+            Self::Lyrics => 10.into_dart(),
+            Self::Comment => 11.into_dart(),
+            Self::Bpm => 12.into_dart(),
+            Self::Pictures => 13.into_dart(),
+            _ => unreachable!(),
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::tag_field::TagField
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::tag_field::TagField>
+    for crate::api::tag_field::TagField
+{
+    fn into_into_dart(self) -> crate::api::tag_field::TagField {
         self
     }
 }
@@ -1031,6 +1481,16 @@ impl SseEncode for Vec<u8> {
     }
 }
 
+impl SseEncode for Vec<crate::api::tag_field::TagField> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::tag_field::TagField>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for crate::api::picture::MimeType {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1110,6 +1570,16 @@ impl SseEncode for Option<u64> {
     }
 }
 
+impl SseEncode for Option<Vec<crate::api::picture::Picture>> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <Vec<crate::api::picture::Picture>>::sse_encode(value, serializer);
+        }
+    }
+}
+
 impl SseEncode for crate::api::picture::Picture {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -1168,9 +1638,58 @@ impl SseEncode for crate::api::tag::Tag {
         <Option<u32>>::sse_encode(self.disc_number, serializer);
         <Option<u32>>::sse_encode(self.disc_total, serializer);
         <Option<String>>::sse_encode(self.lyrics, serializer);
+        <Option<String>>::sse_encode(self.comment, serializer);
         <Option<u32>>::sse_encode(self.duration, serializer);
         <Vec<crate::api::picture::Picture>>::sse_encode(self.pictures, serializer);
         <Option<f32>>::sse_encode(self.bpm, serializer);
+    }
+}
+
+impl SseEncode for crate::api::tag_changes::TagChanges {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Option<String>>::sse_encode(self.title, serializer);
+        <Option<String>>::sse_encode(self.track_artist, serializer);
+        <Option<String>>::sse_encode(self.album, serializer);
+        <Option<String>>::sse_encode(self.album_artist, serializer);
+        <Option<u32>>::sse_encode(self.year, serializer);
+        <Option<String>>::sse_encode(self.genre, serializer);
+        <Option<u32>>::sse_encode(self.track_number, serializer);
+        <Option<u32>>::sse_encode(self.track_total, serializer);
+        <Option<u32>>::sse_encode(self.disc_number, serializer);
+        <Option<u32>>::sse_encode(self.disc_total, serializer);
+        <Option<String>>::sse_encode(self.lyrics, serializer);
+        <Option<String>>::sse_encode(self.comment, serializer);
+        <Option<Vec<crate::api::picture::Picture>>>::sse_encode(self.pictures, serializer);
+        <Option<f32>>::sse_encode(self.bpm, serializer);
+    }
+}
+
+impl SseEncode for crate::api::tag_field::TagField {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(
+            match self {
+                crate::api::tag_field::TagField::Title => 0,
+                crate::api::tag_field::TagField::Artist => 1,
+                crate::api::tag_field::TagField::Album => 2,
+                crate::api::tag_field::TagField::AlbumArtist => 3,
+                crate::api::tag_field::TagField::Year => 4,
+                crate::api::tag_field::TagField::Genre => 5,
+                crate::api::tag_field::TagField::TrackNumber => 6,
+                crate::api::tag_field::TagField::TrackTotal => 7,
+                crate::api::tag_field::TagField::DiscNumber => 8,
+                crate::api::tag_field::TagField::DiscTotal => 9,
+                crate::api::tag_field::TagField::Lyrics => 10,
+                crate::api::tag_field::TagField::Comment => 11,
+                crate::api::tag_field::TagField::Bpm => 12,
+                crate::api::tag_field::TagField::Pictures => 13,
+                _ => {
+                    unimplemented!("");
+                }
+            },
+            serializer,
+        );
     }
 }
 

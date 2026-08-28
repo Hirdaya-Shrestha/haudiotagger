@@ -6,6 +6,8 @@ mod tests {
     use crate::api::api;
     use crate::api::picture;
     use crate::api::tag::Tag;
+    use crate::api::tag_changes;
+    use crate::api::tag_field;
     use anyhow::Context;
     use std::io::Read;
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -64,6 +66,7 @@ mod tests {
             disc_number: None,
             disc_total: None,
             lyrics: None,
+            comment: None,
             duration: None,
             pictures: Vec::new(),
             bpm: None,
@@ -217,5 +220,94 @@ mod tests {
         assert!(read.track_artist.is_none(), "old artist should be removed");
         assert!(read.album.is_none(), "old album should be removed");
         assert!(read.pictures.is_empty(), "old pictures should be removed");
+    }
+
+    #[test]
+    fn update_preserves_existing_fields_mp3() {
+        let path = scratch("samples/test.mp3");
+        api::write(path.clone(), full_tag()).expect("Failed to write full tag.");
+
+        let mut changes = tag_changes::TagChanges::default();
+        changes.title = Some("UPDATED_TITLE".to_string());
+        changes.comment = Some("UPDATED_COMMENT".to_string());
+        tag_changes::update(path.clone(), changes).expect("Failed to update tag.");
+
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        // Changed fields
+        assert_eq!(read.title.as_deref(), Some("UPDATED_TITLE"));
+        assert_eq!(read.comment.as_deref(), Some("UPDATED_COMMENT"));
+        // Untouched fields must be preserved
+        assert_eq!(
+            read.track_artist.as_deref(),
+            full_tag().track_artist.as_deref()
+        );
+        assert_eq!(read.album.as_deref(), full_tag().album.as_deref());
+        assert_eq!(read.year, full_tag().year);
+        assert!(!read.pictures.is_empty(), "pictures should be preserved");
+    }
+
+    #[test]
+    fn update_from_bytes_preserves_existing_fields_mp3() {
+        let bytes = std::fs::read(scratch("samples/test.mp3")).unwrap();
+        let written = api::write_to_bytes(bytes, full_tag()).expect("Failed to write tag.");
+
+        let mut changes = tag_changes::TagChanges::default();
+        changes.genre = Some("UPDATED_GENRE".to_string());
+        let out =
+            tag_changes::update_from_bytes(written, changes).expect("Failed to update bytes.");
+
+        let path = scratch("samples/test.mp3");
+        std::fs::write(&path, &out).unwrap();
+        let read = api::read(path).expect("Failed to read tag.");
+        assert_eq!(read.genre.as_deref(), Some("UPDATED_GENRE"));
+        assert_eq!(read.title.as_deref(), full_tag().title.as_deref());
+    }
+
+    #[test]
+    fn remove_clears_only_named_fields_mp3() {
+        let path = scratch("samples/test.mp3");
+        api::write(path.clone(), full_tag()).expect("Failed to write full tag.");
+
+        api::remove(
+            path.clone(),
+            vec![tag_field::TagField::Lyrics, tag_field::TagField::Comment],
+        )
+        .expect("Failed to remove fields.");
+
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        assert!(read.lyrics.is_none(), "lyrics should be removed");
+        assert!(read.comment.is_none(), "comment should be removed");
+        // Everything else preserved
+        assert_eq!(read.title.as_deref(), full_tag().title.as_deref());
+        assert_eq!(read.album.as_deref(), full_tag().album.as_deref());
+    }
+
+    #[test]
+    fn clear_removes_all_metadata_mp3() {
+        let path = scratch("samples/test.mp3");
+        api::write(path.clone(), full_tag()).expect("Failed to write full tag.");
+
+        api::clear(path.clone()).expect("Failed to clear tag.");
+
+        // After clearing, reading yields no tags.
+        assert!(
+            api::read(path.clone()).is_err(),
+            "cleared file should have no tags"
+        );
+    }
+
+    #[test]
+    fn update_creates_tags_when_none_exist_mp3() {
+        let path = scratch("samples/test.mp3");
+        api::clear(path.clone()).expect("Failed to clear tag.");
+
+        let mut changes = tag_changes::TagChanges::default();
+        changes.title = Some("FRESH_TITLE".to_string());
+        changes.track_artist = Some("FRESH_ARTIST".to_string());
+        tag_changes::update(path.clone(), changes).expect("Failed to update tag.");
+
+        let read = api::read(path.clone()).expect("Failed to read tag.");
+        assert_eq!(read.title.as_deref(), Some("FRESH_TITLE"));
+        assert_eq!(read.track_artist.as_deref(), Some("FRESH_ARTIST"));
     }
 }

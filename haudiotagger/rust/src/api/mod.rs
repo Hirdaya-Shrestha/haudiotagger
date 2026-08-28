@@ -3,3 +3,5 @@ pub mod audio_properties;
 pub mod error;
 pub mod picture;
 pub mod tag;
+pub mod tag_changes;
+pub mod tag_field;
