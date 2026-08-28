@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/haudiotagger/logo.png" alt="HAudioTagger Logo" width="140">
+  <img src="/haudiotagger/logo.png" alt="hAudiotagger Logo" width="140">
 </p>
 
 <h1 align="center">hAudiotagger</h1>
@@ -21,7 +21,7 @@ Read and write audio metadata in Flutter — powered by Rust. Fast, reliable, an
 
 Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 
-![Haudiotagger](/haudiotagger/cover.png)
+![hAudiotagger](/haudiotagger/cover.png)
 
 ## Features
 
@@ -269,7 +269,7 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 
 ## API Reference
 
-### `Haudiotagger`
+### `hAudiotagger`
 
 | Method | Returns | Description |
 |--------|---------|-------------|
@@ -368,10 +368,10 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## ❤️ Support
 
-If HAudioTagger helps you build something cool, consider:
+If hAudiotagger helps you build something cool, consider:
 
-- ⭐ Starring the repository
-- 🐛 Reporting bugs
+- ⭐ Starring the [repository](https://github.com/Hirdaya-Shrestha/haudiotagger)
+- 🐛 [Reporting](https://github.com/Hirdaya-Shrestha/haudiotagger/issues) bugs
 - 💡 Suggesting improvements
 - 🤝 Contributing code
 - 📦 Sharing the package with other Flutter developers
