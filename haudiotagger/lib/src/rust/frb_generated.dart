@@ -86,47 +86,48 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  void crateApiApiClear({required String path});
+  Future<void> crateApiApiClear({required String path});
 
-  Uint8List crateApiApiClearFromBytes({required List<int> bytes});
+  Future<Uint8List> crateApiApiClearFromBytes({required List<int> bytes});
 
-  Picture crateApiPicturePictureNew(
+  Future<Picture> crateApiPicturePictureNew(
       {required PictureType pictureType,
       MimeType? mimeType,
       required List<int> bytes});
 
-  Tag crateApiApiRead({required String path});
+  Future<Tag> crateApiApiRead({required String path});
 
-  Tag crateApiApiReadFromBytes({required List<int> bytes});
+  Future<Tag> crateApiApiReadFromBytes({required List<int> bytes});
 
-  AudioProperties crateApiAudioPropertiesReadProperties({required String path});
+  Future<AudioProperties> crateApiAudioPropertiesReadProperties(
+      {required String path});
 
-  AudioProperties crateApiAudioPropertiesReadPropertiesFromBytes(
+  Future<AudioProperties> crateApiAudioPropertiesReadPropertiesFromBytes(
       {required List<int> bytes});
 
-  void crateApiApiRemove(
+  Future<void> crateApiApiRemove(
       {required String path, required List<TagField> fields});
 
-  Uint8List crateApiApiRemoveFromBytes(
+  Future<Uint8List> crateApiApiRemoveFromBytes(
       {required List<int> bytes, required List<TagField> fields});
 
-  TagChanges crateApiTagChangesTagChangesDefault();
+  Future<TagChanges> crateApiTagChangesTagChangesDefault();
 
-  bool crateApiTagChangesTagChangesIsEmpty({required TagChanges that});
+  Future<bool> crateApiTagChangesTagChangesIsEmpty({required TagChanges that});
 
-  Tag crateApiTagTagDefault();
+  Future<Tag> crateApiTagTagDefault();
 
-  bool crateApiTagTagIsEmpty({required Tag that});
+  Future<bool> crateApiTagTagIsEmpty({required Tag that});
 
-  void crateApiTagChangesUpdate(
+  Future<void> crateApiTagChangesUpdate(
       {required String path, required TagChanges changes});
 
-  Uint8List crateApiTagChangesUpdateFromBytes(
+  Future<Uint8List> crateApiTagChangesUpdateFromBytes(
       {required List<int> bytes, required TagChanges changes});
 
-  void crateApiApiWrite({required String path, required Tag data});
+  Future<void> crateApiApiWrite({required String path, required Tag data});
 
-  Uint8List crateApiApiWriteToBytes(
+  Future<Uint8List> crateApiApiWriteToBytes(
       {required List<int> bytes, required Tag data});
 }
 
@@ -139,12 +140,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  void crateApiApiClear({required String path}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<void> crateApiApiClear({required String path}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 1)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 1, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -162,12 +164,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Uint8List crateApiApiClearFromBytes({required List<int> bytes}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<Uint8List> crateApiApiClearFromBytes({required List<int> bytes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 2)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 2, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -185,17 +188,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Picture crateApiPicturePictureNew(
+  Future<Picture> crateApiPicturePictureNew(
       {required PictureType pictureType,
       MimeType? mimeType,
       required List<int> bytes}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_picture_type(pictureType, serializer);
         sse_encode_opt_box_autoadd_mime_type(mimeType, serializer);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 3)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 3, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_picture,
@@ -213,12 +217,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Tag crateApiApiRead({required String path}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<Tag> crateApiApiRead({required String path}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 4)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 4, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -236,12 +241,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Tag crateApiApiReadFromBytes({required List<int> bytes}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<Tag> crateApiApiReadFromBytes({required List<int> bytes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 5)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 5, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -259,13 +265,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  AudioProperties crateApiAudioPropertiesReadProperties(
+  Future<AudioProperties> crateApiAudioPropertiesReadProperties(
       {required String path}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 6)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 6, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -284,13 +291,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  AudioProperties crateApiAudioPropertiesReadPropertiesFromBytes(
+  Future<AudioProperties> crateApiAudioPropertiesReadPropertiesFromBytes(
       {required List<int> bytes}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 7)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 7, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -309,14 +317,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  void crateApiApiRemove(
+  Future<void> crateApiApiRemove(
       {required String path, required List<TagField> fields}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         sse_encode_list_tag_field(fields, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 8)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 8, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -334,14 +343,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Uint8List crateApiApiRemoveFromBytes(
+  Future<Uint8List> crateApiApiRemoveFromBytes(
       {required List<int> bytes, required List<TagField> fields}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_tag_field(fields, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 9)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 9, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -359,11 +369,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  TagChanges crateApiTagChangesTagChangesDefault() {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<TagChanges> crateApiTagChangesTagChangesDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 10)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 10, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_changes,
@@ -382,12 +393,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  bool crateApiTagChangesTagChangesIsEmpty({required TagChanges that}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<bool> crateApiTagChangesTagChangesIsEmpty({required TagChanges that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag_changes(that, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 11)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 11, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -406,11 +418,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Tag crateApiTagTagDefault() {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<Tag> crateApiTagTagDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 12)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 12, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -428,12 +441,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  bool crateApiTagTagIsEmpty({required Tag that}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<bool> crateApiTagTagIsEmpty({required Tag that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(that, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 13)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 13, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -451,14 +465,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  void crateApiTagChangesUpdate(
+  Future<void> crateApiTagChangesUpdate(
       {required String path, required TagChanges changes}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 14)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 14, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -476,14 +491,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Uint8List crateApiTagChangesUpdateFromBytes(
+  Future<Uint8List> crateApiTagChangesUpdateFromBytes(
       {required List<int> bytes, required TagChanges changes}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 15)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 15, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -502,13 +518,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  void crateApiApiWrite({required String path, required Tag data}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+  Future<void> crateApiApiWrite({required String path, required Tag data}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 16, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -526,14 +543,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Uint8List crateApiApiWriteToBytes(
+  Future<Uint8List> crateApiApiWriteToBytes(
       {required List<int> bytes, required Tag data}) {
-    return handler.executeSync(SyncTask(
-      callFfi: () {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
-        return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 17, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -747,7 +765,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     final arr = raw as List<dynamic>;
     if (arr.length != 3)
       throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
-    return Picture.raw(
+    return Picture(
       pictureType: dco_decode_picture_type(arr[0]),
       mimeType: dco_decode_opt_box_autoadd_mime_type(arr[1]),
       bytes: dco_decode_list_prim_u_8_strict(arr[2]),
@@ -1095,7 +1113,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_pictureType = sse_decode_picture_type(deserializer);
     var var_mimeType = sse_decode_opt_box_autoadd_mime_type(deserializer);
     var var_bytes = sse_decode_list_prim_u_8_strict(deserializer);
-    return Picture.raw(
+    return Picture(
         pictureType: var_pictureType, mimeType: var_mimeType, bytes: var_bytes);
   }
 
