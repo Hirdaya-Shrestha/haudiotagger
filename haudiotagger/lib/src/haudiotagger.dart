@@ -6,11 +6,15 @@ import 'rust/api/api.dart' as api;
 import 'rust/api/tag.dart';
 import 'rust/api/error.dart';
 import 'rust/api/audio_properties.dart' as ap;
+import 'rust/api/tag_changes.dart' as tc;
+import 'rust/api/tag_field.dart';
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
 export 'rust/api/error.dart';
 export 'rust/api/audio_properties.dart';
+export 'rust/api/tag_changes.dart';
+export 'rust/api/tag_field.dart';
 
 class Haudiotagger {
   static Future<void>? _initFuture;
@@ -79,6 +83,49 @@ class Haudiotagger {
       Uint8List bytes) async {
     await _ensureInit();
     return await ap.readPropertiesFromBytes(bytes: bytes);
+  }
+
+  /// Apply [changes] to the metadata at [path], preserving any fields not
+  /// mentioned in [changes]. Works on native.
+  static Future<void> update(String path, tc.TagChanges changes) async {
+    await _ensureInit();
+    return await tc.update(path: path, changes: changes);
+  }
+
+  /// Apply [changes] to metadata held in [bytes], returning the modified bytes.
+  /// Works on web and native.
+  static Future<Uint8List> updateFromBytes(
+      Uint8List bytes, tc.TagChanges changes) async {
+    await _ensureInit();
+    return await tc.updateFromBytes(bytes: bytes, changes: changes);
+  }
+
+  /// Remove the given [fields] from the metadata at [path], keeping everything
+  /// else. Works on native.
+  static Future<void> remove(String path, List<TagField> fields) async {
+    await _ensureInit();
+    return await api.remove(path: path, fields: fields);
+  }
+
+  /// Remove the given [fields] from metadata held in [bytes], returning the
+  /// modified bytes. Works on web and native.
+  static Future<Uint8List> removeFromBytes(
+      Uint8List bytes, List<TagField> fields) async {
+    await _ensureInit();
+    return await api.removeFromBytes(bytes: bytes, fields: fields);
+  }
+
+  /// Remove all metadata from the file at [path]. Works on native.
+  static Future<void> clear(String path) async {
+    await _ensureInit();
+    return await api.clear(path: path);
+  }
+
+  /// Remove all metadata from the data held in [bytes], returning the modified
+  /// bytes. Works on web and native.
+  static Future<Uint8List> clearFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.clearFromBytes(bytes: bytes);
   }
 }
 

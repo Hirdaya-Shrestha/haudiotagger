@@ -4,60 +4,44 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import 'error.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `from`
+// These functions are ignored because they are not marked as `pub`: `merge`, `read_bytes_or_empty`, `read_or_empty`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
 
-/// Represents the metadata of the file.
-class Tag {
-  /// The title of the song.
+/// Apply [changes] to the tag at `path`, preserving any fields not mentioned.
+Future<void> update({required String path, required TagChanges changes}) =>
+    RustLib.instance.api.crateApiTagChangesUpdate(path: path, changes: changes);
+
+/// Apply [changes] to a tag held in `bytes`, returning the modified bytes.
+Future<Uint8List> updateFromBytes(
+        {required List<int> bytes, required TagChanges changes}) =>
+    RustLib.instance.api
+        .crateApiTagChangesUpdateFromBytes(bytes: bytes, changes: changes);
+
+/// A partial set of tag fields to apply on top of an existing tag.
+///
+/// Every field is optional. When applying via `update`, a `Some` value replaces
+/// the corresponding field on the existing tag, while `None` leaves it untouched.
+class TagChanges {
   final String? title;
-
-  /// The artist of the song.
   final String? trackArtist;
-
-  /// The album the song is from.
   final String? album;
-
-  /// The artist of the album.
   final String? albumArtist;
-
-  /// The year that this song was made.
   final int? year;
-
-  /// The genre of the song.
   final String? genre;
-
-  /// The position of the song in a list.
   final int? trackNumber;
-
-  /// The total amount of songs in a list.
   final int? trackTotal;
-
-  /// The position of the disc in a list.
   final int? discNumber;
-
-  /// The total amount of discs in a list.
   final int? discTotal;
-
-  /// The lyrics of the song.
   final String? lyrics;
-
-  /// A comment about the song.
   final String? comment;
-
-  /// The duration of the song. Setting this field
-  /// when writing will do nothing.
-  final int? duration;
-
-  /// All the pictures of the song.
-  final List<Picture> pictures;
-
-  /// Beats per minute.
+  final List<Picture>? pictures;
   final double? bpm;
 
-  const Tag({
+  const TagChanges({
     this.title,
     this.trackArtist,
     this.album,
@@ -70,15 +54,16 @@ class Tag {
     this.discTotal,
     this.lyrics,
     this.comment,
-    this.duration,
-    required this.pictures,
+    this.pictures,
     this.bpm,
   });
 
-  static Future<Tag> default_() => RustLib.instance.api.crateApiTagTagDefault();
+  static Future<TagChanges> default_() =>
+      RustLib.instance.api.crateApiTagChangesTagChangesDefault();
 
-  /// Returns `true` if the tag has no data.
-  Future<bool> isEmpty() => RustLib.instance.api.crateApiTagTagIsEmpty(
+  /// Returns `true` if no fields are set.
+  Future<bool> isEmpty() =>
+      RustLib.instance.api.crateApiTagChangesTagChangesIsEmpty(
         that: this,
       );
 
@@ -96,14 +81,13 @@ class Tag {
       discTotal.hashCode ^
       lyrics.hashCode ^
       comment.hashCode ^
-      duration.hashCode ^
       pictures.hashCode ^
       bpm.hashCode;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Tag &&
+      other is TagChanges &&
           runtimeType == other.runtimeType &&
           title == other.title &&
           trackArtist == other.trackArtist &&
@@ -117,7 +101,6 @@ class Tag {
           discTotal == other.discTotal &&
           lyrics == other.lyrics &&
           comment == other.comment &&
-          duration == other.duration &&
           pictures == other.pictures &&
           bpm == other.bpm;
 }
