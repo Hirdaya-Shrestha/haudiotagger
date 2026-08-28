@@ -27,6 +27,8 @@ pub struct Tag {
     pub disc_total: Option<u32>,
     /// The lyrics of the song.
     pub lyrics: Option<String>,
+    /// A comment about the song.
+    pub comment: Option<String>,
     /// The duration of the song. Setting this field
     /// when writing will do nothing.
     pub duration: Option<u32>,
@@ -52,6 +54,7 @@ impl Tag {
             && self.duration.is_none()
             && self.pictures.is_empty()
             && self.lyrics.is_none()
+            && self.comment.is_none()
             && self.bpm.is_none()
     }
 }
@@ -95,6 +98,7 @@ impl From<&lofty::tag::Tag> for Tag {
                 .get_string(ItemKey::Lyrics)
                 .or_else(|| tag.get_string(ItemKey::UnsyncLyrics))
                 .map(|e| e.to_string()),
+            comment: tag.get_string(ItemKey::Comment).map(|e| e.to_string()),
             pictures,
             duration: None,
             bpm,

@@ -66,7 +66,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.1.1
+  haudiotagger: ^1.1.2
 ```
 
 Then run:
@@ -147,6 +147,57 @@ print(props.fileSize);       // 8234567 (bytes)
 
 > **Note:** Audio properties are read-only and never affect tags or writing.
 
+### Update Metadata (preserve the rest)
+
+`write` replaces the whole tag. `update` changes only the fields you pass and keeps everything else:
+
+```dart
+await Haudiotagger.update(
+  '/path/to/song.mp3',
+  TagChanges(
+    title: 'New Title',
+    trackArtist: 'New Artist',
+  ),
+);
+```
+
+`TagChanges` mirrors `Tag` (all fields optional). Fields you omit are left untouched. On web + native, use the bytes variant:
+
+```dart
+final modified = await Haudiotagger.updateFromBytes(
+  fileBytes,
+  TagChanges(genre: 'Jazz'),
+);
+```
+
+If the file has no existing tag, `update` simply creates one from the given fields.
+
+### Remove Specific Fields
+
+```dart
+await Haudiotagger.remove(
+  '/path/to/song.mp3',
+  [TagField.lyrics, TagField.comment],
+);
+```
+
+This clears only `lyrics` and `comment`, leaving all other metadata intact. Bytes variant:
+
+```dart
+final modified = await Haudiotagger.removeFromBytes(
+  fileBytes,
+  [TagField.pictures],
+);
+```
+
+### Clear All Metadata
+
+```dart
+await Haudiotagger.clear('/path/to/song.mp3');
+```
+
+Removes every tag from the file. Bytes variant `clearFromBytes(bytes)` returns the stripped bytes.
+
 ### Write Metadata
 
 ```dart
@@ -226,6 +277,12 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 | `readFromBytes(Uint8List bytes)` | `Future<Tag?>` | Read metadata from in-memory bytes (web + native). Returns `null` if no tags found. |
 | `write(String path, Tag tag)` | `Future<void>` | Write metadata to a file path. Replaces existing tags. |
 | `writeToBytes(Uint8List bytes, Tag tag)` | `Future<Uint8List>` | Write metadata to in-memory bytes. Returns modified bytes. |
+| `update(String path, TagChanges changes)` | `Future<void>` | Apply partial changes, preserving all other fields (native only). |
+| `updateFromBytes(Uint8List bytes, TagChanges changes)` | `Future<Uint8List>` | Apply partial changes to bytes. Returns modified bytes. |
+| `remove(String path, List<TagField> fields)` | `Future<void>` | Remove the given fields, keeping the rest (native only). |
+| `removeFromBytes(Uint8List bytes, List<TagField> fields)` | `Future<Uint8List>` | Remove the given fields from bytes. Returns modified bytes. |
+| `clear(String path)` | `Future<void>` | Remove all metadata from the file (native only). |
+| `clearFromBytes(Uint8List bytes)` | `Future<Uint8List>` | Remove all metadata from bytes. Returns modified bytes. |
 | `readProperties(String path)` | `Future<AudioProperties>` | Read technical audio properties from a file path (native only). |
 | `readPropertiesFromBytes(Uint8List bytes)` | `Future<AudioProperties>` | Read technical audio properties from in-memory bytes (web + native). |
 
@@ -244,6 +301,7 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 | `discNumber` | `int?` | Disc position |
 | `discTotal` | `int?` | Total discs |
 | `lyrics` | `String?` | Song lyrics |
+| `comment` | `String?` | Comment |
 | `duration` | `int?` | Duration in seconds (read-only) |
 | `bpm` | `double?` | Beats per minute |
 | `pictures` | `List<Picture>` | Embedded images |
@@ -271,6 +329,33 @@ Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-se
 | `lossless` | `bool` | Whether the audio is lossless |
 | `bitrateMode` | `BitrateMode` | `BitrateMode.unknown` / `cbr` / `vbr` |
 | `fileSize` | `BigInt?` | File size in bytes |
+
+### `TagChanges`
+
+A partial tag. All fields are optional — only the ones you set are applied by `update`/`updateFromBytes`; the rest of the existing tag is preserved.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | `String?` | Song title |
+| `trackArtist` | `String?` | Artist name |
+| `album` | `String?` | Album name |
+| `albumArtist` | `String?` | Album artist |
+| `year` | `int?` | Release year |
+| `genre` | `String?` | Genre |
+| `trackNumber` | `int?` | Track position |
+| `trackTotal` | `int?` | Total tracks |
+| `discNumber` | `int?` | Disc position |
+| `discTotal` | `int?` | Total discs |
+| `lyrics` | `String?` | Song lyrics |
+| `comment` | `String?` | Comment |
+| `pictures` | `List<Picture>?` | Embedded images (replaces existing when set) |
+| `bpm` | `double?` | Beats per minute |
+
+### `TagField`
+
+Enum used by `remove`/`removeFromBytes` to name a specific field to clear.
+
+`TagField.title`, `TagField.artist`, `TagField.album`, `TagField.albumArtist`, `TagField.year`, `TagField.genre`, `TagField.trackNumber`, `TagField.trackTotal`, `TagField.discNumber`, `TagField.discTotal`, `TagField.lyrics`, `TagField.comment`, `TagField.bpm`, `TagField.pictures`
 
 ## Requirements
 

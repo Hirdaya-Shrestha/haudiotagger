@@ -11,6 +11,8 @@ import 'api/audio_properties.dart';
 import 'api/error.dart';
 import 'api/picture.dart';
 import 'api/tag.dart';
+import 'api/tag_changes.dart';
+import 'api/tag_field.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -49,6 +51,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Tag dco_decode_box_autoadd_tag(dynamic raw);
 
   @protected
+  TagChanges dco_decode_box_autoadd_tag_changes(dynamic raw);
+
+  @protected
   int dco_decode_box_autoadd_u_32(dynamic raw);
 
   @protected
@@ -76,6 +81,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
 
   @protected
+  List<TagField> dco_decode_list_tag_field(dynamic raw);
+
+  @protected
   MimeType dco_decode_mime_type(dynamic raw);
 
   @protected
@@ -97,6 +105,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt? dco_decode_opt_box_autoadd_u_64(dynamic raw);
 
   @protected
+  List<Picture>? dco_decode_opt_list_picture(dynamic raw);
+
+  @protected
   Picture dco_decode_picture(dynamic raw);
 
   @protected
@@ -104,6 +115,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Tag dco_decode_tag(dynamic raw);
+
+  @protected
+  TagChanges dco_decode_tag_changes(dynamic raw);
+
+  @protected
+  TagField dco_decode_tag_field(dynamic raw);
 
   @protected
   int dco_decode_u_32(dynamic raw);
@@ -142,6 +159,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Tag sse_decode_box_autoadd_tag(SseDeserializer deserializer);
 
   @protected
+  TagChanges sse_decode_box_autoadd_tag_changes(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
 
   @protected
@@ -169,6 +189,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
 
   @protected
+  List<TagField> sse_decode_list_tag_field(SseDeserializer deserializer);
+
+  @protected
   MimeType sse_decode_mime_type(SseDeserializer deserializer);
 
   @protected
@@ -190,6 +213,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   BigInt? sse_decode_opt_box_autoadd_u_64(SseDeserializer deserializer);
 
   @protected
+  List<Picture>? sse_decode_opt_list_picture(SseDeserializer deserializer);
+
+  @protected
   Picture sse_decode_picture(SseDeserializer deserializer);
 
   @protected
@@ -197,6 +223,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Tag sse_decode_tag(SseDeserializer deserializer);
+
+  @protected
+  TagChanges sse_decode_tag_changes(SseDeserializer deserializer);
+
+  @protected
+  TagField sse_decode_tag_field(SseDeserializer deserializer);
 
   @protected
   int sse_decode_u_32(SseDeserializer deserializer);
@@ -238,6 +270,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_box_autoadd_tag(Tag self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_tag_changes(
+      TagChanges self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
 
   @protected
@@ -267,6 +303,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       Uint8List self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_tag_field(List<TagField> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_mime_type(MimeType self, SseSerializer serializer);
 
   @protected
@@ -290,6 +329,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_opt_box_autoadd_u_64(BigInt? self, SseSerializer serializer);
 
   @protected
+  void sse_encode_opt_list_picture(
+      List<Picture>? self, SseSerializer serializer);
+
+  @protected
   void sse_encode_picture(Picture self, SseSerializer serializer);
 
   @protected
@@ -297,6 +340,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_tag(Tag self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_tag_changes(TagChanges self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_tag_field(TagField self, SseSerializer serializer);
 
   @protected
   void sse_encode_u_32(int self, SseSerializer serializer);
