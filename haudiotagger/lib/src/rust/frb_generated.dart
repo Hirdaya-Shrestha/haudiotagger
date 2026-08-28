@@ -80,7 +80,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
       ExternalLibraryLoaderConfig(
     stem: 'haudiotagger',
     ioDirectory: 'rust/target/release/',
-    webPrefix: 'pkg/',
+    webPrefix: 'assets/packages/haudiotagger/pkg/',
     wasmBindgenName: 'wasm_bindgen',
   );
 }

@@ -47,5 +47,5 @@ flutter:
         pluginClass: HaudiotaggerWeb
         fileName: haudiotagger_web.dart
   assets:
-    - web/wasm/haudiotagger_bg.wasm
-    - web/wasm/haudiotagger.js
+    - pkg/haudiotagger_bg.wasm
+    - pkg/haudiotagger.js

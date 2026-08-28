@@ -43,7 +43,7 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 | Windows | ✅ | — |
 | Web | — | ✅ |
 
-> **Web**: Uses a WASM-compiled Rust binary. No native compilation needed — just add the JS/WASM files to your `web/` directory. See [Web Setup](#web-setup) below.
+> **Web**: Uses a WASM-compiled Rust binary. No native compilation needed — the JS/WASM files are bundled automatically as plugin assets. See [Web Setup](#web-setup) below.
 
 ## Supported Formats
 
@@ -77,13 +77,10 @@ flutter pub get
 
 ### Web Setup
 
-Add one line to `web/index.html` before `main.dart.js`:
-
-```html
-<script type="module" src="assets/packages/haudiotagger/web/wasm/haudiotagger.js"></script>
-```
-
-The WASM files are bundled automatically as Flutter assets — no files to copy. The JS glue loads the WASM from the asset path.
+No extra setup is required. The WASM binary and JS glue are bundled
+automatically as Flutter plugin assets (under
+`assets/packages/haudiotagger/pkg/`) and are loaded at runtime by
+`flutter_rust_bridge`. Nothing needs to be added to your `web/index.html`.
 
 ## Usage
 
@@ -265,7 +262,7 @@ No additional setup required.
 
 ### Web
 
-Add the WASM files and JS glue to your `web/` directory (see [Web Setup](#web-setup) above). The WASM binary is ~1.1 MB.
+No extra files are needed — the WASM binary and JS glue are bundled automatically as plugin assets (see [Web Setup](#web-setup) above). The WASM binary is ~1.1 MB.
 
 ## API Reference
 

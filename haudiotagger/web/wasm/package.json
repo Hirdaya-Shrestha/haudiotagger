@@ -1,9 +1,0 @@
-{
-  "name": "haudiotagger",
-  "version": "1.0.0",
-  "files": [
-    "haudiotagger_bg.wasm",
-    "haudiotagger.js"
-  ],
-  "browser": "haudiotagger.js"
-}
