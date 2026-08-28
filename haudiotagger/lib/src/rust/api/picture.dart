@@ -29,13 +29,14 @@ class Picture {
   /// The picture data, in bytes.
   final Uint8List bytes;
 
-  const Picture.raw({
+  const Picture({
     required this.pictureType,
     this.mimeType,
     required this.bytes,
   });
 
-  factory Picture(
+  // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
+  static Future<Picture> newInstance(
           {required PictureType pictureType,
           MimeType? mimeType,
           required List<int> bytes}) =>
