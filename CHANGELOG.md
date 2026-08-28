@@ -1,3 +1,10 @@
+## 1.1.5
+
+- Reverted the 1.1.4 synchronous workaround. Web now runs calls asynchronously through `flutter_rust_bridge` 2.13's Web Worker pool (non-blocking on the main thread), which requires **shared (threaded) WASM memory** plus cross-origin isolation.
+- Rebuilt the web WASM with `+atomics,+bulk-memory,+mutable-globals`, a shared/imported memory (`--shared-memory --import-memory`), and the wasm-threads TLS/heap symbols explicitly exported (`--export=__wasm_init_tls --export=__tls_size --export=__tls_align --export=__tls_base --export=__heap_base --export=__stack_pointer`). This is built with `RUSTUP_TOOLCHAIN=nightly` and `-Z build-std=std,panic_abort` so std provides the threads runtime. The exported symbols let wasm-bindgen's threading transform succeed (previously it failed with `failed to find __wasm_init_tls`).
+- **Web hosts must be cross-origin isolated**: serve the page with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` (e.g. `flutter run -d chrome --web-header=Cross-Origin-Opener-Policy=same-origin --web-header=Cross-Origin-Embedder-Policy=require-corp`). Without these headers, `RustLib.init()` fails with a `WorkerPool` / shared-memory error.
+- Native platforms are unaffected in API and now run async on the thread pool again (no main-thread blocking, unlike 1.1.4).
+
 ## 1.1.4
 
 - Fixed a web runtime crash (`fail to create WorkerPool: ... #<Memory> could not be cloned`). `flutter_rust_bridge` 2.13 dispatches async calls through a Web Worker pool that requires *shared* WASM memory plus cross-origin isolation (COOP/COEP headers), which the example host did not provide. Generated all API functions synchronously (`default_dart_async: false`) so web calls run on the main thread with no Worker pool, no shared memory, and no special server headers. The public `Future<T>` API is unchanged; native calls now execute synchronously on the calling isolate instead of via an async worker pool.
