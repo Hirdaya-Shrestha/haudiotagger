@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="haudiotagger/logo.png" alt="HAudioTagger Logo" width="140">
+  <img src="/haudiotagger/logo.png" alt="HAudioTagger Logo" width="140">
 </p>
 
 <h1 align="center">hAudiotagger</h1>
