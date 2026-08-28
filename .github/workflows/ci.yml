@@ -98,11 +98,14 @@ jobs:
     name: Build Web WASM
     needs: [rust_lint, dart_lint, dart_cli_lint]
     runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: "-C target-feature=+atomics,+bulk-memory,+mutable-globals -C link-arg=--shared-memory -C link-arg=--import-memory -C link-arg=--max-memory=1073741824 -C link-arg=--export=__heap_base -C link-arg=--export=__wasm_init_tls -C link-arg=--export=__tls_size -C link-arg=--export=__tls_align -C link-arg=--export=__tls_base -C link-arg=--export=__stack_pointer"
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-unknown-unknown
+          components: rust-src
       - name: Cache Rust WASM build
         uses: Swatinem/rust-cache@v2
         with:
@@ -111,4 +114,4 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM
-        run: cd haudiotagger/rust && wasm-pack build -t no-modules -d pkg --no-typescript --release
+        run: cd haudiotagger/rust && wasm-pack build -t no-modules -d pkg --no-typescript --no-opt --release
