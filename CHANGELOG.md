@@ -1,3 +1,7 @@
+## 1.1.4
+
+- Fixed a web runtime crash (`fail to create WorkerPool: ... #<Memory> could not be cloned`). `flutter_rust_bridge` 2.13 dispatches async calls through a Web Worker pool that requires *shared* WASM memory plus cross-origin isolation (COOP/COEP headers), which the example host did not provide. Generated all API functions synchronously (`default_dart_async: false`) so web calls run on the main thread with no Worker pool, no shared memory, and no special server headers. The public `Future<T>` API is unchanged; native calls now execute synchronously on the calling isolate instead of via an async worker pool.
+
 ## 1.1.3
 
 - Fixed the web platform: the WASM was previously built with `wasm-pack --target web`, producing an ES module that `flutter_rust_bridge` 2.13's classic-script loader could not initialize (the example hung at `RustLib.init()`). Rebuilt with `wasm-pack -t no-modules`, pointed the plugin/example assets and frb's `webPrefix` to `pkg/`, and removed the manual `<script>` tag so frb loads the glue automatically. No API changes.
