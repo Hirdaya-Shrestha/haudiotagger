@@ -48,15 +48,16 @@ flutter_rust_bridge::frb_generated_default_handler!();
 // Section: wire_funcs
 
 fn wire__crate__api__api__clear_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "clear",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -70,23 +71,27 @@ fn wire__crate__api__api__clear_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_path = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::clear(api_path)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::clear(api_path)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__api__clear_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "clear_from_bytes",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -100,23 +105,27 @@ fn wire__crate__api__api__clear_from_bytes_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::clear_from_bytes(api_bytes)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::clear_from_bytes(api_bytes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__picture__picture_new_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "picture_new",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -134,27 +143,30 @@ fn wire__crate__api__picture__picture_new_impl(
                 <Option<crate::api::picture::MimeType>>::sse_decode(&mut deserializer);
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, ()>((move || {
-                let output_ok = Ok::<_, ()>(crate::api::picture::Picture::new(
-                    api_picture_type,
-                    api_mime_type,
-                    api_bytes,
-                ))?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::picture::Picture::new(
+                        api_picture_type,
+                        api_mime_type,
+                        api_bytes,
+                    ))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
         },
     )
 }
 fn wire__crate__api__api__read_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "read",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -168,23 +180,27 @@ fn wire__crate__api__api__read_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_path = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::read(api_path)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::read(api_path)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__api__read_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "read_from_bytes",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -198,23 +214,27 @@ fn wire__crate__api__api__read_from_bytes_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::read_from_bytes(api_bytes)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::read_from_bytes(api_bytes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__audio_properties__read_properties_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "read_properties",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -228,23 +248,27 @@ fn wire__crate__api__audio_properties__read_properties_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_path = <String>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::audio_properties::read_properties(api_path)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::audio_properties::read_properties(api_path)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__audio_properties__read_properties_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "read_properties_from_bytes",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -258,24 +282,28 @@ fn wire__crate__api__audio_properties__read_properties_from_bytes_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok =
-                    crate::api::audio_properties::read_properties_from_bytes(api_bytes)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok =
+                        crate::api::audio_properties::read_properties_from_bytes(api_bytes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__api__remove_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "remove",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -290,23 +318,27 @@ fn wire__crate__api__api__remove_impl(
             let api_path = <String>::sse_decode(&mut deserializer);
             let api_fields = <Vec<crate::api::tag_field::TagField>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::remove(api_path, api_fields)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::remove(api_path, api_fields)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__api__remove_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "remove_from_bytes",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -321,23 +353,27 @@ fn wire__crate__api__api__remove_from_bytes_impl(
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             let api_fields = <Vec<crate::api::tag_field::TagField>>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::remove_from_bytes(api_bytes, api_fields)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::remove_from_bytes(api_bytes, api_fields)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__tag_changes__tag_changes_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "tag_changes_default",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -350,23 +386,26 @@ fn wire__crate__api__tag_changes__tag_changes_default_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            transform_result_sse::<_, ()>((move || {
-                let output_ok = Ok::<_, ()>(crate::api::tag_changes::TagChanges::default())?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::tag_changes::TagChanges::default())?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
         },
     )
 }
 fn wire__crate__api__tag_changes__tag_changes_is_empty_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "tag_changes_is_empty",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -380,24 +419,27 @@ fn wire__crate__api__tag_changes__tag_changes_is_empty_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_that = <crate::api::tag_changes::TagChanges>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, ()>((move || {
-                let output_ok =
-                    Ok::<_, ()>(crate::api::tag_changes::TagChanges::is_empty(&api_that))?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::tag_changes::TagChanges::is_empty(&api_that))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
         },
     )
 }
 fn wire__crate__api__tag__tag_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "tag_default",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -410,23 +452,26 @@ fn wire__crate__api__tag__tag_default_impl(
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             deserializer.end();
-            transform_result_sse::<_, ()>((move || {
-                let output_ok = Ok::<_, ()>(crate::api::tag::Tag::default())?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::tag::Tag::default())?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
         },
     )
 }
 fn wire__crate__api__tag__tag_is_empty_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "tag_is_empty",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -440,23 +485,26 @@ fn wire__crate__api__tag__tag_is_empty_impl(
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
             let api_that = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, ()>((move || {
-                let output_ok = Ok::<_, ()>(crate::api::tag::Tag::is_empty(&api_that))?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::tag::Tag::is_empty(&api_that))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
         },
     )
 }
 fn wire__crate__api__tag_changes__update_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "update",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -471,23 +519,27 @@ fn wire__crate__api__tag_changes__update_impl(
             let api_path = <String>::sse_decode(&mut deserializer);
             let api_changes = <crate::api::tag_changes::TagChanges>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::tag_changes::update(api_path, api_changes)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::tag_changes::update(api_path, api_changes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__tag_changes__update_from_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "update_from_bytes",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -502,23 +554,28 @@ fn wire__crate__api__tag_changes__update_from_bytes_impl(
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             let api_changes = <crate::api::tag_changes::TagChanges>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::tag_changes::update_from_bytes(api_bytes, api_changes)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok =
+                        crate::api::tag_changes::update_from_bytes(api_bytes, api_changes)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__api__write_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "write",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -533,23 +590,27 @@ fn wire__crate__api__api__write_impl(
             let api_path = <String>::sse_decode(&mut deserializer);
             let api_data = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::write(api_path, api_data)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::write(api_path, api_data)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
 fn wire__crate__api__api__write_to_bytes_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
     rust_vec_len_: i32,
     data_len_: i32,
-) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
-    FLUTTER_RUST_BRIDGE_HANDLER.wrap_sync::<flutter_rust_bridge::for_generated::SseCodec, _>(
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
         flutter_rust_bridge::for_generated::TaskInfo {
             debug_name: "write_to_bytes",
-            port: None,
-            mode: flutter_rust_bridge::for_generated::FfiCallMode::Sync,
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
         },
         move || {
             let message = unsafe {
@@ -564,10 +625,13 @@ fn wire__crate__api__api__write_to_bytes_impl(
             let api_bytes = <Vec<u8>>::sse_decode(&mut deserializer);
             let api_data = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
             deserializer.end();
-            transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
-                let output_ok = crate::api::api::write_to_bytes(api_bytes, api_data)?;
-                std::result::Result::Ok(output_ok)
-            })())
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::write_to_bytes(api_bytes, api_data)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
         },
     )
 }
@@ -991,6 +1055,45 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
+        1 => wire__crate__api__api__clear_impl(port, ptr, rust_vec_len, data_len),
+        2 => wire__crate__api__api__clear_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__picture__picture_new_impl(port, ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__api__read_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__api__read_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__audio_properties__read_properties_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        7 => wire__crate__api__audio_properties__read_properties_from_bytes_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        8 => wire__crate__api__api__remove_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__api__api__remove_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__api__tag_changes__tag_changes_default_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        11 => wire__crate__api__tag_changes__tag_changes_is_empty_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        12 => wire__crate__api__tag__tag_default_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__api__tag__tag_is_empty_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__api__tag_changes__update_impl(port, ptr, rust_vec_len, data_len),
+        15 => {
+            wire__crate__api__tag_changes__update_from_bytes_impl(port, ptr, rust_vec_len, data_len)
+        }
+        16 => wire__crate__api__api__write_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__api__write_to_bytes_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -1003,27 +1106,6 @@ fn pde_ffi_dispatcher_sync_impl(
 ) -> flutter_rust_bridge::for_generated::WireSyncRust2DartSse {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api__api__clear_impl(ptr, rust_vec_len, data_len),
-        2 => wire__crate__api__api__clear_from_bytes_impl(ptr, rust_vec_len, data_len),
-        3 => wire__crate__api__picture__picture_new_impl(ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__api__read_impl(ptr, rust_vec_len, data_len),
-        5 => wire__crate__api__api__read_from_bytes_impl(ptr, rust_vec_len, data_len),
-        6 => wire__crate__api__audio_properties__read_properties_impl(ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__audio_properties__read_properties_from_bytes_impl(
-            ptr,
-            rust_vec_len,
-            data_len,
-        ),
-        8 => wire__crate__api__api__remove_impl(ptr, rust_vec_len, data_len),
-        9 => wire__crate__api__api__remove_from_bytes_impl(ptr, rust_vec_len, data_len),
-        10 => wire__crate__api__tag_changes__tag_changes_default_impl(ptr, rust_vec_len, data_len),
-        11 => wire__crate__api__tag_changes__tag_changes_is_empty_impl(ptr, rust_vec_len, data_len),
-        12 => wire__crate__api__tag__tag_default_impl(ptr, rust_vec_len, data_len),
-        13 => wire__crate__api__tag__tag_is_empty_impl(ptr, rust_vec_len, data_len),
-        14 => wire__crate__api__tag_changes__update_impl(ptr, rust_vec_len, data_len),
-        15 => wire__crate__api__tag_changes__update_from_bytes_impl(ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__api__write_impl(ptr, rust_vec_len, data_len),
-        17 => wire__crate__api__api__write_to_bytes_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
