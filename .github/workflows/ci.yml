@@ -111,4 +111,4 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM
-        run: cd haudiotagger/rust && wasm-pack build --target web --release
+        run: cd haudiotagger/rust && wasm-pack build -t no-modules -d pkg --no-typescript --release

@@ -104,17 +104,17 @@ jobs:
       - name: Build WASM
         working-directory: haudiotagger/rust
         run: |
-          wasm-pack build --target web --release
+          wasm-pack build -t no-modules -d pkg --no-typescript --release
 
       - name: Stage WASM files
         run: |
-          mkdir -p haudiotagger/web/wasm
+          mkdir -p haudiotagger/pkg
 
           cp haudiotagger/rust/pkg/haudiotagger_bg.wasm \
-            haudiotagger/web/wasm/haudiotagger_bg.wasm
+            haudiotagger/pkg/haudiotagger_bg.wasm
 
           cp haudiotagger/rust/pkg/haudiotagger.js \
-            haudiotagger/web/wasm/haudiotagger.js
+            haudiotagger/pkg/haudiotagger.js
 
           cp haudiotagger/rust/pkg/haudiotagger_bg.wasm \
             haudiotagger_bg.wasm
@@ -138,8 +138,8 @@ jobs:
         with:
           name: package-wasm
           path: |
-            haudiotagger/web/wasm/haudiotagger.js
-            haudiotagger/web/wasm/haudiotagger_bg.wasm
+            haudiotagger/pkg/haudiotagger.js
+            haudiotagger/pkg/haudiotagger_bg.wasm
 
 
   # ============================================================
@@ -177,7 +177,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package-wasm
-          path: haudiotagger/web/wasm
+          path: haudiotagger/pkg
 
       - name: Remove local Rust dependency
         working-directory: haudiotagger
