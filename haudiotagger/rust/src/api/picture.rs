@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 /// An object representing a picture metadata.
+#[derive(Clone)]
 pub struct Picture {
     /// The type of picture (ex. front cover)
     pub picture_type: PictureType,
