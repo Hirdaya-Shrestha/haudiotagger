@@ -43,7 +43,7 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 | Windows | ✅ | — |
 | Web | — | ✅ |
 
-> **Web**: Uses a WASM-compiled Rust binary. No native compilation needed — the JS/WASM files are bundled automatically as plugin assets. See [Web Setup](#web-setup) below. Web calls run synchronously on the main thread; no special server headers (COOP/COEP) are required.
+> **Web**: Uses a WASM-compiled Rust binary with a Web Worker pool for non-blocking calls. No native compilation needed — the JS/WASM files are bundled automatically as plugin assets. See [Web Setup](#web-setup) below. The host page must be cross-origin isolated (served with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`) so the WASM can use shared memory.
 
 ## Supported Formats
 
@@ -66,7 +66,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.1.4
+  haudiotagger: ^1.1.5
 ```
 
 Then run:
@@ -77,10 +77,30 @@ flutter pub get
 
 ### Web Setup
 
-No extra setup is required. The WASM binary and JS glue are bundled
-automatically as Flutter plugin assets (under
-`assets/packages/haudiotagger/pkg/`) and are loaded at runtime by
+No extra setup is required to bundle the plugin, but the **host page must be
+cross-origin isolated** for the web build to run. `flutter_rust_bridge` 2.13
+dispatches async calls through a Web Worker pool that needs shared WASM memory,
+which the browser only allows when the page is served with:
+
+```
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
+
+The WASM binary and JS glue are bundled automatically as Flutter plugin assets
+(under `assets/packages/haudiotagger/pkg/`) and are loaded at runtime by
 `flutter_rust_bridge`. Nothing needs to be added to your `web/index.html`.
+
+When running locally, pass the headers to `flutter run`:
+
+```bash
+flutter run -d chrome --web-header=Cross-Origin-Opener-Policy=same-origin \
+  --web-header=Cross-Origin-Embedder-Policy=require-corp
+```
+
+If you serve the built `web/` folder yourself, configure your static server /
+reverse proxy to send the two headers above. Without them the app fails at
+`RustLib.init()` with a `WorkerPool` / shared-memory error.
 
 ## Usage
 
