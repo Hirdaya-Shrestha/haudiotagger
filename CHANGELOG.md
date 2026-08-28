@@ -1,3 +1,7 @@
+## 1.1.3
+
+- Fixed the web platform: the WASM was previously built with `wasm-pack --target web`, producing an ES module that `flutter_rust_bridge` 2.13's classic-script loader could not initialize (the example hung at `RustLib.init()`). Rebuilt with `wasm-pack -t no-modules`, pointed the plugin/example assets and frb's `webPrefix` to `pkg/`, and removed the manual `<script>` tag so frb loads the glue automatically. No API changes.
+
 ## 1.1.2
 
 - Added partial-tag editing that preserves existing metadata:
