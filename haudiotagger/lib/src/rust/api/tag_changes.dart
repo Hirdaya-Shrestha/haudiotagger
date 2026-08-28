@@ -12,11 +12,11 @@ import 'picture.dart';
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
 
 /// Apply [changes] to the tag at `path`, preserving any fields not mentioned.
-Future<void> update({required String path, required TagChanges changes}) =>
+void update({required String path, required TagChanges changes}) =>
     RustLib.instance.api.crateApiTagChangesUpdate(path: path, changes: changes);
 
 /// Apply [changes] to a tag held in `bytes`, returning the modified bytes.
-Future<Uint8List> updateFromBytes(
+Uint8List updateFromBytes(
         {required List<int> bytes, required TagChanges changes}) =>
     RustLib.instance.api
         .crateApiTagChangesUpdateFromBytes(bytes: bytes, changes: changes);
@@ -58,12 +58,11 @@ class TagChanges {
     this.bpm,
   });
 
-  static Future<TagChanges> default_() =>
+  static TagChanges default_() =>
       RustLib.instance.api.crateApiTagChangesTagChangesDefault();
 
   /// Returns `true` if no fields are set.
-  Future<bool> isEmpty() =>
-      RustLib.instance.api.crateApiTagChangesTagChangesIsEmpty(
+  bool isEmpty() => RustLib.instance.api.crateApiTagChangesTagChangesIsEmpty(
         that: this,
       );
 

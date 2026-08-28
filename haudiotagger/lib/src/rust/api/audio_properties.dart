@@ -11,11 +11,11 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
 
 /// Read the technical audio properties of the file at `path`.
-Future<AudioProperties> readProperties({required String path}) =>
+AudioProperties readProperties({required String path}) =>
     RustLib.instance.api.crateApiAudioPropertiesReadProperties(path: path);
 
 /// Read the technical audio properties from in-memory bytes (for web/WASM).
-Future<AudioProperties> readPropertiesFromBytes({required List<int> bytes}) =>
+AudioProperties readPropertiesFromBytes({required List<int> bytes}) =>
     RustLib.instance.api
         .crateApiAudioPropertiesReadPropertiesFromBytes(bytes: bytes);
 

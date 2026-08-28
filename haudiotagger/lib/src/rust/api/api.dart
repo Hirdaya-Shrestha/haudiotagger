@@ -12,34 +12,34 @@ import 'tag_field.dart';
 
 // These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `get_file_from_bytes`, `get_file`, `is_mp3`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
 
-Future<Tag> read({required String path}) =>
+Tag read({required String path}) =>
     RustLib.instance.api.crateApiApiRead(path: path);
 
 /// Read metadata from in-memory bytes (for web/WASM).
-Future<Tag> readFromBytes({required List<int> bytes}) =>
+Tag readFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiReadFromBytes(bytes: bytes);
 
-Future<void> write({required String path, required Tag data}) =>
+void write({required String path, required Tag data}) =>
     RustLib.instance.api.crateApiApiWrite(path: path, data: data);
 
 /// Write metadata to in-memory bytes, returns modified bytes (for web/WASM).
-Future<Uint8List> writeToBytes({required List<int> bytes, required Tag data}) =>
+Uint8List writeToBytes({required List<int> bytes, required Tag data}) =>
     RustLib.instance.api.crateApiApiWriteToBytes(bytes: bytes, data: data);
 
 /// Remove the given `fields` from the tag at `path`, keeping everything else.
-Future<void> remove({required String path, required List<TagField> fields}) =>
+void remove({required String path, required List<TagField> fields}) =>
     RustLib.instance.api.crateApiApiRemove(path: path, fields: fields);
 
 /// Remove the given `fields` from a tag held in `bytes`, returning the modified bytes.
-Future<Uint8List> removeFromBytes(
+Uint8List removeFromBytes(
         {required List<int> bytes, required List<TagField> fields}) =>
     RustLib.instance.api
         .crateApiApiRemoveFromBytes(bytes: bytes, fields: fields);
 
 /// Remove all metadata from the file at `path`.
-Future<void> clear({required String path}) =>
+void clear({required String path}) =>
     RustLib.instance.api.crateApiApiClear(path: path);
 
 /// Remove all metadata from a tag held in `bytes`, returning the modified bytes.
-Future<Uint8List> clearFromBytes({required List<int> bytes}) =>
+Uint8List clearFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiClearFromBytes(bytes: bytes);

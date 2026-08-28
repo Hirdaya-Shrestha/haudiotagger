@@ -75,10 +75,10 @@ class Tag {
     this.bpm,
   });
 
-  static Future<Tag> default_() => RustLib.instance.api.crateApiTagTagDefault();
+  static Tag default_() => RustLib.instance.api.crateApiTagTagDefault();
 
   /// Returns `true` if the tag has no data.
-  Future<bool> isEmpty() => RustLib.instance.api.crateApiTagTagIsEmpty(
+  bool isEmpty() => RustLib.instance.api.crateApiTagTagIsEmpty(
         that: this,
       );
 

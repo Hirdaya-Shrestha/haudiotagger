@@ -6,7 +6,7 @@
 import '../frb_generated.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`
 
 /// The MIME type of the picture.
 enum MimeType {
@@ -29,14 +29,13 @@ class Picture {
   /// The picture data, in bytes.
   final Uint8List bytes;
 
-  const Picture({
+  const Picture.raw({
     required this.pictureType,
     this.mimeType,
     required this.bytes,
   });
 
-  // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
-  static Future<Picture> newInstance(
+  factory Picture(
           {required PictureType pictureType,
           MimeType? mimeType,
           required List<int> bytes}) =>
