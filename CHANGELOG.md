@@ -1,3 +1,7 @@
+## 1.1.6
+
+- Minor changes with updated logs and docs.
+
 ## 1.1.5
 
 - Reverted the 1.1.4 synchronous workaround. Web now runs calls asynchronously through `flutter_rust_bridge` 2.13's Web Worker pool (non-blocking on the main thread), which requires **shared (threaded) WASM memory** plus cross-origin isolation.
