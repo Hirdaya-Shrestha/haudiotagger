@@ -1,3 +1,11 @@
+## 1.1.2
+
+- Added partial-tag editing that preserves existing metadata:
+  - `Haudiotagger.update(path, TagChanges(...))` applies only the fields you specify, leaving the rest untouched (plus `updateFromBytes` for web/native).
+  - `Haudiotagger.remove(path, [TagField.lyrics, TagField.comment, ...])` clears specific fields while keeping the rest (plus `removeFromBytes`).
+  - `Haudiotagger.clear(path)` removes all metadata (plus `clearFromBytes`).
+- Added `comment` field to `Tag` (read/write supported).
+
 ## 1.1.1
 
 - Added read-only `AudioProperties` model exposing technical audio properties (duration, bitrate, sample rate, channels, bits per sample, codec, container format, lossless flag, bitrate mode, file size). Available via `Haudiotagger.readProperties(path)` (native) and `Haudiotagger.readPropertiesFromBytes(bytes)` (web + native). Does not affect existing read/write behavior.

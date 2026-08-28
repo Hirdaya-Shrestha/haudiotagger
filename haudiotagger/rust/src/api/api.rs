@@ -1,6 +1,11 @@
 use std::io::Cursor;
 
-use super::{error::HaudiotaggerError, tag::Tag};
+use super::{
+    error::HaudiotaggerError,
+    tag::Tag,
+    tag_changes::{read_bytes_or_empty, read_or_empty},
+    tag_field::TagField,
+};
 use lofty::config::WriteOptions;
 use lofty::file::FileType;
 use lofty::file::TaggedFile;
@@ -119,6 +124,9 @@ fn apply_tag_to_lofty_tag(
             ItemKey::Lyrics
         };
         lo_tag.insert_text(key, lyrics.clone());
+    }
+    if let Some(comment) = &tag.comment {
+        lo_tag.insert_text(ItemKey::Comment, comment.clone());
     }
     if let Some(bpm) = tag.bpm {
         if !lo_tag.insert_text(ItemKey::Bpm, bpm.to_string()) {
@@ -292,4 +300,55 @@ pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, Haudiotagger
             message: format!("Failed to write tag to buffer. {e:?}"),
         })?;
     Ok(out.into_inner())
+}
+
+/// Clears the given `field` from `tag`.
+fn clear_field(tag: &mut Tag, field: TagField) {
+    match field {
+        TagField::Title => tag.title = None,
+        TagField::Artist => tag.track_artist = None,
+        TagField::Album => tag.album = None,
+        TagField::AlbumArtist => tag.album_artist = None,
+        TagField::Year => tag.year = None,
+        TagField::Genre => tag.genre = None,
+        TagField::TrackNumber => tag.track_number = None,
+        TagField::TrackTotal => tag.track_total = None,
+        TagField::DiscNumber => tag.disc_number = None,
+        TagField::DiscTotal => tag.disc_total = None,
+        TagField::Lyrics => tag.lyrics = None,
+        TagField::Comment => tag.comment = None,
+        TagField::Bpm => tag.bpm = None,
+        TagField::Pictures => tag.pictures = Vec::new(),
+    }
+}
+
+/// Remove the given `fields` from the tag at `path`, keeping everything else.
+pub fn remove(path: String, fields: Vec<TagField>) -> Result<(), HaudiotaggerError> {
+    let mut tag = read_or_empty(&path)?;
+    for field in fields {
+        clear_field(&mut tag, field);
+    }
+    write(path, tag)
+}
+
+/// Remove the given `fields` from a tag held in `bytes`, returning the modified bytes.
+pub fn remove_from_bytes(
+    bytes: Vec<u8>,
+    fields: Vec<TagField>,
+) -> Result<Vec<u8>, HaudiotaggerError> {
+    let mut tag = read_bytes_or_empty(&bytes)?;
+    for field in fields {
+        clear_field(&mut tag, field);
+    }
+    write_to_bytes(bytes, tag)
+}
+
+/// Remove all metadata from the file at `path`.
+pub fn clear(path: String) -> Result<(), HaudiotaggerError> {
+    write(path, Tag::default())
+}
+
+/// Remove all metadata from a tag held in `bytes`, returning the modified bytes.
+pub fn clear_from_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
+    write_to_bytes(bytes, Tag::default())
 }
