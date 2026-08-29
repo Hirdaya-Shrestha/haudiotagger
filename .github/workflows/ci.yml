@@ -99,6 +99,9 @@ jobs:
     needs: [rust_lint, dart_lint, dart_cli_lint]
     runs-on: ubuntu-latest
     env:
+      RUSTUP_TOOLCHAIN: nightly
+      CARGO_UNSTABLE_BUILD_STD: std,panic_abort
+      CARGO_TARGET_DIR: ${{ github.workspace }}/haudiotagger/rust/target
       RUSTFLAGS: "-C target-feature=+atomics,+bulk-memory,+mutable-globals -C link-arg=--shared-memory -C link-arg=--import-memory -C link-arg=--max-memory=1073741824 -C link-arg=--export=__heap_base -C link-arg=--export=__wasm_init_tls -C link-arg=--export=__tls_size -C link-arg=--export=__tls_align -C link-arg=--export=__tls_base -C link-arg=--export=__stack_pointer"
     steps:
       - uses: actions/checkout@v7
@@ -111,7 +114,12 @@ jobs:
         with:
           workspaces: haudiotagger/rust
           key: wasm
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Install wasm-bindgen-cli
+        run: |
+          curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.127/wasm-bindgen-0.2.127-x86_64-unknown-linux-musl.tar.gz -o wb.tar.gz
+          tar xzf wb.tar.gz
+          echo "$PWD/wasm-bindgen-0.2.127-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
       - name: Build WASM
-        run: cd haudiotagger/rust && wasm-pack build -t no-modules -d pkg --no-typescript --no-opt --release
+        run: cargo +nightly build --manifest-path haudiotagger/rust/Cargo.toml --target wasm32-unknown-unknown -Z build-std=std,panic_abort --release
+      - name: Run wasm-bindgen
+        run: wasm-bindgen haudiotagger/rust/target/wasm32-unknown-unknown/release/haudiotagger.wasm --out-dir haudiotagger/rust/pkg --no-typescript --target no-modules

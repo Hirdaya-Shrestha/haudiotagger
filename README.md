@@ -66,7 +66,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.1.6
+  haudiotagger: ^1.1.7
 ```
 
 Then run:
