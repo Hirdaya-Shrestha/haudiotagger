@@ -185,11 +185,55 @@ jobs:
       - name: Setup Dart
         uses: dart-lang/setup-dart@v1
 
-      - name: Download package WASM
+      # Ship the freshly-built native binaries, NOT the committed prebuilt ones.
+      # The committed prebuilt .so files can be stale after API/signature changes
+      # (they are regenerated only by CI), so overwriting them with the artifacts
+      # produced by build_and_upload is what guarantees the native binary matches
+      # the Dart code that gets published.
+      - name: Download native artifacts (linux)
+        uses: actions/download-artifact@v4
+        with:
+          name: linux
+          path: dl/linux
+
+      - name: Download native artifacts (android)
+        uses: actions/download-artifact@v4
+        with:
+          name: android
+          path: dl/android
+
+      - name: Download native artifacts (windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: windows
+          path: dl/windows
+
+      - name: Download native artifacts (macos)
+        uses: actions/download-artifact@v4
+        with:
+          name: macos
+          path: dl/macos
+
+      - name: Download native artifacts (ios)
+        uses: actions/download-artifact@v4
+        with:
+          name: ios
+          path: dl/ios
+
+      - name: Download Web artifacts
         uses: actions/download-artifact@v4
         with:
           name: package-wasm
-          path: haudiotagger/pkg
+          path: dl/package-wasm
+
+      - name: Stage fresh native + web artifacts into package
+        shell: bash
+        run: |
+          set -e
+          for t in linux android windows macos ios package-wasm; do
+            cp -r "dl/$t/haudiotagger/." "haudiotagger/"
+          done
+          echo "Staged native/web artifacts:"
 
       - name: Remove local Rust dependency
         working-directory: haudiotagger
