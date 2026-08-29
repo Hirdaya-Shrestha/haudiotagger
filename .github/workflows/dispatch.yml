@@ -61,6 +61,6 @@ jobs:
               inputs: {
                 ref: context.ref,
                 sha: context.sha,
-                repo: context.repo.full_name
+                repo: process.env.GITHUB_REPOSITORY
               }
             })
