@@ -6,6 +6,14 @@ edition = "2021"
 [lib]
 crate-type = ["staticlib", "cdylib"]
 
+# IMPORTANT: native (Android/iOS/Linux/macOS/Windows) builds must stay `panic = "unwind"`.
+# flutter_rust_bridge 2.13's async FFI dispatcher relies on `catch_unwind`, which is
+# unavailable under `panic = "abort"`. Do NOT add a `.cargo/config.toml` with
+# `build-std = ["std", "panic_abort"]` or any cargokit option that rebuilds std with
+# panic=abort — it rebuilds the native std that way and breaks async calls (abort at
+# `frb_pde_ffi_dispatcher_primary`). The threaded WASM build scopes build-std/panic_abort
+# to the wasm32 target only (via CI / `-Z build-std=std,panic_abort`), never to native.
+
 [dependencies]
 flutter_rust_bridge = "=2.13.0"
 lofty = "0.25.1"
