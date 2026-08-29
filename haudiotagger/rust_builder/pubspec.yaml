@@ -1,6 +1,6 @@
 name: rust_lib_haudiotagger
 description: "Rust native library builder for haudiotagger — compiles lofty-based audio metadata reader/writer for Flutter."
-version: 1.1.8
+version: 1.1.9
 homepage: https://github.com/Hirdaya-Shrestha/haudiotagger
 repository: https://github.com/Hirdaya-Shrestha/haudiotagger
 
