@@ -11,8 +11,8 @@ use lofty::file::FileType;
 use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
 use lofty::probe::Probe;
-use lofty::tag::items::Timestamp;
 use lofty::tag::Tag as LoftyTag;
+use lofty::tag::items::Timestamp;
 use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
 
 /// Returns a `TaggedFile` at the given path.
