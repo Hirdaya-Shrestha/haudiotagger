@@ -1,3 +1,7 @@
+## 1.1.7
+
+- Fixed a native (Android/iOS/Linux/macOS/Windows) runtime crash where the async FFI dispatcher aborted with `panic cannot unwind`. The threaded web build previously relied on a committed `rust/.cargo/config.toml` with `build-std = ["std","panic_abort"]`, which also rebuilt the *native* `std` with `panic=abort` and broke `flutter_rust_bridge`'s `catch_unwind`-based async dispatcher. The build-std/panic_abort configuration is now scoped to the WASM build only (CI `build_web` job + local build via `CARGO_UNSTABLE_BUILD_STD`/`build-std`), so native builds use the default unwinding `std` again. Web behaviour (threaded shared-memory WASM + cross-origin isolation) is unchanged.
+
 ## 1.1.6
 
 - Minor changes with updated logs and docs.
