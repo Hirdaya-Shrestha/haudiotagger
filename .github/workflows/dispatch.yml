@@ -1,0 +1,43 @@
+name: Dispatch
+
+# This public repo no longer runs CI/publish itself. It only forwards events to
+# the PRIVATE haudiotagger-actions repo, which holds the real workflows (hidden).
+#
+#   push to main / any branch  -> repository_dispatch type "ci"
+#   push of a tag v*            -> repository_dispatch type "publish"
+#
+# Required secret (public repo): ACTIONS_DISPATCH_TOKEN = a PAT with `repo` scope
+# that can send repository_dispatch events to the private repo.
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - id: meta
+        name: Decide event type
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "type=publish" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=ci" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.ACTIONS_DISPATCH_TOKEN }}
+          repository: Hirdaya-Shrestha/haudiotagger-actions
+          event-type: ${{ steps.meta.outputs.type }}
+          client-payload: >-
+            {"ref": "${{ github.ref }}", "sha": "${{ github.sha }}",
+             "repo": "${{ github.repository }}"}
