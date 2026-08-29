@@ -226,14 +226,35 @@ jobs:
           name: package-wasm
           path: dl/package-wasm
 
+      # upload-artifact flattens single-file uploads and preserves directory
+      # uploads, so locate each artifact by name rather than assuming a layout.
       - name: Stage fresh native + web artifacts into package
         shell: bash
         run: |
           set -e
-          for t in linux android windows macos ios package-wasm; do
-            cp -r "dl/$t/haudiotagger/." "haudiotagger/"
-          done
-          echo "Staged native/web artifacts:"
+          mkcp() {
+            local d n dst found
+            d="$1"; n="$2"; dst="$3"
+            found=$(find "$d" -name "$n" | head -1)
+            if [ -z "$found" ]; then echo "WARN: $n not found under $d"; return 0; fi
+            mkdir -p "$(dirname "haudiotagger/$dst")"
+            cp -r "$found" "haudiotagger/$dst"
+            echo "staged $found -> haudiotagger/$dst"
+          }
+          mkcp dl/linux        libhaudiotagger.so        linux/libhaudiotagger.so
+          mkcp dl/windows      haudiotagger.dll          windows/haudiotagger.dll
+          mkcp dl/macos        haudiotagger.xcframework  macos/Frameworks/haudiotagger.xcframework
+          mkcp dl/ios          haudiotagger.xcframework  ios/Frameworks/haudiotagger.xcframework
+          mkcp dl/package-wasm haudiotagger.js           pkg/haudiotagger.js
+          mkcp dl/package-wasm haudiotagger_bg.wasm      pkg/haudiotagger_bg.wasm
+          while IFS= read -r f; do
+            rel=${f#dl/android/}
+            rel=${rel#haudiotagger/}
+            mkdir -p "$(dirname "haudiotagger/$rel")"
+            cp -r "$f" "haudiotagger/$rel"
+            echo "staged $f -> haudiotagger/$rel"
+          done < <(find dl/android -name 'libhaudiotagger.so')
+          echo "Staged native/web artifacts"
 
       - name: Remove local Rust dependency
         working-directory: haudiotagger
