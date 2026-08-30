@@ -395,7 +395,7 @@ checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 
 [[package]]
 name = "haudiotagger"
-version = "1.1.9"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "flutter_rust_bridge",
