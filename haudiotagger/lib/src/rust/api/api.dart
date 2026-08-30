@@ -8,9 +8,11 @@ import 'error.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
 import 'tag.dart';
+import 'tag_changes.dart';
 import 'tag_field.dart';
 
 // These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
     RustLib.instance.api.crateApiApiRead(path: path);
@@ -44,6 +46,29 @@ Future<void> clear({required String path}) =>
 Future<Uint8List> clearFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiClearFromBytes(bytes: bytes);
 
+/// Write the same tag to multiple files. Returns the number of successes and failures.
+Future<BatchResult> batchWrite(
+        {required List<String> paths, required Tag data}) =>
+    RustLib.instance.api.crateApiApiBatchWrite(paths: paths, data: data);
+
+/// Apply the same [TagChanges] to multiple files. Returns the number of successes and failures.
+Future<BatchResult> batchUpdateChanges(
+        {required List<String> paths, required TagChanges changes}) =>
+    RustLib.instance.api
+        .crateApiApiBatchUpdateChanges(paths: paths, changes: changes);
+
+/// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
+Future<BatchBytesResult> batchWriteFromBytes(
+        {required List<Uint8List> byteArrays, required Tag data}) =>
+    RustLib.instance.api
+        .crateApiApiBatchWriteFromBytes(byteArrays: byteArrays, data: data);
+
+/// Apply the same [TagChanges] to multiple in-memory byte arrays. Returns modified bytes.
+Future<BatchBytesResult> batchUpdateChangesFromBytes(
+        {required List<Uint8List> byteArrays, required TagChanges changes}) =>
+    RustLib.instance.api.crateApiApiBatchUpdateChangesFromBytes(
+        byteArrays: byteArrays, changes: changes);
+
 /// Returns the list of tag formats present in the file at `path`.
 /// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
 Future<List<String>> getTagFormats({required String path}) =>
@@ -53,3 +78,63 @@ Future<List<String>> getTagFormats({required String path}) =>
 /// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
 Future<List<String>> getTagFormatsFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiGetTagFormatsFromBytes(bytes: bytes);
+
+/// Result of a batch operation on in-memory bytes.
+class BatchBytesResult {
+  /// Successfully processed byte arrays, in the same order as input.
+  final List<Uint8List> results;
+
+  /// Number of files that failed.
+  final int failures;
+
+  /// Indices that failed (0-based), paired with error messages.
+  final List<(int, String)> errors;
+
+  const BatchBytesResult({
+    required this.results,
+    required this.failures,
+    required this.errors,
+  });
+
+  @override
+  int get hashCode => results.hashCode ^ failures.hashCode ^ errors.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BatchBytesResult &&
+          runtimeType == other.runtimeType &&
+          results == other.results &&
+          failures == other.failures &&
+          errors == other.errors;
+}
+
+/// Result of a batch operation on file paths.
+class BatchResult {
+  /// Number of files successfully processed.
+  final int successes;
+
+  /// Number of files that failed.
+  final int failures;
+
+  /// Paths that failed, paired with error messages.
+  final List<(String, String)> errors;
+
+  const BatchResult({
+    required this.successes,
+    required this.failures,
+    required this.errors,
+  });
+
+  @override
+  int get hashCode => successes.hashCode ^ failures.hashCode ^ errors.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BatchResult &&
+          runtimeType == other.runtimeType &&
+          successes == other.successes &&
+          failures == other.failures &&
+          errors == other.errors;
+}
