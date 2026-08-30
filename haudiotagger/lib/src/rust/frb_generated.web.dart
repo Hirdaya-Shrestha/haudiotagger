@@ -33,6 +33,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   AudioProperties dco_decode_audio_properties(dynamic raw);
 
   @protected
+  BatchBytesResult dco_decode_batch_bytes_result(dynamic raw);
+
+  @protected
+  BatchResult dco_decode_batch_result(dynamic raw);
+
+  @protected
   BitrateMode dco_decode_bitrate_mode(dynamic raw);
 
   @protected
@@ -75,6 +81,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> dco_decode_list_String(dynamic raw);
 
   @protected
+  List<Uint8List> dco_decode_list_list_prim_u_8_strict(dynamic raw);
+
+  @protected
   List<Picture> dco_decode_list_picture(dynamic raw);
 
   @protected
@@ -82,6 +91,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List dco_decode_list_prim_u_8_strict(dynamic raw);
+
+  @protected
+  List<(String, String)> dco_decode_list_record_string_string(dynamic raw);
+
+  @protected
+  List<(int, String)> dco_decode_list_record_u_32_string(dynamic raw);
 
   @protected
   List<TagField> dco_decode_list_tag_field(dynamic raw);
@@ -117,6 +132,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PictureType dco_decode_picture_type(dynamic raw);
 
   @protected
+  (String, String) dco_decode_record_string_string(dynamic raw);
+
+  @protected
+  (int, String) dco_decode_record_u_32_string(dynamic raw);
+
+  @protected
   Tag dco_decode_tag(dynamic raw);
 
   @protected
@@ -142,6 +163,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   AudioProperties sse_decode_audio_properties(SseDeserializer deserializer);
+
+  @protected
+  BatchBytesResult sse_decode_batch_bytes_result(SseDeserializer deserializer);
+
+  @protected
+  BatchResult sse_decode_batch_result(SseDeserializer deserializer);
 
   @protected
   BitrateMode sse_decode_bitrate_mode(SseDeserializer deserializer);
@@ -186,6 +213,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<String> sse_decode_list_String(SseDeserializer deserializer);
 
   @protected
+  List<Uint8List> sse_decode_list_list_prim_u_8_strict(
+      SseDeserializer deserializer);
+
+  @protected
   List<Picture> sse_decode_list_picture(SseDeserializer deserializer);
 
   @protected
@@ -193,6 +224,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Uint8List sse_decode_list_prim_u_8_strict(SseDeserializer deserializer);
+
+  @protected
+  List<(String, String)> sse_decode_list_record_string_string(
+      SseDeserializer deserializer);
+
+  @protected
+  List<(int, String)> sse_decode_list_record_u_32_string(
+      SseDeserializer deserializer);
 
   @protected
   List<TagField> sse_decode_list_tag_field(SseDeserializer deserializer);
@@ -228,6 +267,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   PictureType sse_decode_picture_type(SseDeserializer deserializer);
 
   @protected
+  (String, String) sse_decode_record_string_string(
+      SseDeserializer deserializer);
+
+  @protected
+  (int, String) sse_decode_record_u_32_string(SseDeserializer deserializer);
+
+  @protected
   Tag sse_decode_tag(SseDeserializer deserializer);
 
   @protected
@@ -254,6 +300,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_audio_properties(
       AudioProperties self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_batch_bytes_result(
+      BatchBytesResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_batch_result(BatchResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_bitrate_mode(BitrateMode self, SseSerializer serializer);
@@ -302,6 +355,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_String(List<String> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_list_prim_u_8_strict(
+      List<Uint8List> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_list_picture(List<Picture> self, SseSerializer serializer);
 
   @protected
@@ -310,6 +367,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_list_prim_u_8_strict(
       Uint8List self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_record_string_string(
+      List<(String, String)> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_record_u_32_string(
+      List<(int, String)> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_tag_field(List<TagField> self, SseSerializer serializer);
@@ -346,6 +411,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_picture_type(PictureType self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_record_string_string(
+      (String, String) self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_record_u_32_string(
+      (int, String) self, SseSerializer serializer);
 
   @protected
   void sse_encode_tag(Tag self, SseSerializer serializer);

@@ -3,7 +3,7 @@ use std::io::Cursor;
 use super::{
     error::HaudiotaggerError,
     tag::Tag,
-    tag_changes::{read_bytes_or_empty, read_or_empty},
+    tag_changes::{TagChanges, read_bytes_or_empty, read_or_empty},
     tag_field::TagField,
 };
 use lofty::config::WriteOptions;
@@ -351,6 +351,123 @@ pub fn clear(path: String) -> Result<(), HaudiotaggerError> {
 /// Remove all metadata from a tag held in `bytes`, returning the modified bytes.
 pub fn clear_from_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
     write_to_bytes(bytes, Tag::default())
+}
+
+/// Result of a batch operation on file paths.
+#[derive(Debug, Clone)]
+pub struct BatchResult {
+    /// Number of files successfully processed.
+    pub successes: u32,
+    /// Number of files that failed.
+    pub failures: u32,
+    /// Paths that failed, paired with error messages.
+    pub errors: Vec<(String, String)>,
+}
+
+/// Result of a batch operation on in-memory bytes.
+#[derive(Debug, Clone)]
+pub struct BatchBytesResult {
+    /// Successfully processed byte arrays, in the same order as input.
+    pub results: Vec<Vec<u8>>,
+    /// Number of files that failed.
+    pub failures: u32,
+    /// Indices that failed (0-based), paired with error messages.
+    pub errors: Vec<(u32, String)>,
+}
+
+/// Write the same tag to multiple files. Returns the number of successes and failures.
+pub fn batch_write(paths: Vec<String>, data: Tag) -> BatchResult {
+    let mut successes = 0u32;
+    let mut failures = 0u32;
+    let mut errors = Vec::new();
+
+    for path in paths {
+        match write(path.clone(), data.clone()) {
+            Ok(()) => successes += 1,
+            Err(e) => {
+                failures += 1;
+                errors.push((path, e.to_string()));
+            }
+        }
+    }
+
+    BatchResult {
+        successes,
+        failures,
+        errors,
+    }
+}
+
+/// Apply the same [TagChanges] to multiple files. Returns the number of successes and failures.
+pub fn batch_update_changes(paths: Vec<String>, changes: TagChanges) -> BatchResult {
+    let mut successes = 0u32;
+    let mut failures = 0u32;
+    let mut errors = Vec::new();
+
+    for path in paths {
+        match super::tag_changes::update(path.clone(), changes.clone()) {
+            Ok(()) => successes += 1,
+            Err(e) => {
+                failures += 1;
+                errors.push((path, e.to_string()));
+            }
+        }
+    }
+
+    BatchResult {
+        successes,
+        failures,
+        errors,
+    }
+}
+
+/// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
+pub fn batch_write_from_bytes(byte_arrays: Vec<Vec<u8>>, data: Tag) -> BatchBytesResult {
+    let mut results = Vec::new();
+    let mut failures = 0u32;
+    let mut errors = Vec::new();
+
+    for (i, bytes) in byte_arrays.into_iter().enumerate() {
+        match write_to_bytes(bytes, data.clone()) {
+            Ok(modified) => results.push(modified),
+            Err(e) => {
+                failures += 1;
+                errors.push((i as u32, e.to_string()));
+            }
+        }
+    }
+
+    BatchBytesResult {
+        results,
+        failures,
+        errors,
+    }
+}
+
+/// Apply the same [TagChanges] to multiple in-memory byte arrays. Returns modified bytes.
+pub fn batch_update_changes_from_bytes(
+    byte_arrays: Vec<Vec<u8>>,
+    changes: TagChanges,
+) -> BatchBytesResult {
+    let mut results = Vec::new();
+    let mut failures = 0u32;
+    let mut errors = Vec::new();
+
+    for (i, bytes) in byte_arrays.into_iter().enumerate() {
+        match super::tag_changes::update_from_bytes(bytes, changes.clone()) {
+            Ok(modified) => results.push(modified),
+            Err(e) => {
+                failures += 1;
+                errors.push((i as u32, e.to_string()));
+            }
+        }
+    }
+
+    BatchBytesResult {
+        results,
+        failures,
+        errors,
+    }
 }
 
 /// Returns the list of tag formats present in the file at `path`.
