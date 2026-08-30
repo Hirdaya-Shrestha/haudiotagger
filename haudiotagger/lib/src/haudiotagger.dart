@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'rust/frb_generated.dart';
 
 import 'rust/api/api.dart' as api;
+import 'rust/api/api.dart' show BatchResult, BatchBytesResult;
 import 'rust/api/tag.dart';
 import 'rust/api/error.dart';
 import 'rust/api/audio_properties.dart' as ap;
@@ -15,6 +16,21 @@ export 'rust/api/error.dart';
 export 'rust/api/audio_properties.dart';
 export 'rust/api/tag_changes.dart';
 export 'rust/api/tag_field.dart';
+export 'rust/api/api.dart' show BatchResult, BatchBytesResult;
+
+/// Progress information for batch operations.
+class BatchProgress {
+  /// Number of files processed so far.
+  final int completed;
+
+  /// Total number of files to process.
+  final int total;
+
+  const BatchProgress({required this.completed, required this.total});
+
+  /// Progress as a percentage (0.0 to 1.0).
+  double get percent => total > 0 ? completed / total : 0.0;
+}
 
 class Haudiotagger {
   static Future<void>? _initFuture;
@@ -122,10 +138,153 @@ class Haudiotagger {
   }
 
   /// Remove all metadata from the data held in [bytes], returning the modified
-  /// bytes. Works on native.
+  /// bytes. Works on web and native.
   static Future<Uint8List> clearFromBytes(Uint8List bytes) async {
     await _ensureInit();
     return await api.clearFromBytes(bytes: bytes);
+  }
+
+  /// Write the same [tag] to multiple files at [paths].
+  ///
+  /// Returns a [BatchResult] with counts of successes/failures.
+  /// Works on native only.
+  static Future<BatchResult> batchWrite(
+    List<String> paths,
+    Tag tag,
+  ) async {
+    await _ensureInit();
+    return await api.batchWrite(paths: paths, data: tag);
+  }
+
+  /// Apply the same [TagChanges] to multiple files at [paths].
+  ///
+  /// Returns a [BatchResult] with counts of successes/failures.
+  /// Works on native only.
+  static Future<BatchResult> batchUpdateChanges(
+    List<String> paths,
+    tc.TagChanges changes,
+  ) async {
+    await _ensureInit();
+    return await api.batchUpdateChanges(paths: paths, changes: changes);
+  }
+
+  /// Update tags for multiple files using a callback.
+  ///
+  /// For each file, reads the current tag, calls [updater] to get the new tag,
+  /// and writes it back. Use [onProgress] to track progress.
+  ///
+  /// Returns a [BatchResult] with counts of successes/failures.
+  /// Works on native only.
+  static Future<BatchResult> batchUpdate(
+    List<String> paths,
+    Tag Function(String path, Tag currentTag) updater, {
+    void Function(BatchProgress progress)? onProgress,
+  }) async {
+    await _ensureInit();
+    final total = paths.length;
+    var completed = 0;
+    var successes = 0;
+    var failures = 0;
+    final errors = <(String, String)>[];
+
+    for (final path in paths) {
+      try {
+        final currentTag = await api.read(path: path);
+        final newTag = updater(path, currentTag);
+        await api.write(path: path, data: newTag);
+        successes++;
+      } on HaudiotaggerError catch (e) {
+        failures++;
+        errors.add((path, e.toString()));
+      } catch (e) {
+        failures++;
+        errors.add((path, e.toString()));
+      }
+      completed++;
+      onProgress?.call(BatchProgress(
+        completed: completed,
+        total: total,
+      ));
+    }
+
+    return BatchResult(
+      successes: successes,
+      failures: failures,
+      errors: errors,
+    );
+  }
+
+  /// Write the same tag to multiple in-memory byte arrays.
+  ///
+  /// Returns a [BatchBytesResult] with the modified bytes and any errors.
+  /// Works on web and native.
+  static Future<BatchBytesResult> batchWriteFromBytes(
+    List<Uint8List> byteArrays,
+    Tag tag,
+  ) async {
+    await _ensureInit();
+    return await api.batchWriteFromBytes(byteArrays: byteArrays, data: tag);
+  }
+
+  /// Apply the same [TagChanges] to multiple in-memory byte arrays.
+  ///
+  /// Returns a [BatchBytesResult] with the modified bytes and any errors.
+  /// Works on web and native.
+  static Future<BatchBytesResult> batchUpdateChangesFromBytes(
+    List<Uint8List> byteArrays,
+    tc.TagChanges changes,
+  ) async {
+    await _ensureInit();
+    return await api.batchUpdateChangesFromBytes(
+      byteArrays: byteArrays,
+      changes: changes,
+    );
+  }
+
+  /// Update tags for multiple in-memory byte arrays using a callback.
+  ///
+  /// For each byte array, reads the current tag, calls [updater] to get the
+  /// new tag, and writes it back. Use [onProgress] to track progress.
+  ///
+  /// Returns a [BatchBytesResult] with the modified bytes and any errors.
+  /// Works on web and native.
+  static Future<BatchBytesResult> batchUpdateFromBytes(
+    List<Uint8List> byteArrays,
+    Tag Function(int index, Tag currentTag) updater, {
+    void Function(BatchProgress progress)? onProgress,
+  }) async {
+    await _ensureInit();
+    final total = byteArrays.length;
+    var completed = 0;
+    final results = <Uint8List>[];
+    var failures = 0;
+    final errors = <(int, String)>[];
+
+    for (var i = 0; i < byteArrays.length; i++) {
+      try {
+        final currentTag = await api.readFromBytes(bytes: byteArrays[i]);
+        final newTag = updater(i, currentTag);
+        final modified = await api.writeToBytes(bytes: byteArrays[i], data: newTag);
+        results.add(modified);
+      } on HaudiotaggerError catch (e) {
+        failures++;
+        errors.add((i, e.toString()));
+      } catch (e) {
+        failures++;
+        errors.add((i, e.toString()));
+      }
+      completed++;
+      onProgress?.call(BatchProgress(
+        completed: completed,
+        total: total,
+      ));
+    }
+
+    return BatchBytesResult(
+      results: results,
+      failures: failures,
+      errors: errors,
+    );
   }
 
   /// Get the list of tag formats present in the file at [path].

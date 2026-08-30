@@ -1,3 +1,12 @@
+## 1.2.1
+
+- Added batch operations for processing multiple files at once:
+  - `batchWrite` / `batchWriteFromBytes`: write the same tag to multiple files
+  - `batchUpdateChanges` / `batchUpdateChangesFromBytes`: apply the same `TagChanges` to multiple files
+  - `batchUpdate` / `batchUpdateFromBytes`: per-file callback-based update with progress tracking
+- Added `BatchResult`, `BatchBytesResult`, and `BatchProgress` types for batch operation results
+- All batch operations work on both native (file paths) and web (byte arrays)
+
 ## 1.2.0
 
 - Added `getTagFormats()` and `getTagFormatsFromBytes()` to detect which tag formats are present in an audio file (ID3v1, ID3v2, APE, iTunes, VorbisComments, RiffInfo, AiffText).
