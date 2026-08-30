@@ -8,9 +8,11 @@
   Powerful audio metadata editing for Flutter
 </p>
 
-[![pub package](https://img.shields.io/pub/v/haudiotagger.svg)](https://pub.dev/packages/haudiotagger)
-[![build](https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg)](https://github.com/Hirdaya-Shrestha/haudiotagger/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/v/haudiotagger.svg" alt="pub package"></a>
+  <a href="https://github.com/Hirdaya-Shrestha/haudiotagger/actions"><img src="https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg" alt="build"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+</p>   
 
 Read and write audio metadata in Flutter — powered by Rust. Supports every major format on **Android, iOS, Linux, macOS, Windows, and Web**.
 
@@ -42,8 +44,7 @@ await Haudiotagger.update('/path/to/song.mp3', TagChanges(album: 'New Album'));
 final result = await Haudiotagger.batchWrite(paths, tag);
 ```
 
-<details>
-<summary><b>Supported Formats</b></summary>
+## Supported Formats
 
 | Format | Metadata |
 |--------|----------|
@@ -60,10 +61,7 @@ final result = await Haudiotagger.batchWrite(paths, tag);
 
 \* Read-only due to lack of official support.
 
-</details>
-
-<details>
-<summary><b>Web Setup</b></summary>
+## Web Setup
 
 The host page must be **cross-origin isolated** for WASM shared memory. Add these headers when serving:
 
@@ -81,8 +79,6 @@ flutter run -d chrome \
 ```
 
 The WASM binary (~1.1 MB) is bundled automatically as a plugin asset.
-
-</details>
 
 ## Usage
 
