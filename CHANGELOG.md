@@ -1,3 +1,8 @@
+## 1.2.0
+
+- Added `getTagFormats()` and `getTagFormatsFromBytes()` to detect which tag formats are present in an audio file (ID3v1, ID3v2, APE, iTunes, VorbisComments, RiffInfo, AiffText).
+- Updated README with correct supported formats table matching lofty documentation.
+
 ## 1.1.9
 
 - Minor changes and binary version updates
