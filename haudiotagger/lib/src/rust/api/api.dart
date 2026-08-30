@@ -10,7 +10,7 @@ import 'picture.dart';
 import 'tag.dart';
 import 'tag_field.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `get_file_from_bytes`, `get_file`, `is_mp3`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
 
 Future<Tag> read({required String path}) =>
     RustLib.instance.api.crateApiApiRead(path: path);
@@ -43,3 +43,13 @@ Future<void> clear({required String path}) =>
 /// Remove all metadata from a tag held in `bytes`, returning the modified bytes.
 Future<Uint8List> clearFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiClearFromBytes(bytes: bytes);
+
+/// Returns the list of tag formats present in the file at `path`.
+/// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
+Future<List<String>> getTagFormats({required String path}) =>
+    RustLib.instance.api.crateApiApiGetTagFormats(path: path);
+
+/// Returns the list of tag formats present in the in-memory `bytes`.
+/// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
+Future<List<String>> getTagFormatsFromBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiGetTagFormatsFromBytes(bytes: bytes);

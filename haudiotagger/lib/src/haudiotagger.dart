@@ -122,10 +122,24 @@ class Haudiotagger {
   }
 
   /// Remove all metadata from the data held in [bytes], returning the modified
-  /// bytes. Works on web and native.
+  /// bytes. Works on native.
   static Future<Uint8List> clearFromBytes(Uint8List bytes) async {
     await _ensureInit();
     return await api.clearFromBytes(bytes: bytes);
+  }
+
+  /// Get the list of tag formats present in the file at [path].
+  /// Works on native only.
+  static Future<List<String>> getTagFormats(String path) async {
+    await _ensureInit();
+    return await api.getTagFormats(path: path);
+  }
+
+  /// Get the list of tag formats present in the in-memory [bytes].
+  /// Works on web and native.
+  static Future<List<String>> getTagFormatsFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.getTagFormatsFromBytes(bytes: bytes);
   }
 }
 

@@ -47,18 +47,22 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 
 ## Supported Formats
 
-| Format | Tags |
-|--------|------|
-| MP3 | ID3v1, ID3v2, APE |
-| FLAC | Vorbis Comments |
-| OGG (Vorbis / Opus / Speex) | Vorbis Comments |
-| MP4 / M4A | iTunes-style ilst |
-| WAV | ID3v2, RIFF INFO |
-| AIFF | ID3v2, Text Chunks |
-| APE | APE, ID3v2, ID3v1 |
-| WavPack | APE, ID3v1 |
-| Musepack | APE, ID3v2, ID3v1 |
-| AAC (ADTS) | ID3v2, ID3v1 |
+| File Format | Metadata Format(s) |
+|-------------|---------------------|
+| AAC (ADTS) | `ID3v2`, `ID3v1` |
+| APE | `APE`, `ID3v2`\*, `ID3v1` |
+| AIFF | `ID3v2`, `Text Chunks` |
+| FLAC | `Vorbis Comments`, `ID3v2`\* |
+| MP3 | `ID3v2`, `ID3v1`, `APE` |
+| MP4 / M4A | `iTunes-style ilst` |
+| MPC | `APE`, `ID3v2`\*, `ID3v1`\* |
+| Opus | `Vorbis Comments` |
+| Ogg Vorbis | `Vorbis Comments` |
+| Speex | `Vorbis Comments` |
+| WAV | `ID3v2`, `RIFF INFO` |
+| WavPack | `APE`, `ID3v1` |
+
+\* The tag will be **read only**, due to lack of official support.
 
 ## Installation
 
@@ -302,6 +306,8 @@ No extra files are needed — the WASM binary and JS glue are bundled automatica
 | `clearFromBytes(Uint8List bytes)` | `Future<Uint8List>` | Remove all metadata from bytes. Returns modified bytes. |
 | `readProperties(String path)` | `Future<AudioProperties>` | Read technical audio properties from a file path (native only). |
 | `readPropertiesFromBytes(Uint8List bytes)` | `Future<AudioProperties>` | Read technical audio properties from in-memory bytes (web + native). |
+| `getTagFormats(String path)` | `Future<List<String>>` | Get the list of tag formats present in a file (native only). |
+| `getTagFormatsFromBytes(Uint8List bytes)` | `Future<List<String>>` | Get the list of tag formats present in in-memory bytes (web + native). |
 
 ### `Tag`
 
@@ -373,6 +379,25 @@ A partial tag. All fields are optional — only the ones you set are applied by 
 Enum used by `remove`/`removeFromBytes` to name a specific field to clear.
 
 `TagField.title`, `TagField.artist`, `TagField.album`, `TagField.albumArtist`, `TagField.year`, `TagField.genre`, `TagField.trackNumber`, `TagField.trackTotal`, `TagField.discNumber`, `TagField.discTotal`, `TagField.lyrics`, `TagField.comment`, `TagField.bpm`, `TagField.pictures`
+
+### Tag Formats
+
+The `getTagFormats` method returns a list of tag format strings present in the file. Possible values:
+
+| Format | Description |
+|--------|-------------|
+| `ID3v1` | ID3v1 tag (128-byte tail tag) |
+| `ID3v2` | ID3v2 tag (header tag, all versions upgraded to 2.4) |
+| `APE` | APEv1/APEv2 tag |
+| `iTunes` | MP4 ilst atom |
+| `VorbisComments` | Vorbis Comments (FLAC, OGG, Opus, Speex) |
+| `RiffInfo` | RIFF INFO LIST (WAV) |
+| `AiffText` | AIFF text chunks |
+
+```dart
+final formats = await Haudiotagger.getTagFormats('/path/to/song.mp3');
+print(formats); // ['ID3v2', 'ID3v1']
+```
 
 ## Requirements
 
