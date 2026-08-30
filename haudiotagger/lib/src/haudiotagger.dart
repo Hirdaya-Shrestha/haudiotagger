@@ -264,7 +264,8 @@ class Haudiotagger {
       try {
         final currentTag = await api.readFromBytes(bytes: byteArrays[i]);
         final newTag = updater(i, currentTag);
-        final modified = await api.writeToBytes(bytes: byteArrays[i], data: newTag);
+        final modified =
+            await api.writeToBytes(bytes: byteArrays[i], data: newTag);
         results.add(modified);
       } on HaudiotaggerError catch (e) {
         failures++;
