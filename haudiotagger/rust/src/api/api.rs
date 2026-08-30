@@ -352,3 +352,44 @@ pub fn clear(path: String) -> Result<(), HaudiotaggerError> {
 pub fn clear_from_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
     write_to_bytes(bytes, Tag::default())
 }
+
+/// Returns the list of tag formats present in the file at `path`.
+/// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
+pub fn get_tag_formats(path: String) -> Result<Vec<String>, HaudiotaggerError> {
+    let file = get_file(&path)?;
+    let formats = file
+        .tags()
+        .iter()
+        .map(|t| format_tag_type(t.tag_type()).to_string())
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+    Ok(formats)
+}
+
+/// Returns the list of tag formats present in the in-memory `bytes`.
+/// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
+pub fn get_tag_formats_from_bytes(bytes: Vec<u8>) -> Result<Vec<String>, HaudiotaggerError> {
+    let file = get_file_from_bytes(&bytes)?;
+    let formats = file
+        .tags()
+        .iter()
+        .map(|t| format_tag_type(t.tag_type()).to_string())
+        .collect::<std::collections::HashSet<_>>()
+        .into_iter()
+        .collect();
+    Ok(formats)
+}
+
+fn format_tag_type(tag_type: TagType) -> &'static str {
+    match tag_type {
+        TagType::Id3v1 => "ID3v1",
+        TagType::Id3v2 => "ID3v2",
+        TagType::Ape => "APE",
+        TagType::Mp4Ilst => "iTunes",
+        TagType::VorbisComments => "VorbisComments",
+        TagType::RiffInfo => "RiffInfo",
+        TagType::AiffText => "AiffText",
+        _ => "Unknown",
+    }
+}
