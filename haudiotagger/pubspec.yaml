@@ -1,6 +1,6 @@
 name: haudiotagger
 description: Read and write audio metadata in Flutter. Supports MP3, FLAC, OGG, MP4, WAV, AIFF, and more. Powered by Rust for fast, reliable performance.
-version: 1.2.1
+version: 1.2.2
 homepage: https://github.com/Hirdaya-Shrestha/haudiotagger
 repository: https://github.com/Hirdaya-Shrestha/haudiotagger
 

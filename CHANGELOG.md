@@ -1,3 +1,16 @@
+## 1.2.2
+
+- Added custom tag operations for reading, writing, and removing format-specific custom tags:
+  - `getCustomTags` / `getCustomTagsFromBytes`: read custom tags (ID3v2 TXXX frames, Vorbis non-standard keys)
+  - `setCustomTag` / `setCustomTagFromBytes`: write custom tags
+  - `removeCustomTag` / `removeCustomTagFromBytes`: remove custom tags
+- Added ID3v2 version control:
+  - `getId3v2Version` / `getId3v2VersionFromBytes`: detect current ID3v2 version (v2.2, v2.3, v2.4)
+  - `convertId3v2` / `convertId3v2FromBytes`: convert ID3v2 tag to a specific version (v3 or v4)
+- Added ID3v1 removal:
+  - `removeId3v1` / `removeId3v1FromBytes`: strip ID3v1 tags from files/bytes
+- All new features work on both native (file paths) and web (byte arrays)
+
 ## 1.2.1
 
 - Added batch operations for processing multiple files at once:

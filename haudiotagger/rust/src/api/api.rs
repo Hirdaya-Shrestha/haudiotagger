@@ -6,7 +6,6 @@ use super::{
     tag_changes::{TagChanges, read_bytes_or_empty, read_or_empty},
     tag_field::TagField,
 };
-use lofty::config::WriteOptions;
 use lofty::file::FileType;
 use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
@@ -14,6 +13,7 @@ use lofty::probe::Probe;
 use lofty::tag::Tag as LoftyTag;
 use lofty::tag::items::Timestamp;
 use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
+use lofty::config::WriteOptions;
 
 /// Returns a `TaggedFile` at the given path.
 pub(crate) fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
@@ -509,4 +509,437 @@ fn format_tag_type(tag_type: TagType) -> &'static str {
         TagType::AiffText => "AiffText",
         _ => "Unknown",
     }
+}
+
+/// Get all custom tags from the file at `path`.
+/// Returns a map of key -> value for format-specific custom tags.
+/// For ID3v2: TXXX frames (user-defined text).
+/// For Vorbis Comments: non-standard keys.
+/// For APE: non-standard keys.
+pub fn get_custom_tags(path: String) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
+    let file = get_file(&path)?;
+    extract_custom_tags_from_file(&file)
+}
+
+/// Get all custom tags from in-memory `bytes`.
+pub fn get_custom_tags_from_bytes(bytes: Vec<u8>) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
+    let file = get_file_from_bytes(&bytes)?;
+    extract_custom_tags_from_file(&file)
+}
+
+fn extract_custom_tags_from_file(
+    file: &TaggedFile,
+) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
+    let tag = match file.primary_tag() {
+        Some(tag) => tag,
+        None => match file.first_tag() {
+            Some(tag) => tag,
+            None => return Err(HaudiotaggerError::NoTags),
+        },
+    };
+    extract_custom_tags_from_lofty_tag(tag)
+}
+
+fn extract_custom_tags_from_lofty_tag(
+    tag: &LoftyTag,
+) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
+    let mut custom_tags = std::collections::HashMap::new();
+
+    match tag.tag_type() {
+        TagType::Id3v2 => {
+            // Convert to Id3v2Tag to access TXXX frames
+            let id3v2: lofty::id3::v2::Id3v2Tag = tag.clone().into();
+            for frame in &id3v2 {
+                if let lofty::id3::v2::Frame::UserText(extended_text) = frame {
+                    let description = extended_text.description.to_string();
+                    let content = extended_text.content.to_string();
+                    if !description.is_empty() {
+                        custom_tags.insert(description, content);
+                    }
+                }
+            }
+        }
+        TagType::VorbisComments => {
+            // Vorbis Comments: convert and iterate
+            let vorbis: lofty::ogg::tag::VorbisComments = tag.clone().into();
+            for (key, value) in vorbis.items() {
+                // Filter out standard keys
+                if !is_standard_vorbis_key(key) {
+                    custom_tags.insert(key.to_string(), value.to_string());
+                }
+            }
+        }
+        _ => {
+            // Custom tags only supported for ID3v2 and Vorbis
+        }
+    }
+
+    Ok(custom_tags)
+}
+
+fn is_standard_vorbis_key(key: &str) -> bool {
+    matches!(
+        key.to_lowercase().as_str(),
+        "title" | "artist" | "album" | "albumartist" | "date" | "year"
+            | "genre" | "tracknumber" | "tracktotal" | "discnumber" | "disctotal"
+            | "lyrics" | "comment" | "bpm" | "composer" | "conductor"
+            | "isrc" | "label" | "copyright" | "description"
+    )
+}
+
+/// Set a custom tag on the file at `path`.
+/// For ID3v2: creates a TXXX frame with the key as description.
+/// For Vorbis Comments: inserts with the key directly.
+/// For APE: inserts with the key directly.
+pub fn set_custom_tag(
+    path: String,
+    key: String,
+    value: String,
+) -> Result<(), HaudiotaggerError> {
+    let mut file = get_file(&path)?;
+    let tag_type = file.primary_tag_type();
+
+    let mut new_tag = LoftyTag::new(tag_type);
+
+    // First apply existing standard tags
+    if let Some(existing_tag) = file.primary_tag() {
+        let std_tag = Tag::from(existing_tag);
+        apply_tag_to_lofty_tag(&std_tag, &mut new_tag)?;
+    }
+
+    // Now apply the custom tag based on format
+    match tag_type {
+        TagType::Id3v2 => {
+            let mut id3v2: lofty::id3::v2::Id3v2Tag = new_tag.into();
+            id3v2.insert_user_text(key, value);
+            new_tag = id3v2.into();
+        }
+        TagType::VorbisComments => {
+            let mut vorbis: lofty::ogg::tag::VorbisComments = new_tag.into();
+            vorbis.insert(key, value);
+            new_tag = vorbis.into();
+        }
+        _ => {
+            return Err(HaudiotaggerError::Write {
+                message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
+            });
+        }
+    }
+
+    file.insert_tag(new_tag);
+    file.save_to_path(&path, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to write custom tag: {e}"),
+        })
+}
+
+/// Set a custom tag on in-memory `bytes`, returning the modified bytes.
+pub fn set_custom_tag_from_bytes(
+    bytes: Vec<u8>,
+    key: String,
+    value: String,
+) -> Result<Vec<u8>, HaudiotaggerError> {
+    let mut file = get_file_from_bytes(&bytes)?;
+    let tag_type = file.primary_tag_type();
+
+    let mut new_tag = LoftyTag::new(tag_type);
+
+    // First apply existing standard tags
+    if let Some(existing_tag) = file.primary_tag() {
+        let std_tag = Tag::from(existing_tag);
+        apply_tag_to_lofty_tag(&std_tag, &mut new_tag)?;
+    }
+
+    // Now apply the custom tag based on format
+    match tag_type {
+        TagType::Id3v2 => {
+            let mut id3v2: lofty::id3::v2::Id3v2Tag = new_tag.into();
+            id3v2.insert_user_text(key, value);
+            new_tag = id3v2.into();
+        }
+        TagType::VorbisComments => {
+            let mut vorbis: lofty::ogg::tag::VorbisComments = new_tag.into();
+            vorbis.insert(key, value);
+            new_tag = vorbis.into();
+        }
+        _ => {
+            return Err(HaudiotaggerError::Write {
+                message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
+            });
+        }
+    }
+
+    file.insert_tag(new_tag);
+
+    let mut out = Cursor::new(Vec::new());
+    file.save_to(&mut out, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to write custom tag: {e}"),
+        })?;
+    Ok(out.into_inner())
+}
+
+/// Remove a custom tag from the file at `path`.
+pub fn remove_custom_tag(
+    path: String,
+    key: String,
+) -> Result<(), HaudiotaggerError> {
+    let mut file = get_file(&path)?;
+    let tag_type = file.primary_tag_type();
+
+    let mut new_tag = LoftyTag::new(tag_type);
+
+    // First apply existing standard tags
+    if let Some(existing_tag) = file.primary_tag() {
+        let std_tag = Tag::from(existing_tag);
+        apply_tag_to_lofty_tag(&std_tag, &mut new_tag)?;
+    }
+
+    // Now remove the custom tag based on format
+    match tag_type {
+        TagType::Id3v2 => {
+            let mut id3v2: lofty::id3::v2::Id3v2Tag = new_tag.into();
+            id3v2.remove_user_text(&key);
+            new_tag = id3v2.into();
+        }
+        TagType::VorbisComments => {
+            let mut vorbis: lofty::ogg::tag::VorbisComments = new_tag.into();
+            // Consume the iterator to actually remove the items
+            for _ in vorbis.remove(&key) {}
+            new_tag = vorbis.into();
+        }
+        _ => {
+            return Err(HaudiotaggerError::Write {
+                message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
+            });
+        }
+    }
+
+    file.insert_tag(new_tag);
+    file.save_to_path(&path, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to remove custom tag: {e}"),
+        })
+}
+
+/// Remove a custom tag from in-memory `bytes`, returning the modified bytes.
+pub fn remove_custom_tag_from_bytes(
+    bytes: Vec<u8>,
+    key: String,
+) -> Result<Vec<u8>, HaudiotaggerError> {
+    let mut file = get_file_from_bytes(&bytes)?;
+    let tag_type = file.primary_tag_type();
+
+    let mut new_tag = LoftyTag::new(tag_type);
+
+    // First apply existing standard tags
+    if let Some(existing_tag) = file.primary_tag() {
+        let std_tag = Tag::from(existing_tag);
+        apply_tag_to_lofty_tag(&std_tag, &mut new_tag)?;
+    }
+
+    // Now remove the custom tag based on format
+    match tag_type {
+        TagType::Id3v2 => {
+            let mut id3v2: lofty::id3::v2::Id3v2Tag = new_tag.into();
+            id3v2.remove_user_text(&key);
+            new_tag = id3v2.into();
+        }
+        TagType::VorbisComments => {
+            let mut vorbis: lofty::ogg::tag::VorbisComments = new_tag.into();
+            // Consume the iterator to actually remove the items
+            for _ in vorbis.remove(&key) {}
+            new_tag = vorbis.into();
+        }
+        _ => {
+            return Err(HaudiotaggerError::Write {
+                message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
+            });
+        }
+    }
+
+    file.insert_tag(new_tag);
+
+    let mut out = Cursor::new(Vec::new());
+    file.save_to(&mut out, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to remove custom tag: {e}"),
+        })?;
+    Ok(out.into_inner())
+}
+
+/// Represents the ID3v2 version to use when writing.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Id3v2Version {
+    /// ID3v2.2 (3-character frame IDs, limited features)
+    V2,
+    /// ID3v2.3 (widely supported, recommended for compatibility)
+    V3,
+    /// ID3v2.4 (latest spec, but less software support)
+    V4,
+}
+
+/// Get the ID3v2 version of the tag in the file at `path`.
+/// Returns None if the file has no ID3v2 tag.
+pub fn get_id3v2_version(path: String) -> Result<Option<Id3v2Version>, HaudiotaggerError> {
+    let file = get_file(&path)?;
+    extract_id3v2_version(&file)
+}
+
+/// Get the ID3v2 version of the tag in in-memory `bytes`.
+/// Returns None if the bytes have no ID3v2 tag.
+pub fn get_id3v2_version_from_bytes(bytes: Vec<u8>) -> Result<Option<Id3v2Version>, HaudiotaggerError> {
+    let file = get_file_from_bytes(&bytes)?;
+    extract_id3v2_version(&file)
+}
+
+fn extract_id3v2_version(file: &TaggedFile) -> Result<Option<Id3v2Version>, HaudiotaggerError> {
+    for tag in file.tags() {
+        if tag.tag_type() == TagType::Id3v2 {
+            let id3v2: lofty::id3::v2::Id3v2Tag = tag.clone().into();
+            let version = match id3v2.original_version() {
+                lofty::id3::v2::Id3v2Version::V2 => Id3v2Version::V2,
+                lofty::id3::v2::Id3v2Version::V3 => Id3v2Version::V3,
+                lofty::id3::v2::Id3v2Version::V4 => Id3v2Version::V4,
+            };
+            return Ok(Some(version));
+        }
+    }
+    Ok(None)
+}
+
+/// Convert the ID3v2 tag in the file at `path` to the specified version.
+/// ID3v2.2 is not supported for writing (lofty doesn't support it).
+/// ID3v2.3 uses `WriteOptions::use_id3v23(true)`.
+/// ID3v2.4 uses default `WriteOptions`.
+pub fn convert_id3v2(
+    path: String,
+    version: Id3v2Version,
+) -> Result<(), HaudiotaggerError> {
+    match version {
+        Id3v2Version::V2 => {
+            return Err(HaudiotaggerError::Write {
+                message: "ID3v2.2 is not supported for writing. Use V3 or V4.".to_string(),
+            });
+        }
+        Id3v2Version::V3 | Id3v2Version::V4 => {}
+    }
+
+    // Read the existing tag via our API
+    let std_tag = read(path.clone())?;
+
+    // Read raw bytes and strip existing tags
+    let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+        message: format!("Could not read file: {e}"),
+    })?;
+    let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+
+    if std_tag.is_empty() {
+        // No tag data, just write back the audio
+        std::fs::write(&path, audio).map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not write file: {e}"),
+        })?;
+        return Ok(());
+    }
+
+    // Build a fresh ID3v2 tag with the desired version
+    let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+    apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
+
+    let mut write_options = WriteOptions::new();
+    if version == Id3v2Version::V3 {
+        write_options = write_options.use_id3v23(true);
+    }
+
+    let mut tag_bytes = Vec::new();
+    lo_tag
+        .dump_to(&mut tag_bytes, write_options)
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        })?;
+
+    let mut out = tag_bytes;
+    out.extend_from_slice(audio);
+    std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
+        message: format!("Could not write file: {e}"),
+    })?;
+    Ok(())
+}
+
+/// Convert the ID3v2 tag in in-memory `bytes` to the specified version, returning modified bytes.
+pub fn convert_id3v2_from_bytes(
+    bytes: Vec<u8>,
+    version: Id3v2Version,
+) -> Result<Vec<u8>, HaudiotaggerError> {
+    match version {
+        Id3v2Version::V2 => {
+            return Err(HaudiotaggerError::Write {
+                message: "ID3v2.2 is not supported for writing. Use V3 or V4.".to_string(),
+            });
+        }
+        Id3v2Version::V3 | Id3v2Version::V4 => {}
+    }
+
+    let std_tag = read_from_bytes(bytes.clone())?;
+    let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+
+    if std_tag.is_empty() {
+        return Ok(audio.to_vec());
+    }
+
+    let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+    apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
+
+    let mut write_options = WriteOptions::new();
+    if version == Id3v2Version::V3 {
+        write_options = write_options.use_id3v23(true);
+    }
+
+    let mut tag_bytes = Vec::new();
+    lo_tag
+        .dump_to(&mut tag_bytes, write_options)
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        })?;
+
+    let mut out = tag_bytes;
+    out.extend_from_slice(audio);
+    Ok(out)
+}
+
+/// Remove the ID3v1 tag from the file at `path`.
+pub fn remove_id3v1(path: String) -> Result<(), HaudiotaggerError> {
+    let mut file = get_file(&path)?;
+
+    // Check if there's an ID3v1 tag
+    let has_id3v1 = file.tags().iter().any(|t| t.tag_type() == TagType::Id3v1);
+    if !has_id3v1 {
+        return Ok(()); // Nothing to remove
+    }
+
+    file.remove(TagType::Id3v1);
+
+    file.save_to_path(&path, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to remove ID3v1 tag: {e}"),
+        })
+}
+
+/// Remove the ID3v1 tag from in-memory `bytes`, returning the modified bytes.
+pub fn remove_id3v1_from_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
+    let mut file = get_file_from_bytes(&bytes)?;
+
+    let has_id3v1 = file.tags().iter().any(|t| t.tag_type() == TagType::Id3v1);
+    if !has_id3v1 {
+        return Ok(bytes);
+    }
+
+    file.remove(TagType::Id3v1);
+
+    let mut out = Cursor::new(Vec::new());
+    file.save_to(&mut out, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Failed to remove ID3v1 tag: {e}"),
+        })?;
+    Ok(out.into_inner())
 }

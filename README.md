@@ -24,7 +24,7 @@ Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.1
+  haudiotagger: ^1.2.2
 ```
 
 ```dart
@@ -226,6 +226,72 @@ Bytes variant: `getTagFormatsFromBytes`.
 </details>
 
 <details>
+<summary><b>Custom Tags</b></summary>
+
+Read, write, and remove format-specific custom tags. Supported for **ID3v2** (TXXX frames) and **Vorbis Comments** (non-standard keys).
+
+**Read custom tags:**
+
+```dart
+final custom = await Haudiotagger.getCustomTags('/path/to/song.mp3');
+// {'MY_FIELD': 'some value', 'RATING': '5'}
+```
+
+**Write a custom tag:**
+
+```dart
+await Haudiotagger.setCustomTag('/path/to/song.mp3', 'MY_FIELD', 'some value');
+```
+
+**Remove a custom tag:**
+
+```dart
+await Haudiotagger.removeCustomTag('/path/to/song.mp3', 'MY_FIELD');
+```
+
+Bytes variants: `getCustomTagsFromBytes`, `setCustomTagFromBytes`, `removeCustomTagFromBytes`.
+
+</details>
+
+<details>
+<summary><b>ID3v2 Version Control</b></summary>
+
+Detect and convert the ID3v2 version of MP3/AAC files.
+
+**Get current version:**
+
+```dart
+final version = await Haudiotagger.getId3v2Version('/path/to/song.mp3');
+// Id3v2Version.v3 or Id3v2Version.v4
+```
+
+**Convert to a specific version:**
+
+```dart
+// Convert to ID3v2.3 (widely compatible)
+await Haudiotagger.convertId3v2('/path/to/song.mp3', Id3v2Version.v3);
+
+// Convert to ID3v2.4 (latest spec)
+await Haudiotagger.convertId3v2('/path/to/song.mp3', Id3v2Version.v4);
+```
+
+Bytes variants: `getId3v2VersionFromBytes`, `convertId3v2FromBytes`.
+
+</details>
+
+<details>
+<summary><b>Remove ID3v1</b></summary>
+
+Strip ID3v1 tags from files or bytes.
+
+```dart
+await Haudiotagger.removeId3v1('/path/to/song.mp3');
+final cleaned = await Haudiotagger.removeId3v1FromBytes(bytes);
+```
+
+</details>
+
+<details>
 <summary><b>Error Handling</b></summary>
 
 ```dart
@@ -259,6 +325,18 @@ try {
 | `readPropertiesFromBytes(bytes)` | `AudioProperties` | all |
 | `getTagFormats(path)` | `List<String>` | native |
 | `getTagFormatsFromBytes(bytes)` | `List<String>` | all |
+| `getCustomTags(path)` | `Map<String, String>` | native |
+| `getCustomTagsFromBytes(bytes)` | `Map<String, String>` | all |
+| `setCustomTag(path, key, value)` | `void` | native |
+| `setCustomTagFromBytes(bytes, key, value)` | `Uint8List` | all |
+| `removeCustomTag(path, key)` | `void` | native |
+| `removeCustomTagFromBytes(bytes, key)` | `Uint8List` | all |
+| `getId3v2Version(path)` | `Id3v2Version?` | all |
+| `getId3v2VersionFromBytes(bytes)` | `Id3v2Version?` | all |
+| `convertId3v2(path, version)` | `void` | all |
+| `convertId3v2FromBytes(bytes, version)` | `Uint8List` | all |
+| `removeId3v1(path)` | `void` | all |
+| `removeId3v1FromBytes(bytes)` | `Uint8List` | all |
 | `batchWrite(paths, tag)` | `BatchResult` | native |
 | `batchUpdateChanges(paths, changes)` | `BatchResult` | native |
 | `batchUpdate(paths, updater, {onProgress})` | `BatchResult` | native |
