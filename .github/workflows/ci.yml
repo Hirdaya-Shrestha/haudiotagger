@@ -12,6 +12,26 @@ permissions:
   contents: read
 
 jobs:
+  build_frameworks:
+    name: Build Frameworks
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+      - uses: dtolnay/rust-toolchain@stable
+      - run: flutter pub get
+        working-directory: haudiotagger
+      - run: cd cli && flutter pub get
+
+      - name: Build iOS xcframework
+        run: dart run cli build ios -v
+
+      - name: Build macOS xcframework
+        run: dart run cli build macos -v
+
   rust_lint:
     name: Rust Lint
     runs-on: ubuntu-latest
@@ -73,7 +93,7 @@ jobs:
 
   build:
     name: Build ${{ matrix.target }}
-    needs: [rust_lint, dart_lint, dart_cli_lint]
+    needs: [build_frameworks, rust_lint, dart_lint, dart_cli_lint]
     if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
     strategy:
       fail-fast: false
