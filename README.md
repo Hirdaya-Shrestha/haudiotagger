@@ -433,4 +433,22 @@ Same fields as `Tag`, all optional. Only set fields are applied.
 
 ## License
 
-[MIT](LICENSE)
+hAudiotagger is open-source software licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for more information.
+
+## ❤️ Support
+
+If hAudiotagger helps you build something cool, consider:
+
+- ⭐ Starring the [repository](https://github.com/Hirdaya-Shrestha/haudiotagger)
+- 🐛 Reporting bugs
+- 💡 Suggesting improvements
+- 🤝 Contributing code
+- 📦 Sharing the package with other Flutter developers
+
+Every bit of support helps keep the project moving forward.
+
+<p align="center">
+Made with ❤️ and 🦀.
+</p>
