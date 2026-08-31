@@ -6,6 +6,7 @@ use super::{
     tag_changes::{TagChanges, read_bytes_or_empty, read_or_empty},
     tag_field::TagField,
 };
+use lofty::config::WriteOptions;
 use lofty::file::FileType;
 use lofty::file::TaggedFile;
 use lofty::file::{AudioFile, TaggedFileExt};
@@ -13,7 +14,6 @@ use lofty::probe::Probe;
 use lofty::tag::Tag as LoftyTag;
 use lofty::tag::items::Timestamp;
 use lofty::tag::{Accessor, ItemKey, TagExt, TagType};
-use lofty::config::WriteOptions;
 
 /// Returns a `TaggedFile` at the given path.
 pub(crate) fn get_file(path: &str) -> Result<TaggedFile, HaudiotaggerError> {
@@ -516,13 +516,17 @@ fn format_tag_type(tag_type: TagType) -> &'static str {
 /// For ID3v2: TXXX frames (user-defined text).
 /// For Vorbis Comments: non-standard keys.
 /// For APE: non-standard keys.
-pub fn get_custom_tags(path: String) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
+pub fn get_custom_tags(
+    path: String,
+) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
     let file = get_file(&path)?;
     extract_custom_tags_from_file(&file)
 }
 
 /// Get all custom tags from in-memory `bytes`.
-pub fn get_custom_tags_from_bytes(bytes: Vec<u8>) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
+pub fn get_custom_tags_from_bytes(
+    bytes: Vec<u8>,
+) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
     let file = get_file_from_bytes(&bytes)?;
     extract_custom_tags_from_file(&file)
 }
@@ -580,10 +584,26 @@ fn extract_custom_tags_from_lofty_tag(
 fn is_standard_vorbis_key(key: &str) -> bool {
     matches!(
         key.to_lowercase().as_str(),
-        "title" | "artist" | "album" | "albumartist" | "date" | "year"
-            | "genre" | "tracknumber" | "tracktotal" | "discnumber" | "disctotal"
-            | "lyrics" | "comment" | "bpm" | "composer" | "conductor"
-            | "isrc" | "label" | "copyright" | "description"
+        "title"
+            | "artist"
+            | "album"
+            | "albumartist"
+            | "date"
+            | "year"
+            | "genre"
+            | "tracknumber"
+            | "tracktotal"
+            | "discnumber"
+            | "disctotal"
+            | "lyrics"
+            | "comment"
+            | "bpm"
+            | "composer"
+            | "conductor"
+            | "isrc"
+            | "label"
+            | "copyright"
+            | "description"
     )
 }
 
@@ -591,11 +611,7 @@ fn is_standard_vorbis_key(key: &str) -> bool {
 /// For ID3v2: creates a TXXX frame with the key as description.
 /// For Vorbis Comments: inserts with the key directly.
 /// For APE: inserts with the key directly.
-pub fn set_custom_tag(
-    path: String,
-    key: String,
-    value: String,
-) -> Result<(), HaudiotaggerError> {
+pub fn set_custom_tag(path: String, key: String, value: String) -> Result<(), HaudiotaggerError> {
     let mut file = get_file(&path)?;
     let tag_type = file.primary_tag_type();
 
@@ -680,10 +696,7 @@ pub fn set_custom_tag_from_bytes(
 }
 
 /// Remove a custom tag from the file at `path`.
-pub fn remove_custom_tag(
-    path: String,
-    key: String,
-) -> Result<(), HaudiotaggerError> {
+pub fn remove_custom_tag(path: String, key: String) -> Result<(), HaudiotaggerError> {
     let mut file = get_file(&path)?;
     let tag_type = file.primary_tag_type();
 
@@ -788,7 +801,9 @@ pub fn get_id3v2_version(path: String) -> Result<Option<Id3v2Version>, Haudiotag
 
 /// Get the ID3v2 version of the tag in in-memory `bytes`.
 /// Returns None if the bytes have no ID3v2 tag.
-pub fn get_id3v2_version_from_bytes(bytes: Vec<u8>) -> Result<Option<Id3v2Version>, HaudiotaggerError> {
+pub fn get_id3v2_version_from_bytes(
+    bytes: Vec<u8>,
+) -> Result<Option<Id3v2Version>, HaudiotaggerError> {
     let file = get_file_from_bytes(&bytes)?;
     extract_id3v2_version(&file)
 }
@@ -812,10 +827,7 @@ fn extract_id3v2_version(file: &TaggedFile) -> Result<Option<Id3v2Version>, Haud
 /// ID3v2.2 is not supported for writing (lofty doesn't support it).
 /// ID3v2.3 uses `WriteOptions::use_id3v23(true)`.
 /// ID3v2.4 uses default `WriteOptions`.
-pub fn convert_id3v2(
-    path: String,
-    version: Id3v2Version,
-) -> Result<(), HaudiotaggerError> {
+pub fn convert_id3v2(path: String, version: Id3v2Version) -> Result<(), HaudiotaggerError> {
     match version {
         Id3v2Version::V2 => {
             return Err(HaudiotaggerError::Write {

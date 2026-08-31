@@ -324,7 +324,8 @@ class Haudiotagger {
   /// For ID3v2: creates a TXXX frame with the key as description.
   /// For Vorbis Comments: inserts with the key directly.
   /// Works on native only.
-  static Future<void> setCustomTag(String path, String key, String value) async {
+  static Future<void> setCustomTag(
+      String path, String key, String value) async {
     await _ensureInit();
     return await api.setCustomTag(path: path, key: key, value: value);
   }
@@ -337,7 +338,8 @@ class Haudiotagger {
     String value,
   ) async {
     await _ensureInit();
-    return await api.setCustomTagFromBytes(bytes: bytes, key: key, value: value);
+    return await api.setCustomTagFromBytes(
+        bytes: bytes, key: key, value: value);
   }
 
   /// Remove a custom tag from the file at [path].
