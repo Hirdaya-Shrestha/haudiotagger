@@ -11,3 +11,7 @@ rename.sh
 
 # flutter linux build artifact
 haudiotagger/linux/linux.tar.gz
+
+# Local benchmark data and music samples
+haudiotagger/rust/samples/
+haudiotagger/benchmark/
