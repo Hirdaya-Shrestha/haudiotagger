@@ -39,7 +39,7 @@ Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Window
 | ReplayGain support (track/album gain/peak) | All |
 
 > [!NOTE]
-> On the web, browsers cannot access arbitrary local files via file paths due to security sandboxing. Use the `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`) which accept and return raw byte arrays. On native platforms (Android, iOS, Linux, macOS, Windows), both file path and bytes APIs are available.
+> On the web, browsers cannot access arbitrary local files via file paths due to security sandboxing. Use the `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`) which accept and return raw byte arrays. On native platforms (Android, iOS, Linux, macOS, Windows), both file path and bytes APIs are available. Also see [Web Setup](#web-setup).
 
 ## Install
 
@@ -624,11 +624,11 @@ See the [LICENSE](LICENSE) file for more information.
 
 If hAudiotagger helps you build something cool, consider:
 
-⭐ Starring the [repository](https://github.com/Hirdaya-Shrestha/haudiotagger)
-🐛 Reporting bugs
-💡 Suggesting improvements
-🤝 Contributing code
-📦 Sharing the package with other Flutter developers
+- ⭐ Starring the [repository](https://github.com/Hirdaya-Shrestha/haudiotagger)
+- 🐛 Reporting bugs
+- 💡 Suggesting improvements
+- 🤝 Contributing code
+- 📦 Sharing the package with other Flutter developers
 
 Every bit of support helps keep the project moving forward.
 
