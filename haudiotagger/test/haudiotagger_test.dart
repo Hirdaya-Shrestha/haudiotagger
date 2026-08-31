@@ -48,7 +48,8 @@ void main() {
     });
 
     test('write with empty tag clears metadata', () async {
-      final written = await Haudiotagger.writeToBytes(mp3Bytes, Tag(pictures: []));
+      final written =
+          await Haudiotagger.writeToBytes(mp3Bytes, Tag(pictures: []));
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNull);
     });
@@ -61,8 +62,7 @@ void main() {
   group('update', () {
     test('updateFromBytes changes only specified fields', () async {
       final changes = TagChanges(title: 'Updated Title');
-      final written =
-          await Haudiotagger.updateFromBytes(mp3Bytes, changes);
+      final written = await Haudiotagger.updateFromBytes(mp3Bytes, changes);
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNotNull);
       expect(readBack!.title, 'Updated Title');
@@ -75,8 +75,7 @@ void main() {
         year: 2030,
         genre: 'Jazz',
       );
-      final written =
-          await Haudiotagger.updateFromBytes(mp3Bytes, changes);
+      final written = await Haudiotagger.updateFromBytes(mp3Bytes, changes);
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNotNull);
       expect(readBack!.title, 'Original Title');
@@ -92,8 +91,7 @@ void main() {
         trackArtist: 'New Artist',
         album: 'New Album',
       );
-      final written =
-          await Haudiotagger.updateFromBytes(mp3Bytes, changes);
+      final written = await Haudiotagger.updateFromBytes(mp3Bytes, changes);
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNotNull);
       expect(readBack!.title, 'New Title');
@@ -133,10 +131,10 @@ void main() {
   group('batch operations', () {
     test('batchWriteFromBytes writes to all byte arrays', () async {
       final arrays = [mp3Bytes, mp3Bytes, mp3Bytes];
-      final tag = Tag(title: 'Batch Title', trackArtist: 'Batch Artist', pictures: []);
+      final tag =
+          Tag(title: 'Batch Title', trackArtist: 'Batch Artist', pictures: []);
 
-      final result =
-          await Haudiotagger.batchWriteFromBytes(arrays, tag);
+      final result = await Haudiotagger.batchWriteFromBytes(arrays, tag);
 
       expect(result.failures, 0);
       expect(result.results.length, 3);
@@ -253,7 +251,8 @@ void main() {
   group('diff', () {
     test('diff detects added fields', () {
       final oldTag = Tag(pictures: []);
-      final newTag = Tag(title: 'New Title', trackArtist: 'New Artist', pictures: []);
+      final newTag =
+          Tag(title: 'New Title', trackArtist: 'New Artist', pictures: []);
 
       final diff = Haudiotagger.diff(oldTag, newTag);
 
@@ -292,11 +291,13 @@ void main() {
 
     test('diff returns empty for identical tags', () {
       final tag = Tag(title: 'Title', year: 2025, pictures: []);
-      final diff = Haudiotagger.diff(tag, Tag(
-        title: 'Title',
-        year: 2025,
-        pictures: [],
-      ));
+      final diff = Haudiotagger.diff(
+          tag,
+          Tag(
+            title: 'Title',
+            year: 2025,
+            pictures: [],
+          ));
 
       expect(diff.isEmpty, true);
     });
@@ -309,7 +310,8 @@ void main() {
   group('mergeTags', () {
     test('preferFirstNonEmpty uses first tag unless empty', () {
       final tagA = Tag(title: 'Title A', trackArtist: 'Artist A', pictures: []);
-      final tagB = Tag(title: '', trackArtist: 'Artist B', album: 'Album B', pictures: []);
+      final tagB = Tag(
+          title: '', trackArtist: 'Artist B', album: 'Album B', pictures: []);
 
       final merged = Haudiotagger.mergeTags(tagA, tagB);
 
@@ -399,13 +401,16 @@ void main() {
         album: 'Album',
         trackNumber: 1,
         trackTotal: 10,
-        pictures: [Picture(pictureType: PictureType.coverFront, bytes: Uint8List(1))],
+        pictures: [
+          Picture(pictureType: PictureType.coverFront, bytes: Uint8List(1))
+        ],
       );
 
       final result = await Haudiotagger.validateTag(tag);
 
       expect(await result.isValid(), true);
-      expect(result.issues.where((i) => i.severity == ValidationSeverity.error), isEmpty);
+      expect(result.issues.where((i) => i.severity == ValidationSeverity.error),
+          isEmpty);
     });
 
     test('validateTag detects track number > total', () async {
@@ -414,7 +419,8 @@ void main() {
       final result = await Haudiotagger.validateTag(tag);
 
       expect(await result.isValid(), false);
-      final errors = result.issues.where((i) => i.severity == ValidationSeverity.error);
+      final errors =
+          result.issues.where((i) => i.severity == ValidationSeverity.error);
       expect(errors.any((i) => i.field == 'track_number'), true);
     });
 
@@ -424,7 +430,8 @@ void main() {
       final result = await Haudiotagger.validateTag(tag);
 
       expect(await result.isValid(), false);
-      final errors = result.issues.where((i) => i.severity == ValidationSeverity.error);
+      final errors =
+          result.issues.where((i) => i.severity == ValidationSeverity.error);
       expect(errors.any((i) => i.field == 'disc_number'), true);
     });
 
@@ -433,7 +440,8 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings = result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings =
+          result.issues.where((i) => i.severity == ValidationSeverity.warning);
       expect(warnings.any((i) => i.field == 'track_artist'), true);
     });
 
@@ -442,16 +450,19 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings = result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings =
+          result.issues.where((i) => i.severity == ValidationSeverity.warning);
       expect(warnings.any((i) => i.field == 'album'), true);
     });
 
     test('validateTag warns on missing artwork', () async {
-      final tag = Tag(title: 'Title', trackArtist: 'Artist', album: 'Album', pictures: []);
+      final tag = Tag(
+          title: 'Title', trackArtist: 'Artist', album: 'Album', pictures: []);
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings = result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings =
+          result.issues.where((i) => i.severity == ValidationSeverity.warning);
       expect(warnings.any((i) => i.field == 'pictures'), true);
     });
 
@@ -460,7 +471,8 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings = result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings =
+          result.issues.where((i) => i.severity == ValidationSeverity.warning);
       expect(warnings.any((i) => i.field == 'bpm'), true);
     });
 
@@ -469,7 +481,8 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings = result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings =
+          result.issues.where((i) => i.severity == ValidationSeverity.warning);
       expect(warnings.any((i) => i.field == 'year'), true);
     });
   });
