@@ -126,6 +126,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y musl-tools
       - name: Build
         run: dart run cli build ${{ matrix.target }} -v
+      - name: Test
+        if: matrix.target == 'linux'
+        run: flutter test
+        working-directory: haudiotagger
 
   build_web:
     name: Build Web WASM
