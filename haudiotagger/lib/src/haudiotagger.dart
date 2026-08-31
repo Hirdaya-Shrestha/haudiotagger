@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'rust/frb_generated.dart';
 
 import 'rust/api/api.dart' as api;
-import 'rust/api/api.dart' show BatchResult, BatchBytesResult;
+import 'rust/api/api.dart' show BatchResult, BatchBytesResult, Id3v2Version;
 import 'rust/api/tag.dart';
 import 'rust/api/error.dart';
 import 'rust/api/audio_properties.dart' as ap;
@@ -16,7 +16,7 @@ export 'rust/api/error.dart';
 export 'rust/api/audio_properties.dart';
 export 'rust/api/tag_changes.dart';
 export 'rust/api/tag_field.dart';
-export 'rust/api/api.dart' show BatchResult, BatchBytesResult;
+export 'rust/api/api.dart' show BatchResult, BatchBytesResult, Id3v2Version;
 
 /// Progress information for batch operations.
 class BatchProgress {
@@ -300,6 +300,115 @@ class Haudiotagger {
   static Future<List<String>> getTagFormatsFromBytes(Uint8List bytes) async {
     await _ensureInit();
     return await api.getTagFormatsFromBytes(bytes: bytes);
+  }
+
+  /// Get all custom tags from the file at [path].
+  /// Returns a map of key -> value for format-specific custom tags.
+  /// For ID3v2: TXXX frames (user-defined text).
+  /// For Vorbis Comments: non-standard keys.
+  /// Works on native only.
+  static Future<Map<String, String>> getCustomTags(String path) async {
+    await _ensureInit();
+    return await api.getCustomTags(path: path);
+  }
+
+  /// Get all custom tags from in-memory [bytes].
+  /// Works on web and native.
+  static Future<Map<String, String>> getCustomTagsFromBytes(
+      Uint8List bytes) async {
+    await _ensureInit();
+    return await api.getCustomTagsFromBytes(bytes: bytes);
+  }
+
+  /// Set a custom tag on the file at [path].
+  /// For ID3v2: creates a TXXX frame with the key as description.
+  /// For Vorbis Comments: inserts with the key directly.
+  /// Works on native only.
+  static Future<void> setCustomTag(String path, String key, String value) async {
+    await _ensureInit();
+    return await api.setCustomTag(path: path, key: key, value: value);
+  }
+
+  /// Set a custom tag on in-memory [bytes], returning the modified bytes.
+  /// Works on web and native.
+  static Future<Uint8List> setCustomTagFromBytes(
+    Uint8List bytes,
+    String key,
+    String value,
+  ) async {
+    await _ensureInit();
+    return await api.setCustomTagFromBytes(bytes: bytes, key: key, value: value);
+  }
+
+  /// Remove a custom tag from the file at [path].
+  /// Works on native only.
+  static Future<void> removeCustomTag(String path, String key) async {
+    await _ensureInit();
+    return await api.removeCustomTag(path: path, key: key);
+  }
+
+  /// Remove a custom tag from in-memory [bytes], returning the modified bytes.
+  /// Works on web and native.
+  static Future<Uint8List> removeCustomTagFromBytes(
+      Uint8List bytes, String key) async {
+    await _ensureInit();
+    return await api.removeCustomTagFromBytes(bytes: bytes, key: key);
+  }
+
+  /// Get the ID3v2 version of the tag in the file at [path].
+  /// Returns null if the file has no ID3v2 tag.
+  /// Works on native only.
+  static Future<Id3v2Version?> getId3v2Version(String path) async {
+    await _ensureInit();
+    return await api.getId3V2Version(path: path);
+  }
+
+  /// Get the ID3v2 version of the tag in in-memory [bytes].
+  /// Returns null if the bytes have no ID3v2 tag.
+  /// Works on web and native.
+  static Future<Id3v2Version?> getId3v2VersionFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.getId3V2VersionFromBytes(bytes: bytes);
+  }
+
+  /// Convert the ID3v2 tag in the file at [path] to the specified [version].
+  ///
+  /// - [Id3v2Version.v2] is not supported for writing (returns error).
+  /// - [Id3v2Version.v3] writes ID3v2.3 (widely compatible).
+  /// - [Id3v2Version.v4] writes ID3v2.4 (latest spec).
+  ///
+  /// Works on native only.
+  static Future<void> convertId3v2(String path, Id3v2Version version) async {
+    await _ensureInit();
+    return await api.convertId3V2(path: path, version: version);
+  }
+
+  /// Convert the ID3v2 tag in in-memory [bytes] to the specified [version],
+  /// returning the modified bytes.
+  ///
+  /// - [Id3v2Version.v2] is not supported for writing (returns error).
+  /// - [Id3v2Version.v3] writes ID3v2.3 (widely compatible).
+  /// - [Id3v2Version.v4] writes ID3v2.4 (latest spec).
+  ///
+  /// Works on web and native.
+  static Future<Uint8List> convertId3v2FromBytes(
+      Uint8List bytes, Id3v2Version version) async {
+    await _ensureInit();
+    return await api.convertId3V2FromBytes(bytes: bytes, version: version);
+  }
+
+  /// Remove the ID3v1 tag from the file at [path].
+  /// Works on native only.
+  static Future<void> removeId3v1(String path) async {
+    await _ensureInit();
+    return await api.removeId3V1(path: path);
+  }
+
+  /// Remove the ID3v1 tag from in-memory [bytes], returning the modified bytes.
+  /// Works on web and native.
+  static Future<Uint8List> removeId3v1FromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.removeId3V1FromBytes(bytes: bytes);
   }
 }
 
