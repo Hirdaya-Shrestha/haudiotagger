@@ -3,7 +3,7 @@ use lofty::tag::{Accessor, ItemKey};
 use super::picture::Picture;
 
 /// Represents the metadata of the file.
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Tag {
     /// The title of the song.
     pub title: Option<String>,

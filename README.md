@@ -1,31 +1,46 @@
 <p align="center">
-  <img src="/haudiotagger/logo.png" alt="hAudiotagger Logo" width="140">
+  <img src="/haudiotagger/logo.png" alt="hAudiotagger" width="120">
 </p>
 
 <h1 align="center">hAudiotagger</h1>
 
 <p align="center">
-  Powerful audio metadata editing for Flutter
+  <em>Rust-powered audio metadata for Flutter</em>
 </p>
 
 <p align="center">
-  <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/v/haudiotagger.svg" alt="pub package"></a>
-  <a href="https://github.com/Hirdaya-Shrestha/haudiotagger/actions"><img src="https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg" alt="build"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-</p>   
+  <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/v/haudiotagger.svg?label=pub.dev&color=0175C2" alt="pub.dev"></a>
+  <a href="https://github.com/Hirdaya-Shrestha/haudiotagger/actions"><img src="https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-4285F4.svg" alt="MIT License"></a>
+</p>
 
-Read and write audio metadata in Flutter — powered by Rust. Supports every major format on **Android, iOS, Linux, macOS, Windows, and Web**.
+---
 
-Built on [lofty](https://github.com/Serial-ATA/lofty-rs).
+Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/aspect-build/aspect).
 
 ![hAudiotagger](/haudiotagger/cover.png)
 
-## Quick Start
+## Features
+
+| Feature | Platforms |
+|---------|-----------|
+| Read / write metadata (title, artist, album, art, lyrics...) | All |
+| Partial updates — change one field without touching others | All |
+| Batch operations with progress callbacks | All |
+| Custom tags (TXXX, Vorbis) | All |
+| ID3v2 version control (v2.3 / v2.4) | All |
+| Strip ID3v1 tags | All |
+| Audio properties (duration, bitrate, codec...) | All |
+| Tag format detection | All |
+
+## Install
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.2
+  haudiotagger: ^1.2.3
 ```
+
+## Quick Start
 
 ```dart
 import 'package:haudiotagger/haudiotagger.dart';
@@ -35,10 +50,16 @@ final tag = await Haudiotagger.read('/path/to/song.mp3');
 print(tag?.title);
 
 // Write
-await Haudiotagger.write('/path/to/song.mp3', Tag(title: 'My Song', artist: 'Artist'));
+await Haudiotagger.write('/path/to/song.mp3', Tag(
+  title: 'My Song',
+  artist: 'Artist',
+  album: 'Album',
+));
 
 // Update (preserves other fields)
-await Haudiotagger.update('/path/to/song.mp3', TagChanges(album: 'New Album'));
+await Haudiotagger.update('/path/to/song.mp3', TagChanges(
+  album: 'New Album',
+));
 
 // Batch
 final result = await Haudiotagger.batchWrite(paths, tag);
@@ -46,20 +67,186 @@ final result = await Haudiotagger.batchWrite(paths, tag);
 
 ## Supported Formats
 
-| Format | Metadata |
-|--------|----------|
-| MP3 | `ID3v2`, `ID3v1`, `APE` |
-| FLAC | `Vorbis Comments`, `ID3v2`* |
-| MP4 / M4A | `iTunes ilst` |
-| Ogg Vorbis | `Vorbis Comments` |
-| Opus | `Vorbis Comments` |
-| AAC | `ID3v2`, `ID3v1` |
-| WAV | `ID3v2`, `RIFF INFO` |
-| AIFF | `ID3v2`, `Text Chunks` |
-| APE | `APE`, `ID3v2`*, `ID3v1` |
-| WavPack | `APE`, `ID3v1` |
+| Format | Tags |
+|--------|------|
+| **MP3** | ID3v2, ID3v1, APE |
+| **FLAC** | Vorbis Comments, ID3v2\* |
+| **MP4 / M4A** | iTunes ilst |
+| **Ogg Vorbis** | Vorbis Comments |
+| **Opus** | Vorbis Comments |
+| **AAC** | ID3v2, ID3v1 |
+| **WAV** | ID3v2, RIFF INFO |
+| **AIFF** | ID3v2, Text Chunks |
+| **APE** | APE, ID3v2\*, ID3v1 |
+| **WavPack** | APE, ID3v1 |
 
-\* Read-only due to lack of official support.
+\* The tag will be **read only**, due to lack of official support
+
+---
+
+## Usage
+
+### Read Metadata
+
+```dart
+// From file path (native)
+final tag = await Haudiotagger.read('/path/to/song.mp3');
+
+// From bytes (web + native)
+final tag = await Haudiotagger.readFromBytes(fileBytes);
+```
+
+### Write Metadata
+
+```dart
+// To file path (native)
+await Haudiotagger.write('/path/to/song.mp3', Tag(
+  title: 'Song Title',
+  trackArtist: 'Artist',
+  album: 'Album',
+  year: 2024,
+));
+
+// To bytes (web + native)
+final modified = await Haudiotagger.writeToBytes(fileBytes, tag);
+```
+
+### Update Metadata
+
+Only the fields you pass are changed — everything else stays intact.
+
+```dart
+await Haudiotagger.update('/path/to/song.mp3', TagChanges(
+  title: 'New Title',
+  genre: 'Jazz',
+));
+
+// Bytes variant
+final modified = await Haudiotagger.updateFromBytes(fileBytes, changes);
+```
+
+### Batch Operations
+
+```dart
+// Write same tag to multiple files
+final result = await Haudiotagger.batchWrite(paths, tag);
+
+// Apply same changes to multiple files
+await Haudiotagger.batchUpdateChanges(paths, TagChanges(album: 'New Album'));
+
+// Per-file callback with progress
+await Haudiotagger.batchUpdate(
+  paths,
+  onProgress: (p) => print('${(p.percent * 100).round()}%'),
+  (path, current) => current.copyWith(trackNumber: paths.indexOf(path) + 1),
+);
+
+// Web/bytes variants available
+await Haudiotagger.batchWriteFromBytes(byteArrays, tag);
+```
+
+### Custom Tags
+
+Read, write, and remove format-specific custom tags (ID3v2 TXXX frames, Vorbis non-standard keys).
+
+```dart
+// Read
+final custom = await Haudiotagger.getCustomTags('/path/to/song.mp3');
+// {'MY_FIELD': 'some value'}
+
+// Write
+await Haudiotagger.setCustomTag('/path/to/song.mp3', 'MY_FIELD', 'some value');
+
+// Remove
+await Haudiotagger.removeCustomTag('/path/to/song.mp3', 'MY_FIELD');
+
+// Bytes variants: getCustomTagsFromBytes, setCustomTagFromBytes, removeCustomTagFromBytes
+```
+
+### ID3v2 Version Control
+
+```dart
+// Detect version
+final version = await Haudiotagger.getId3v2Version('/path/to/song.mp3');
+// Id3v2Version.v3 or Id3v2Version.v4
+
+// Convert to ID3v2.3 (widely compatible)
+await Haudiotagger.convertId3v2('/path/to/song.mp3', Id3v2Version.v3);
+
+// Convert to ID3v2.4 (latest spec)
+await Haudiotagger.convertId3v2('/path/to/song.mp3', Id3v2Version.v4);
+
+// Bytes variants: getId3v2VersionFromBytes, convertId3v2FromBytes
+```
+
+### Remove ID3v1
+
+```dart
+await Haudiotagger.removeId3v1('/path/to/song.mp3');
+final cleaned = await Haudiotagger.removeId3v1FromBytes(bytes);
+```
+
+### Audio Properties
+
+```dart
+final props = await Haudiotagger.readProperties('/path/to/song.mp3');
+// props.duration, props.bitrate, props.sampleRate, props.codec, ...
+
+// Bytes variant
+await Haudiotagger.readPropertiesFromBytes(bytes);
+```
+
+### Diff Tags
+
+Compare two tags to see exactly what changed — useful for confirmation dialogs and undo previews.
+
+```dart
+final oldTag = await Haudiotagger.read('/path/to/song.mp3');
+final newTag = oldTag?.copyWith(title: 'New Title', year: 2025);
+
+final diff = Haudiotagger.diff(oldTag!, newTag!);
+
+print(diff.length);     // 2
+print(diff.changes[0]); // title: Old Title → New Title
+
+for (final change in diff.changes) {
+  switch (change.type) {
+    case ChangeType.added:
+      print('Added ${change.field.name}');
+    case ChangeType.updated:
+      print('Updated ${change.field.name}');
+    case ChangeType.removed:
+      print('Removed ${change.field.name}');
+  }
+}
+```
+
+### Detect Tag Formats
+
+```dart
+final formats = await Haudiotagger.getTagFormats('/path/to/song.mp3');
+// ['ID3v2', 'ID3v1']
+```
+
+### Inspect File
+
+One call to get everything: format, tag format, properties, metadata, pictures, and file size.
+
+```dart
+final info = await Haudiotagger.inspect('/path/to/song.mp3');
+
+print(info.format);      // 'MP3'
+print(info.tagFormat);   // 'ID3v2'
+print(info.size);        // 4812345
+print(info.metadata?.title);
+print(info.properties.duration);
+print(info.pictures.length);
+
+// Bytes variant
+final info = await Haudiotagger.inspectFromBytes(bytes);
+```
+
+---
 
 ## Web Setup
 
@@ -78,236 +265,12 @@ flutter run -d chrome \
   --web-header=Cross-Origin-Embedder-Policy=require-corp
 ```
 
-The WASM binary (~1.1 MB) is bundled automatically as a plugin asset.
+---
 
-## Usage
-
-<details>
-<summary><b>Read Metadata</b></summary>
-
-**From file path (native only):**
-
-```dart
-final tag = await Haudiotagger.read('/path/to/song.mp3');
-// tag?.title, tag?.trackArtist, tag?.album, tag?.year, tag?.genre, etc.
-```
-
-**From bytes (web + native):**
-
-```dart
-final tag = await Haudiotagger.readFromBytes(fileBytes);
-```
-
-</details>
+## API Reference
 
 <details>
-<summary><b>Write Metadata</b></summary>
-
-**To file path (native only):**
-
-```dart
-await Haudiotagger.write('/path/to/song.mp3', Tag(
-  title: 'Song Title',
-  trackArtist: 'Artist',
-  album: 'Album',
-  year: 2024,
-));
-```
-
-**To bytes (web + native):**
-
-```dart
-final modified = await Haudiotagger.writeToBytes(fileBytes, tag);
-```
-
-</details>
-
-<details>
-<summary><b>Update Metadata</b></summary>
-
-`update` changes only the fields you pass, preserving everything else:
-
-```dart
-await Haudiotagger.update('/path/to/song.mp3', TagChanges(
-  title: 'New Title',
-  trackArtist: 'New Artist',
-));
-```
-
-**Bytes variant (web + native):**
-
-```dart
-final modified = await Haudiotagger.updateFromBytes(fileBytes, TagChanges(genre: 'Jazz'));
-```
-
-</details>
-
-<details>
-<summary><b>Remove / Clear</b></summary>
-
-```dart
-// Remove specific fields
-await Haudiotagger.remove(path, [TagField.lyrics, TagField.comment]);
-
-// Clear all metadata
-await Haudiotagger.clear(path);
-```
-
-Bytes variants: `removeFromBytes`, `clearFromBytes`.
-
-</details>
-
-<details>
-<summary><b>Batch Operations</b></summary>
-
-Process multiple files at once. Rust handles the heavy lifting.
-
-**Write same tag to multiple files:**
-
-```dart
-final result = await Haudiotagger.batchWrite(paths, tag);
-print('${result.successes} updated, ${result.failures} failed');
-```
-
-**Apply same changes to multiple files:**
-
-```dart
-final result = await Haudiotagger.batchUpdateChanges(paths, TagChanges(album: 'New Album'));
-```
-
-**Per-file callback with progress:**
-
-```dart
-final result = await Haudiotagger.batchUpdate(
-  paths,
-  onProgress: (p) => print('${(p.percent * 100).round()}%'),
-  (path, currentTag) => currentTag.copyWith(trackNumber: paths.indexOf(path) + 1),
-);
-```
-
-**Web/bytes variants:**
-
-```dart
-await Haudiotagger.batchWriteFromBytes(byteArrays, tag);
-await Haudiotagger.batchUpdateChangesFromBytes(byteArrays, changes);
-await Haudiotagger.batchUpdateFromBytes(byteArrays, (i, tag) => tag.copyWith(...));
-```
-
-`BatchResult` / `BatchBytesResult` include `successes`, `failures`, and `errors`.
-
-</details>
-
-<details>
-<summary><b>Audio Properties</b></summary>
-
-Read-only technical info (duration, bitrate, sample rate, codec, etc.):
-
-```dart
-final props = await Haudiotagger.readProperties('/path/to/song.mp3');
-// props.duration, props.bitrate, props.sampleRate, props.codec, etc.
-```
-
-Bytes variant: `readPropertiesFromBytes`.
-
-</details>
-
-<details>
-<summary><b>Detect Tag Formats</b></summary>
-
-```dart
-final formats = await Haudiotagger.getTagFormats('/path/to/song.mp3');
-// ['ID3v2', 'ID3v1']
-```
-
-Returns: `ID3v1`, `ID3v2`, `APE`, `iTunes`, `VorbisComments`, `RiffInfo`, `AiffText`.
-
-Bytes variant: `getTagFormatsFromBytes`.
-
-</details>
-
-<details>
-<summary><b>Custom Tags</b></summary>
-
-Read, write, and remove format-specific custom tags. Supported for **ID3v2** (TXXX frames) and **Vorbis Comments** (non-standard keys).
-
-**Read custom tags:**
-
-```dart
-final custom = await Haudiotagger.getCustomTags('/path/to/song.mp3');
-// {'MY_FIELD': 'some value', 'RATING': '5'}
-```
-
-**Write a custom tag:**
-
-```dart
-await Haudiotagger.setCustomTag('/path/to/song.mp3', 'MY_FIELD', 'some value');
-```
-
-**Remove a custom tag:**
-
-```dart
-await Haudiotagger.removeCustomTag('/path/to/song.mp3', 'MY_FIELD');
-```
-
-Bytes variants: `getCustomTagsFromBytes`, `setCustomTagFromBytes`, `removeCustomTagFromBytes`.
-
-</details>
-
-<details>
-<summary><b>ID3v2 Version Control</b></summary>
-
-Detect and convert the ID3v2 version of MP3/AAC files.
-
-**Get current version:**
-
-```dart
-final version = await Haudiotagger.getId3v2Version('/path/to/song.mp3');
-// Id3v2Version.v3 or Id3v2Version.v4
-```
-
-**Convert to a specific version:**
-
-```dart
-// Convert to ID3v2.3 (widely compatible)
-await Haudiotagger.convertId3v2('/path/to/song.mp3', Id3v2Version.v3);
-
-// Convert to ID3v2.4 (latest spec)
-await Haudiotagger.convertId3v2('/path/to/song.mp3', Id3v2Version.v4);
-```
-
-Bytes variants: `getId3v2VersionFromBytes`, `convertId3v2FromBytes`.
-
-</details>
-
-<details>
-<summary><b>Remove ID3v1</b></summary>
-
-Strip ID3v1 tags from files or bytes.
-
-```dart
-await Haudiotagger.removeId3v1('/path/to/song.mp3');
-final cleaned = await Haudiotagger.removeId3v1FromBytes(bytes);
-```
-
-</details>
-
-<details>
-<summary><b>Error Handling</b></summary>
-
-```dart
-try {
-  final tag = await Haudiotagger.read('/path/to/song.mp3');
-} on HaudiotaggerError catch (e) {
-  // file not found, unsupported format, etc.
-}
-```
-
-</details>
-
-<details>
-<summary><b>API Reference</b></summary>
-
-### Methods
+<summary>All methods</summary>
 
 | Method | Returns | Platform |
 |--------|---------|----------|
@@ -325,6 +288,8 @@ try {
 | `readPropertiesFromBytes(bytes)` | `AudioProperties` | all |
 | `getTagFormats(path)` | `List<String>` | native |
 | `getTagFormatsFromBytes(bytes)` | `List<String>` | all |
+| `inspect(path)` | `AudioFileInfo` | native |
+| `inspectFromBytes(bytes)` | `AudioFileInfo` | all |
 | `getCustomTags(path)` | `Map<String, String>` | native |
 | `getCustomTagsFromBytes(bytes)` | `Map<String, String>` | all |
 | `setCustomTag(path, key, value)` | `void` | native |
@@ -344,6 +309,11 @@ try {
 | `batchUpdateChangesFromBytes(bytes, changes)` | `BatchBytesResult` | all |
 | `batchUpdateFromBytes(bytes, updater, {onProgress})` | `BatchBytesResult` | all |
 
+</details>
+
+<details>
+<summary>Data types</summary>
+
 ### `Tag`
 
 | Field | Type | Notes |
@@ -361,12 +331,12 @@ try {
 | `lyrics` | `String?` | |
 | `comment` | `String?` | |
 | `bpm` | `double?` | |
-| `duration` | `int?` | Read-only (seconds) |
+| `duration` | `int?` | Read-only |
 | `pictures` | `List<Picture>` | |
 
 ### `TagChanges`
 
-Same fields as `Tag`, all optional. Only set fields are applied; rest preserved.
+Same fields as `Tag`, all optional. Only set fields are applied.
 
 ### `Picture`
 
@@ -375,6 +345,17 @@ Same fields as `Tag`, all optional. Only set fields are applied; rest preserved.
 | `pictureType` | `PictureType` |
 | `mimeType` | `MimeType?` |
 | `bytes` | `Uint8List` |
+
+### `AudioFileInfo`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `format` | `String` | e.g. `MP3`, `FLAC` |
+| `tagFormat` | `String` | e.g. `ID3v2`, `VorbisComments` |
+| `properties` | `AudioProperties` | Technical details |
+| `metadata` | `Tag?` | All metadata fields |
+| `pictures` | `List<Picture>` | Embedded artwork |
+| `size` | `BigInt` | File size in bytes |
 
 ### `AudioProperties`
 
@@ -391,6 +372,10 @@ Same fields as `Tag`, all optional. Only set fields are applied; rest preserved.
 | `lossless` | `bool` |
 | `bitrateMode` | `BitrateMode` |
 | `fileSize` | `BigInt?` |
+
+### `Id3v2Version`
+
+`v2` (not supported for writing), `v3`, `v4`
 
 ### `BatchResult`
 
@@ -416,7 +401,30 @@ Same fields as `Tag`, all optional. Only set fields are applied; rest preserved.
 | `total` | `int` |
 | `percent` | `double` |
 
+### `MetadataDiff`
+
+| Field | Type |
+|-------|------|
+| `changes` | `List<MetadataChange>` |
+| `length` | `int` |
+| `isEmpty` | `bool` |
+
+### `MetadataChange<T>`
+
+| Field | Type |
+|-------|------|
+| `field` | `TagField` |
+| `oldValue` | `T?` |
+| `newValue` | `T?` |
+| `type` | `ChangeType` |
+
+### `ChangeType`
+
+`added`, `updated`, `removed`
+
 </details>
+
+---
 
 ## Requirements
 
@@ -425,4 +433,4 @@ Same fields as `Tag`, all optional. Only set fields are applied; rest preserved.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+[MIT](LICENSE)

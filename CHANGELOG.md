@@ -1,3 +1,9 @@
+## 1.2.3
+
+- Added `inspect` / `inspectFromBytes` — get format, tag format, properties, metadata, pictures, and file size in one call
+- Added `diff` — compare two tags and get a structured list of changes (added/updated/removed)
+- New types: `AudioFileInfo`, `MetadataDiff`, `MetadataChange`, `ChangeType`
+
 ## 1.2.2
 
 - Added custom tag operations for reading, writing, and removing format-specific custom tags:

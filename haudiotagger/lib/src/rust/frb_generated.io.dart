@@ -31,6 +31,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   String dco_decode_String(dynamic raw);
 
   @protected
+  AudioFileInfo dco_decode_audio_file_info(dynamic raw);
+
+  @protected
   AudioProperties dco_decode_audio_properties(dynamic raw);
 
   @protected
@@ -127,6 +130,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   MimeType? dco_decode_opt_box_autoadd_mime_type(dynamic raw);
 
   @protected
+  Tag? dco_decode_opt_box_autoadd_tag(dynamic raw);
+
+  @protected
   int? dco_decode_opt_box_autoadd_u_32(dynamic raw);
 
   @protected
@@ -174,6 +180,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
+
+  @protected
+  AudioFileInfo sse_decode_audio_file_info(SseDeserializer deserializer);
 
   @protected
   AudioProperties sse_decode_audio_properties(SseDeserializer deserializer);
@@ -277,6 +286,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   MimeType? sse_decode_opt_box_autoadd_mime_type(SseDeserializer deserializer);
 
   @protected
+  Tag? sse_decode_opt_box_autoadd_tag(SseDeserializer deserializer);
+
+  @protected
   int? sse_decode_opt_box_autoadd_u_32(SseDeserializer deserializer);
 
   @protected
@@ -325,6 +337,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_audio_file_info(AudioFileInfo self, SseSerializer serializer);
 
   @protected
   void sse_encode_audio_properties(
@@ -435,6 +450,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_mime_type(
       MimeType? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_tag(Tag? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_u_32(int? self, SseSerializer serializer);
