@@ -32,13 +32,24 @@ Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Window
 | Strip ID3v1 tags | All |
 | Audio properties (duration, bitrate, codec...) | All |
 | Tag format detection | All |
+| Validate metadata (missing fields, invalid values) | All |
+| Normalize metadata (trim, Unicode, whitespace) | All |
+| Copy metadata between files | All |
+| Merge tags with configurable strategy | All |
+| ReplayGain support (track/album gain/peak) | All |
+
+> [!NOTE]
+> On the web, browsers cannot access arbitrary local files via file paths due to security sandboxing. Use the `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`) which accept and return raw byte arrays. On native platforms (Android, iOS, Linux, macOS, Windows), both file path and bytes APIs are available.
 
 ## Install
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.3
+  haudiotagger: ^1.2.4
 ```
+
+> [!NOTE]
+> On the web, browsers cannot access arbitrary local files via file paths due to security sandboxing. Use the `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`) which accept and return raw byte arrays. On native platforms (Android, iOS, Linux, macOS, Windows), both file path and bytes APIs are available.
 
 ## Quick Start
 
@@ -246,6 +257,131 @@ print(info.pictures.length);
 final info = await Haudiotagger.inspectFromBytes(bytes);
 ```
 
+### Validate Metadata
+
+Detect issues before publishing: missing fields, invalid track/disc numbers, bad BPM or year values.
+
+```dart
+final result = await Haudiotagger.validate('/path/to/song.mp3');
+
+print(result.isValid);  // false if any errors
+
+for (final issue in result.issues) {
+  print('${issue.severity.name}: ${issue.field} — ${issue.message}');
+}
+// Error: track_number — Track number (5) exceeds total (3)
+// Warning: pictures — Missing artwork
+
+// Bytes variant
+final result = await Haudiotagger.validateFromBytes(bytes);
+
+// Validate a Tag directly
+final result = await Haudiotagger.validateTag(tag);
+```
+
+### Normalize Metadata
+
+Clean up whitespace, normalize Unicode, and remove empty values.
+
+```dart
+// Default options (trim, normalize whitespace, NFKC, remove empty)
+final tag = await Haudiotagger.normalize('/path/to/song.mp3');
+await Haudiotagger.write('/path/to/song.mp3', tag);
+
+// Custom options
+final tag = await Haudiotagger.normalizeTag(
+  currentTag,
+  options: NormalizeOptions(
+    trimValues: true,
+    normalizeWhitespace: true,
+    normalizeUnicode: false,  // keep original Unicode
+    removeEmptyValues: true,
+  ),
+);
+
+// Bytes variant
+final bytes = await Haudiotagger.normalizeBytes(fileBytes);
+```
+
+### Copy Metadata
+
+Copy metadata between files with fine-grained control.
+
+```dart
+// Copy all metadata from FLAC to MP3
+await Haudiotagger.copyMetadata('album.flac', 'album.mp3');
+
+// Copy without artwork
+await Haudiotagger.copyMetadata(
+  'source.mp3',
+  'dest.mp3',
+  includeArtwork: false,
+);
+
+// Copy without lyrics or custom tags
+await Haudiotagger.copyMetadata(
+  'source.flac',
+  'dest.mp3',
+  includeLyrics: false,
+  includeCustomTags: false,
+);
+
+// Bytes variant (web + native)
+final result = await Haudiotagger.copyMetadataFromBytes(
+  sourceBytes,
+  destBytes,
+  includeArtwork: true,
+);
+```
+
+### Merge Tags
+
+Combine two tags with configurable priority strategy.
+
+```dart
+final tagA = await Haudiotagger.read('song_a.mp3');
+final tagB = await Haudiotagger.read('song_b.mp3');
+
+// Default: preferFirstNonEmpty (tagA wins unless empty)
+final merged = Haudiotagger.mergeTags(tagA, tagB);
+
+// Explicit strategy
+final merged = Haudiotagger.mergeTags(
+  tagA,
+  tagB,
+  strategy: MergeStrategy.preferSecond,
+);
+
+await Haudiotagger.write('merged.mp3', merged);
+```
+
+**Strategies**: `preferFirst`, `preferSecond`, `preferFirstNonEmpty`, `preferSecondNonEmpty`
+
+### ReplayGain
+
+Read and write ReplayGain tags for volume normalization.
+
+```dart
+final tag = await Haudiotagger.read('song.mp3');
+
+// Read
+print(tag.replayGainTrackGain);  // "-6.43"
+print(tag.replayGainAlbumPeak);  // "0.981201"
+
+// Write
+await Haudiotagger.write('song.mp3', tag.copyWith(
+  replayGainTrackGain: '-6.43',
+  replayGainTrackPeak: '0.981201',
+  replayGainAlbumGain: '-7.12',
+  replayGainAlbumPeak: '0.995000',
+));
+
+// Partial update
+await Haudiotagger.update('song.mp3', TagChanges(
+  replayGainTrackGain: '-6.43',
+));
+```
+
 ---
 
 ## Web Setup
@@ -302,6 +438,15 @@ flutter run -d chrome \
 | `convertId3v2FromBytes(bytes, version)` | `Uint8List` | all |
 | `removeId3v1(path)` | `void` | all |
 | `removeId3v1FromBytes(bytes)` | `Uint8List` | all |
+| `validate(path)` | `ValidationResult` | native |
+| `validateFromBytes(bytes)` | `ValidationResult` | all |
+| `validateTag(tag)` | `ValidationResult` | all |
+| `normalize(path)` | `Tag` | native |
+| `normalizeBytes(bytes)` | `Uint8List` | all |
+| `normalizeTag(tag, {options})` | `Tag` | all |
+| `copyMetadata(src, dst, {includeArtwork, includeLyrics, includeCustomTags})` | `void` | native |
+| `copyMetadataFromBytes(srcBytes, dstBytes, {includeArtwork, includeLyrics, includeCustomTags})` | `Uint8List` | all |
+| `mergeTags(tagA, tagB, {strategy})` | `Tag` | all |
 | `batchWrite(paths, tag)` | `BatchResult` | native |
 | `batchUpdateChanges(paths, changes)` | `BatchResult` | native |
 | `batchUpdate(paths, updater, {onProgress})` | `BatchResult` | native |
@@ -333,6 +478,10 @@ flutter run -d chrome \
 | `bpm` | `double?` | |
 | `duration` | `int?` | Read-only |
 | `pictures` | `List<Picture>` | |
+| `replayGainTrackGain` | `String?` | e.g. `"-6.43"` |
+| `replayGainTrackPeak` | `String?` | e.g. `"0.981201"` |
+| `replayGainAlbumGain` | `String?` | e.g. `"-7.12"` |
+| `replayGainAlbumPeak` | `String?` | e.g. `"0.995000"` |
 
 ### `TagChanges`
 
@@ -422,6 +571,43 @@ Same fields as `Tag`, all optional. Only set fields are applied.
 
 `added`, `updated`, `removed`
 
+### `ValidationResult`
+
+| Field | Type |
+|-------|------|
+| `issues` | `List<ValidationIssue>` |
+| `isValid` | `bool` (getter) |
+
+### `ValidationIssue`
+
+| Field | Type |
+|-------|------|
+| `field` | `String` |
+| `message` | `String` |
+| `severity` | `ValidationSeverity` |
+
+### `ValidationSeverity`
+
+`error`, `warning`
+
+### `NormalizeOptions`
+
+| Field | Type | Default |
+|-------|------|---------|
+| `trimValues` | `bool` | `true` |
+| `normalizeWhitespace` | `bool` | `true` |
+| `normalizeUnicode` | `bool` | `true` |
+| `removeEmptyValues` | `bool` | `true` |
+
+### `MergeStrategy`
+
+| Value | Behavior |
+|-------|----------|
+| `preferFirst` | tagA wins for all fields |
+| `preferSecond` | tagB wins for all fields |
+| `preferFirstNonEmpty` | tagA wins unless empty, then tagB |
+| `preferSecondNonEmpty` | tagB wins unless empty, then tagA |
+
 </details>
 
 ---
@@ -433,4 +619,22 @@ Same fields as `Tag`, all optional. Only set fields are applied.
 
 ## License
 
-[MIT](LICENSE)
+hAudiotagger is open-source software licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for more information.
+
+## ❤️ Support
+
+If hAudiotagger helps you build something cool, consider:
+
+⭐ Starring the [repository](https://github.com/Hirdaya-Shrestha/haudiotagger)
+🐛 Reporting bugs
+💡 Suggesting improvements
+🤝 Contributing code
+📦 Sharing the package with other Flutter developers
+
+Every bit of support helps keep the project moving forward.
+
+<p align="center">
+Made with ❤️ and 🦀
+</p>

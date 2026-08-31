@@ -6,10 +6,12 @@
 import 'api/api.dart';
 import 'api/audio_properties.dart';
 import 'api/error.dart';
+import 'api/normalization.dart';
 import 'api/picture.dart';
 import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
+import 'api/validation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'frb_generated.dart';
@@ -74,7 +76,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 494050885;
+  int get rustContentHash => 1769373144;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -127,6 +129,18 @@ abstract class RustLibApi extends BaseApi {
 
   Future<AudioFileInfo> crateApiApiInspectFromBytes({required List<int> bytes});
 
+  Future<Tag> crateApiApiNormalize({required String path});
+
+  Future<Tag> crateApiNormalizationNormalize(
+      {required Tag tag, required NormalizeOptions opts});
+
+  Future<Uint8List> crateApiApiNormalizeBytes({required List<int> bytes});
+
+  Future<NormalizeOptions> crateApiNormalizationNormalizeOptionsDefault();
+
+  Future<Tag> crateApiApiNormalizeTag(
+      {required Tag tag, required NormalizeOptions options});
+
   Future<Picture> crateApiPicturePictureNew(
       {required PictureType pictureType,
       MimeType? mimeType,
@@ -177,6 +191,18 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiTagChangesUpdateFromBytes(
       {required List<int> bytes, required TagChanges changes});
+
+  Future<ValidationResult> crateApiApiValidate({required String path});
+
+  Future<ValidationResult> crateApiValidationValidate({required Tag tag});
+
+  Future<ValidationResult> crateApiApiValidateFromBytes(
+      {required List<int> bytes});
+
+  Future<ValidationResult> crateApiApiValidateTag({required Tag tag});
+
+  Future<bool> crateApiValidationValidationResultIsValid(
+      {required ValidationResult that});
 
   Future<void> crateApiApiWrite({required String path, required Tag data});
 
@@ -601,6 +627,131 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<Tag> crateApiApiNormalize({required String path}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 17, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiApiNormalizeConstMeta,
+      argValues: [path],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiNormalizeConstMeta => const TaskConstMeta(
+        debugName: "normalize",
+        argNames: ["path"],
+      );
+
+  @override
+  Future<Tag> crateApiNormalizationNormalize(
+      {required Tag tag, required NormalizeOptions opts}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        sse_encode_box_autoadd_normalize_options(opts, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 18, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiNormalizationNormalizeConstMeta,
+      argValues: [tag, opts],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiNormalizationNormalizeConstMeta =>
+      const TaskConstMeta(
+        debugName: "normalize",
+        argNames: ["tag", "opts"],
+      );
+
+  @override
+  Future<Uint8List> crateApiApiNormalizeBytes({required List<int> bytes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_prim_u_8_loose(bytes, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 19, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiApiNormalizeBytesConstMeta,
+      argValues: [bytes],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiNormalizeBytesConstMeta => const TaskConstMeta(
+        debugName: "normalize_bytes",
+        argNames: ["bytes"],
+      );
+
+  @override
+  Future<NormalizeOptions> crateApiNormalizationNormalizeOptionsDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 20, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_normalize_options,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiNormalizationNormalizeOptionsDefaultConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiNormalizationNormalizeOptionsDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "normalize_options_default",
+        argNames: [],
+      );
+
+  @override
+  Future<Tag> crateApiApiNormalizeTag(
+      {required Tag tag, required NormalizeOptions options}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        sse_encode_box_autoadd_normalize_options(options, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 21, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiApiNormalizeTagConstMeta,
+      argValues: [tag, options],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiNormalizeTagConstMeta => const TaskConstMeta(
+        debugName: "normalize_tag",
+        argNames: ["tag", "options"],
+      );
+
+  @override
   Future<Picture> crateApiPicturePictureNew(
       {required PictureType pictureType,
       MimeType? mimeType,
@@ -612,7 +763,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_opt_box_autoadd_mime_type(mimeType, serializer);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 17, port: port_);
+            funcId: 22, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_picture,
@@ -636,7 +787,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 18, port: port_);
+            funcId: 23, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -660,7 +811,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 19, port: port_);
+            funcId: 24, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -685,7 +836,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 20, port: port_);
+            funcId: 25, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -711,7 +862,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 21, port: port_);
+            funcId: 26, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -738,7 +889,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_list_tag_field(fields, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 22, port: port_);
+            funcId: 27, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -764,7 +915,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_String(key, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 23, port: port_);
+            funcId: 28, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -790,7 +941,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_String(key, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 24, port: port_);
+            funcId: 29, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -817,7 +968,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_tag_field(fields, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 25, port: port_);
+            funcId: 30, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -841,7 +992,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 26, port: port_);
+            funcId: 31, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -866,7 +1017,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 27, port: port_);
+            funcId: 32, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -894,7 +1045,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(key, serializer);
         sse_encode_String(value, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 28, port: port_);
+            funcId: 33, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -921,7 +1072,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(key, serializer);
         sse_encode_String(value, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 29, port: port_);
+            funcId: 34, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -945,7 +1096,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 30, port: port_);
+            funcId: 35, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_changes,
@@ -970,7 +1121,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag_changes(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 31, port: port_);
+            funcId: 36, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -994,7 +1145,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 32, port: port_);
+            funcId: 37, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1018,7 +1169,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 33, port: port_);
+            funcId: 38, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1044,7 +1195,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 34, port: port_);
+            funcId: 39, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1070,7 +1221,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 35, port: port_);
+            funcId: 40, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1089,6 +1240,130 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<ValidationResult> crateApiApiValidate({required String path}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 41, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_validation_result,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiApiValidateConstMeta,
+      argValues: [path],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiValidateConstMeta => const TaskConstMeta(
+        debugName: "validate",
+        argNames: ["path"],
+      );
+
+  @override
+  Future<ValidationResult> crateApiValidationValidate({required Tag tag}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 42, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_validation_result,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiValidationValidateConstMeta,
+      argValues: [tag],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiValidationValidateConstMeta => const TaskConstMeta(
+        debugName: "validate",
+        argNames: ["tag"],
+      );
+
+  @override
+  Future<ValidationResult> crateApiApiValidateFromBytes(
+      {required List<int> bytes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_prim_u_8_loose(bytes, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 43, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_validation_result,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiApiValidateFromBytesConstMeta,
+      argValues: [bytes],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiValidateFromBytesConstMeta =>
+      const TaskConstMeta(
+        debugName: "validate_from_bytes",
+        argNames: ["bytes"],
+      );
+
+  @override
+  Future<ValidationResult> crateApiApiValidateTag({required Tag tag}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 44, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_validation_result,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiApiValidateTagConstMeta,
+      argValues: [tag],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiValidateTagConstMeta => const TaskConstMeta(
+        debugName: "validate_tag",
+        argNames: ["tag"],
+      );
+
+  @override
+  Future<bool> crateApiValidationValidationResultIsValid(
+      {required ValidationResult that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_validation_result(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 45, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_bool,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiValidationValidationResultIsValidConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiValidationValidationResultIsValidConstMeta =>
+      const TaskConstMeta(
+        debugName: "validation_result_is_valid",
+        argNames: ["that"],
+      );
+
+  @override
   Future<void> crateApiApiWrite({required String path, required Tag data}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
@@ -1096,7 +1371,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 36, port: port_);
+            funcId: 46, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1122,7 +1397,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 37, port: port_);
+            funcId: 47, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1251,6 +1526,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  NormalizeOptions dco_decode_box_autoadd_normalize_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_normalize_options(raw);
+  }
+
+  @protected
   Tag dco_decode_box_autoadd_tag(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_tag(raw);
@@ -1272,6 +1553,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt dco_decode_box_autoadd_u_64(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return dco_decode_u_64(raw);
+  }
+
+  @protected
+  ValidationResult dco_decode_box_autoadd_validation_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_validation_result(raw);
   }
 
   @protected
@@ -1368,9 +1655,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<ValidationIssue> dco_decode_list_validation_issue(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_validation_issue).toList();
+  }
+
+  @protected
   MimeType dco_decode_mime_type(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return MimeType.values[raw as int];
+  }
+
+  @protected
+  NormalizeOptions dco_decode_normalize_options(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 4)
+      throw Exception('unexpected arr length: expect 4 but see ${arr.length}');
+    return NormalizeOptions(
+      trimValues: dco_decode_bool(arr[0]),
+      normalizeWhitespace: dco_decode_bool(arr[1]),
+      normalizeUnicode: dco_decode_bool(arr[2]),
+      removeEmptyValues: dco_decode_bool(arr[3]),
+    );
   }
 
   @protected
@@ -1476,8 +1783,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   Tag dco_decode_tag(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 15)
-      throw Exception('unexpected arr length: expect 15 but see ${arr.length}');
+    if (arr.length != 19)
+      throw Exception('unexpected arr length: expect 19 but see ${arr.length}');
     return Tag(
       title: dco_decode_opt_String(arr[0]),
       trackArtist: dco_decode_opt_String(arr[1]),
@@ -1494,6 +1801,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       duration: dco_decode_opt_box_autoadd_u_32(arr[12]),
       pictures: dco_decode_list_picture(arr[13]),
       bpm: dco_decode_opt_box_autoadd_f_32(arr[14]),
+      replayGainTrackGain: dco_decode_opt_String(arr[15]),
+      replayGainTrackPeak: dco_decode_opt_String(arr[16]),
+      replayGainAlbumGain: dco_decode_opt_String(arr[17]),
+      replayGainAlbumPeak: dco_decode_opt_String(arr[18]),
     );
   }
 
@@ -1501,8 +1812,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TagChanges dco_decode_tag_changes(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 14)
-      throw Exception('unexpected arr length: expect 14 but see ${arr.length}');
+    if (arr.length != 18)
+      throw Exception('unexpected arr length: expect 18 but see ${arr.length}');
     return TagChanges(
       title: dco_decode_opt_String(arr[0]),
       trackArtist: dco_decode_opt_String(arr[1]),
@@ -1518,6 +1829,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       comment: dco_decode_opt_String(arr[11]),
       pictures: dco_decode_opt_list_picture(arr[12]),
       bpm: dco_decode_opt_box_autoadd_f_32(arr[13]),
+      replayGainTrackGain: dco_decode_opt_String(arr[14]),
+      replayGainTrackPeak: dco_decode_opt_String(arr[15]),
+      replayGainAlbumGain: dco_decode_opt_String(arr[16]),
+      replayGainAlbumPeak: dco_decode_opt_String(arr[17]),
     );
   }
 
@@ -1549,6 +1864,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void dco_decode_unit(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return;
+  }
+
+  @protected
+  ValidationIssue dco_decode_validation_issue(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 3)
+      throw Exception('unexpected arr length: expect 3 but see ${arr.length}');
+    return ValidationIssue(
+      field: dco_decode_String(arr[0]),
+      message: dco_decode_String(arr[1]),
+      severity: dco_decode_validation_severity(arr[2]),
+    );
+  }
+
+  @protected
+  ValidationResult dco_decode_validation_result(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return ValidationResult(
+      issues: dco_decode_list_validation_issue(arr[0]),
+    );
+  }
+
+  @protected
+  ValidationSeverity dco_decode_validation_severity(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return ValidationSeverity.values[raw as int];
   }
 
   @protected
@@ -1669,6 +2014,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  NormalizeOptions sse_decode_box_autoadd_normalize_options(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_normalize_options(deserializer));
+  }
+
+  @protected
   Tag sse_decode_box_autoadd_tag(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_tag(deserializer));
@@ -1690,6 +2042,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_u_64(deserializer));
+  }
+
+  @protected
+  ValidationResult sse_decode_box_autoadd_validation_result(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_validation_result(deserializer));
   }
 
   @protected
@@ -1829,10 +2188,37 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  List<ValidationIssue> sse_decode_list_validation_issue(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <ValidationIssue>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_validation_issue(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
   MimeType sse_decode_mime_type(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return MimeType.values[inner];
+  }
+
+  @protected
+  NormalizeOptions sse_decode_normalize_options(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_trimValues = sse_decode_bool(deserializer);
+    var var_normalizeWhitespace = sse_decode_bool(deserializer);
+    var var_normalizeUnicode = sse_decode_bool(deserializer);
+    var var_removeEmptyValues = sse_decode_bool(deserializer);
+    return NormalizeOptions(
+        trimValues: var_trimValues,
+        normalizeWhitespace: var_normalizeWhitespace,
+        normalizeUnicode: var_normalizeUnicode,
+        removeEmptyValues: var_removeEmptyValues);
   }
 
   @protected
@@ -1987,6 +2373,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_duration = sse_decode_opt_box_autoadd_u_32(deserializer);
     var var_pictures = sse_decode_list_picture(deserializer);
     var var_bpm = sse_decode_opt_box_autoadd_f_32(deserializer);
+    var var_replayGainTrackGain = sse_decode_opt_String(deserializer);
+    var var_replayGainTrackPeak = sse_decode_opt_String(deserializer);
+    var var_replayGainAlbumGain = sse_decode_opt_String(deserializer);
+    var var_replayGainAlbumPeak = sse_decode_opt_String(deserializer);
     return Tag(
         title: var_title,
         trackArtist: var_trackArtist,
@@ -2002,7 +2392,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         comment: var_comment,
         duration: var_duration,
         pictures: var_pictures,
-        bpm: var_bpm);
+        bpm: var_bpm,
+        replayGainTrackGain: var_replayGainTrackGain,
+        replayGainTrackPeak: var_replayGainTrackPeak,
+        replayGainAlbumGain: var_replayGainAlbumGain,
+        replayGainAlbumPeak: var_replayGainAlbumPeak);
   }
 
   @protected
@@ -2022,6 +2416,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_comment = sse_decode_opt_String(deserializer);
     var var_pictures = sse_decode_opt_list_picture(deserializer);
     var var_bpm = sse_decode_opt_box_autoadd_f_32(deserializer);
+    var var_replayGainTrackGain = sse_decode_opt_String(deserializer);
+    var var_replayGainTrackPeak = sse_decode_opt_String(deserializer);
+    var var_replayGainAlbumGain = sse_decode_opt_String(deserializer);
+    var var_replayGainAlbumPeak = sse_decode_opt_String(deserializer);
     return TagChanges(
         title: var_title,
         trackArtist: var_trackArtist,
@@ -2036,7 +2434,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         lyrics: var_lyrics,
         comment: var_comment,
         pictures: var_pictures,
-        bpm: var_bpm);
+        bpm: var_bpm,
+        replayGainTrackGain: var_replayGainTrackGain,
+        replayGainTrackPeak: var_replayGainTrackPeak,
+        replayGainAlbumGain: var_replayGainAlbumGain,
+        replayGainAlbumPeak: var_replayGainAlbumPeak);
   }
 
   @protected
@@ -2067,6 +2469,31 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_decode_unit(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  ValidationIssue sse_decode_validation_issue(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_field = sse_decode_String(deserializer);
+    var var_message = sse_decode_String(deserializer);
+    var var_severity = sse_decode_validation_severity(deserializer);
+    return ValidationIssue(
+        field: var_field, message: var_message, severity: var_severity);
+  }
+
+  @protected
+  ValidationResult sse_decode_validation_result(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_issues = sse_decode_list_validation_issue(deserializer);
+    return ValidationResult(issues: var_issues);
+  }
+
+  @protected
+  ValidationSeverity sse_decode_validation_severity(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var inner = sse_decode_i_32(deserializer);
+    return ValidationSeverity.values[inner];
   }
 
   @protected
@@ -2168,6 +2595,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_normalize_options(
+      NormalizeOptions self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_normalize_options(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_tag(Tag self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_tag(self, serializer);
@@ -2190,6 +2624,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_64(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_validation_result(
+      ValidationResult self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_validation_result(self, serializer);
   }
 
   @protected
@@ -2311,9 +2752,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_list_validation_issue(
+      List<ValidationIssue> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_validation_issue(item, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_mime_type(MimeType self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
+  }
+
+  @protected
+  void sse_encode_normalize_options(
+      NormalizeOptions self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bool(self.trimValues, serializer);
+    sse_encode_bool(self.normalizeWhitespace, serializer);
+    sse_encode_bool(self.normalizeUnicode, serializer);
+    sse_encode_bool(self.removeEmptyValues, serializer);
   }
 
   @protected
@@ -2458,6 +2919,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_box_autoadd_u_32(self.duration, serializer);
     sse_encode_list_picture(self.pictures, serializer);
     sse_encode_opt_box_autoadd_f_32(self.bpm, serializer);
+    sse_encode_opt_String(self.replayGainTrackGain, serializer);
+    sse_encode_opt_String(self.replayGainTrackPeak, serializer);
+    sse_encode_opt_String(self.replayGainAlbumGain, serializer);
+    sse_encode_opt_String(self.replayGainAlbumPeak, serializer);
   }
 
   @protected
@@ -2477,6 +2942,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.comment, serializer);
     sse_encode_opt_list_picture(self.pictures, serializer);
     sse_encode_opt_box_autoadd_f_32(self.bpm, serializer);
+    sse_encode_opt_String(self.replayGainTrackGain, serializer);
+    sse_encode_opt_String(self.replayGainTrackPeak, serializer);
+    sse_encode_opt_String(self.replayGainAlbumGain, serializer);
+    sse_encode_opt_String(self.replayGainAlbumPeak, serializer);
   }
 
   @protected
@@ -2506,5 +2975,28 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  void sse_encode_validation_issue(
+      ValidationIssue self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_String(self.field, serializer);
+    sse_encode_String(self.message, serializer);
+    sse_encode_validation_severity(self.severity, serializer);
+  }
+
+  @protected
+  void sse_encode_validation_result(
+      ValidationResult self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_list_validation_issue(self.issues, serializer);
+  }
+
+  @protected
+  void sse_encode_validation_severity(
+      ValidationSeverity self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.index, serializer);
   }
 }

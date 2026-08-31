@@ -1,6 +1,6 @@
 [package]
 name = "haudiotagger"
-version = "1.2.3"
+version = "1.2.4"
 edition = "2024"
 
 [lib]
@@ -17,6 +17,7 @@ crate-type = ["staticlib", "cdylib"]
 [dependencies]
 flutter_rust_bridge = "=2.13.0"
 lofty = "0.25.1"
+unicode-normalization = "0.1.24"
 
 [dev-dependencies]
 anyhow = "1.0.68"

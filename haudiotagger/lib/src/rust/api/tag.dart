@@ -57,6 +57,18 @@ class Tag {
   /// Beats per minute.
   final double? bpm;
 
+  /// ReplayGain track gain in dB (e.g. "-6.43").
+  final String? replayGainTrackGain;
+
+  /// ReplayGain track peak (e.g. "0.981201").
+  final String? replayGainTrackPeak;
+
+  /// ReplayGain album gain in dB.
+  final String? replayGainAlbumGain;
+
+  /// ReplayGain album peak.
+  final String? replayGainAlbumPeak;
+
   const Tag({
     this.title,
     this.trackArtist,
@@ -73,6 +85,10 @@ class Tag {
     this.duration,
     required this.pictures,
     this.bpm,
+    this.replayGainTrackGain,
+    this.replayGainTrackPeak,
+    this.replayGainAlbumGain,
+    this.replayGainAlbumPeak,
   });
 
   static Future<Tag> default_() => RustLib.instance.api.crateApiTagTagDefault();
@@ -98,7 +114,11 @@ class Tag {
       comment.hashCode ^
       duration.hashCode ^
       pictures.hashCode ^
-      bpm.hashCode;
+      bpm.hashCode ^
+      replayGainTrackGain.hashCode ^
+      replayGainTrackPeak.hashCode ^
+      replayGainAlbumGain.hashCode ^
+      replayGainAlbumPeak.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -119,5 +139,9 @@ class Tag {
           comment == other.comment &&
           duration == other.duration &&
           pictures == other.pictures &&
-          bpm == other.bpm;
+          bpm == other.bpm &&
+          replayGainTrackGain == other.replayGainTrackGain &&
+          replayGainTrackPeak == other.replayGainTrackPeak &&
+          replayGainAlbumGain == other.replayGainAlbumGain &&
+          replayGainAlbumPeak == other.replayGainAlbumPeak;
 }

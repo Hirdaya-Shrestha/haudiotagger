@@ -1,3 +1,14 @@
+## 1.2.4
+
+- Added `validate` / `validateFromBytes` / `validateTag` — detect metadata issues (missing fields, invalid track/disc numbers, bad BPM/year)
+- Added `NormalizeOptions` and `normalize` / `normalizeBytes` / `normalizeTag` — trim whitespace, normalize Unicode (NFKC), collapse spaces, remove empty values
+- Added `copyMetadata` / `copyMetadataFromBytes` — copy metadata between files with options to include/exclude artwork, lyrics, and custom tags
+- Added `mergeTags` with `MergeStrategy` — merge two tags with configurable priority (preferFirst, preferSecond, preferFirstNonEmpty, preferSecondNonEmpty)
+- Added ReplayGain support: `replayGainTrackGain`, `replayGainTrackPeak`, `replayGainAlbumGain`, `replayGainAlbumPeak` fields on `Tag`
+- Added ReplayGain fields to `TagChanges` for partial updates
+- Added `copyWith` extensions for `Tag`, `TagChanges`, and `Picture`
+- New types: `ValidationResult`, `ValidationIssue`, `ValidationSeverity`, `NormalizeOptions`, `MergeStrategy`
+
 ## 1.2.3
 
 - Added `inspect` / `inspectFromBytes` — get format, tag format, properties, metadata, pictures, and file size in one call

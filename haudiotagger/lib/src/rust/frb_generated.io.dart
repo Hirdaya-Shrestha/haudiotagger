@@ -6,10 +6,12 @@
 import 'api/api.dart';
 import 'api/audio_properties.dart';
 import 'api/error.dart';
+import 'api/normalization.dart';
 import 'api/picture.dart';
 import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
+import 'api/validation.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
@@ -61,6 +63,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   MimeType dco_decode_box_autoadd_mime_type(dynamic raw);
 
   @protected
+  NormalizeOptions dco_decode_box_autoadd_normalize_options(dynamic raw);
+
+  @protected
   Tag dco_decode_box_autoadd_tag(dynamic raw);
 
   @protected
@@ -71,6 +76,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt dco_decode_box_autoadd_u_64(dynamic raw);
+
+  @protected
+  ValidationResult dco_decode_box_autoadd_validation_result(dynamic raw);
 
   @protected
   double dco_decode_f_32(dynamic raw);
@@ -112,7 +120,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<TagField> dco_decode_list_tag_field(dynamic raw);
 
   @protected
+  List<ValidationIssue> dco_decode_list_validation_issue(dynamic raw);
+
+  @protected
   MimeType dco_decode_mime_type(dynamic raw);
+
+  @protected
+  NormalizeOptions dco_decode_normalize_options(dynamic raw);
 
   @protected
   String? dco_decode_opt_String(dynamic raw);
@@ -175,6 +189,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void dco_decode_unit(dynamic raw);
 
   @protected
+  ValidationIssue dco_decode_validation_issue(dynamic raw);
+
+  @protected
+  ValidationResult dco_decode_validation_result(dynamic raw);
+
+  @protected
+  ValidationSeverity dco_decode_validation_severity(dynamic raw);
+
+  @protected
   Map<String, String> sse_decode_Map_String_String_None(
       SseDeserializer deserializer);
 
@@ -213,6 +236,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   MimeType sse_decode_box_autoadd_mime_type(SseDeserializer deserializer);
 
   @protected
+  NormalizeOptions sse_decode_box_autoadd_normalize_options(
+      SseDeserializer deserializer);
+
+  @protected
   Tag sse_decode_box_autoadd_tag(SseDeserializer deserializer);
 
   @protected
@@ -223,6 +250,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   BigInt sse_decode_box_autoadd_u_64(SseDeserializer deserializer);
+
+  @protected
+  ValidationResult sse_decode_box_autoadd_validation_result(
+      SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_32(SseDeserializer deserializer);
@@ -267,7 +298,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   List<TagField> sse_decode_list_tag_field(SseDeserializer deserializer);
 
   @protected
+  List<ValidationIssue> sse_decode_list_validation_issue(
+      SseDeserializer deserializer);
+
+  @protected
   MimeType sse_decode_mime_type(SseDeserializer deserializer);
+
+  @protected
+  NormalizeOptions sse_decode_normalize_options(SseDeserializer deserializer);
 
   @protected
   String? sse_decode_opt_String(SseDeserializer deserializer);
@@ -332,6 +370,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_decode_unit(SseDeserializer deserializer);
 
   @protected
+  ValidationIssue sse_decode_validation_issue(SseDeserializer deserializer);
+
+  @protected
+  ValidationResult sse_decode_validation_result(SseDeserializer deserializer);
+
+  @protected
+  ValidationSeverity sse_decode_validation_severity(
+      SseDeserializer deserializer);
+
+  @protected
   void sse_encode_Map_String_String_None(
       Map<String, String> self, SseSerializer serializer);
 
@@ -374,6 +422,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       MimeType self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_normalize_options(
+      NormalizeOptions self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_tag(Tag self, SseSerializer serializer);
 
   @protected
@@ -385,6 +437,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_u_64(BigInt self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_validation_result(
+      ValidationResult self, SseSerializer serializer);
 
   @protected
   void sse_encode_f_32(double self, SseSerializer serializer);
@@ -431,7 +487,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_list_tag_field(List<TagField> self, SseSerializer serializer);
 
   @protected
+  void sse_encode_list_validation_issue(
+      List<ValidationIssue> self, SseSerializer serializer);
+
+  @protected
   void sse_encode_mime_type(MimeType self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_normalize_options(
+      NormalizeOptions self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
@@ -498,6 +562,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_validation_issue(
+      ValidationIssue self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_validation_result(
+      ValidationResult self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_validation_severity(
+      ValidationSeverity self, SseSerializer serializer);
 }
 
 // Section: wire_class
