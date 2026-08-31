@@ -699,9 +699,11 @@ pub fn set_custom_tag_from_bytes(
         }
         let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
         let mut tag_bytes = Vec::new();
-        lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()).map_err(|e| HaudiotaggerError::Write {
-            message: format!("Could not serialize tag: {e:?}"),
-        })?;
+        lo_tag
+            .dump_to(&mut tag_bytes, WriteOptions::new())
+            .map_err(|e| HaudiotaggerError::Write {
+                message: format!("Could not serialize tag: {e:?}"),
+            })?;
         let mut out = tag_bytes;
         out.extend_from_slice(audio);
         return Ok(out);
@@ -794,9 +796,11 @@ pub fn remove_custom_tag_from_bytes(
         }
         let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
         let mut tag_bytes = Vec::new();
-        lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()).map_err(|e| HaudiotaggerError::Write {
-            message: format!("Could not serialize tag: {e:?}"),
-        })?;
+        lo_tag
+            .dump_to(&mut tag_bytes, WriteOptions::new())
+            .map_err(|e| HaudiotaggerError::Write {
+                message: format!("Could not serialize tag: {e:?}"),
+            })?;
         let mut out = tag_bytes;
         out.extend_from_slice(audio);
         return Ok(out);
