@@ -673,10 +673,42 @@ pub fn set_custom_tag_from_bytes(
     key: String,
     value: String,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
+    if is_mp3("", &bytes) {
+        let file = get_file_from_bytes(&bytes)?;
+        let mut lo_tag = LoftyTag::new(file.primary_tag_type());
+        if let Some(existing_tag) = file.primary_tag() {
+            let std_tag = Tag::from(existing_tag);
+            apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
+        }
+        match file.primary_tag_type() {
+            TagType::Id3v2 => {
+                let mut id3v2: lofty::id3::v2::Id3v2Tag = lo_tag.into();
+                id3v2.insert_user_text(key, value);
+                lo_tag = id3v2.into();
+            }
+            TagType::VorbisComments => {
+                let mut vorbis: lofty::ogg::tag::VorbisComments = lo_tag.into();
+                vorbis.insert(key, value);
+                lo_tag = vorbis.into();
+            }
+            _ => {
+                return Err(HaudiotaggerError::Write {
+                    message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
+                });
+            }
+        }
+        let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+        let mut tag_bytes = Vec::new();
+        lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()).map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        })?;
+        let mut out = tag_bytes;
+        out.extend_from_slice(audio);
+        return Ok(out);
+    }
     let mut file = get_file_from_bytes(&bytes)?;
     let new_tag = set_custom_tag_impl(&file, key, value)?;
     file.insert_tag(new_tag);
-
     let mut out = Cursor::new(Vec::new());
     file.save_to(&mut out, WriteOptions::new())
         .map_err(|e| HaudiotaggerError::Write {
@@ -735,10 +767,43 @@ pub fn remove_custom_tag_from_bytes(
     bytes: Vec<u8>,
     key: String,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
+    if is_mp3("", &bytes) {
+        let file = get_file_from_bytes(&bytes)?;
+        let tag_type = file.primary_tag_type();
+        let mut lo_tag = LoftyTag::new(tag_type);
+        if let Some(existing_tag) = file.primary_tag() {
+            let std_tag = Tag::from(existing_tag);
+            apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
+        }
+        match tag_type {
+            TagType::Id3v2 => {
+                let mut id3v2: lofty::id3::v2::Id3v2Tag = lo_tag.into();
+                id3v2.remove_user_text(&key);
+                lo_tag = id3v2.into();
+            }
+            TagType::VorbisComments => {
+                let mut vorbis: lofty::ogg::tag::VorbisComments = lo_tag.into();
+                for _ in vorbis.remove(&key) {}
+                lo_tag = vorbis.into();
+            }
+            _ => {
+                return Err(HaudiotaggerError::Write {
+                    message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
+                });
+            }
+        }
+        let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+        let mut tag_bytes = Vec::new();
+        lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()).map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        })?;
+        let mut out = tag_bytes;
+        out.extend_from_slice(audio);
+        return Ok(out);
+    }
     let mut file = get_file_from_bytes(&bytes)?;
     let new_tag = remove_custom_tag_impl(&file, key)?;
     file.insert_tag(new_tag);
-
     let mut out = Cursor::new(Vec::new());
     file.save_to(&mut out, WriteOptions::new())
         .map_err(|e| HaudiotaggerError::Write {

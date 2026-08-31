@@ -11,11 +11,7 @@ void main() {
   late Uint8List mp3Bytes;
 
   setUp(() {
-    mp3Bytes = createMinimalMp3(
-      title: 'Original Title',
-      artist: 'Original Artist',
-      album: 'Original Album',
-    );
+    mp3Bytes = createTaggedMp3();
   });
 
   // ============================================================
@@ -54,10 +50,7 @@ void main() {
     test('write with empty tag clears metadata', () async {
       final written = await Haudiotagger.writeToBytes(mp3Bytes, Tag(pictures: []));
       final readBack = await Haudiotagger.readFromBytes(written);
-      expect(readBack, isNotNull);
-      expect(readBack!.title, isNull);
-      expect(readBack.trackArtist, isNull);
-      expect(readBack.album, isNull);
+      expect(readBack, isNull);
     });
   });
 
@@ -129,11 +122,7 @@ void main() {
     test('clearFromBytes removes all metadata', () async {
       final written = await Haudiotagger.clearFromBytes(mp3Bytes);
       final readBack = await Haudiotagger.readFromBytes(written);
-      expect(readBack, isNotNull);
-      expect(readBack!.title, isNull);
-      expect(readBack.trackArtist, isNull);
-      expect(readBack.album, isNull);
-      expect(await readBack.isEmpty(), true);
+      expect(readBack, isNull);
     });
   });
 
@@ -415,7 +404,7 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      expect(result.isValid, true);
+      expect(await result.isValid(), true);
       expect(result.issues.where((i) => i.severity == ValidationSeverity.error), isEmpty);
     });
 
@@ -424,7 +413,7 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      expect(result.isValid, false);
+      expect(await result.isValid(), false);
       final errors = result.issues.where((i) => i.severity == ValidationSeverity.error);
       expect(errors.any((i) => i.field == 'track_number'), true);
     });
@@ -434,7 +423,7 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      expect(result.isValid, false);
+      expect(await result.isValid(), false);
       final errors = result.issues.where((i) => i.severity == ValidationSeverity.error);
       expect(errors.any((i) => i.field == 'disc_number'), true);
     });
@@ -570,7 +559,7 @@ void main() {
 
   group('copyMetadata', () {
     test('copyMetadataFromBytes copies all metadata', () async {
-      final destBytes = createMinimalMp3();
+      final destBytes = createEmptyMp3();
 
       final result = await Haudiotagger.copyMetadataFromBytes(
         mp3Bytes,
@@ -585,7 +574,7 @@ void main() {
     });
 
     test('copyMetadataFromBytes without artwork excludes pictures', () async {
-      final destBytes = createMinimalMp3();
+      final destBytes = createEmptyMp3();
 
       final result = await Haudiotagger.copyMetadataFromBytes(
         mp3Bytes,
