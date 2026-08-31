@@ -52,7 +52,7 @@ jobs:
             echo "No framework changes to commit"
           else
             git commit -m "build: update committed iOS/macOS xcframeworks (SPM)"
-            git push
+            git push origin HEAD:main
           fi
 
   # ============================================================
