@@ -1,5 +1,6 @@
 use std::io::Cursor;
 
+use rayon::prelude::*;
 use super::{
     error::HaudiotaggerError,
     tag::Tag,
@@ -164,6 +165,7 @@ pub fn read_from_bytes(bytes: Vec<u8>) -> Result<Tag, HaudiotaggerError> {
 /// identifies some real MP3s (returns non-`Mpeg`), which would otherwise route
 /// them through lofty's writer and abort with `FileEncodingError { format: None }`.
 /// So we additionally key off the `.mp3` extension and a leading "ID3" marker.
+#[inline]
 fn is_mp3(path: &str, bytes: &[u8]) -> bool {
     if path.to_lowercase().ends_with(".mp3") {
         return true;
@@ -218,6 +220,8 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
 }
 
 /// Strip a leading ID3v2 tag (starts with "ID3", syncsafe size at bytes 6..10).
+/// Strip a leading ID3v2 tag. Returns the audio portion after the tag.
+#[inline]
 fn strip_id3v2(bytes: &[u8]) -> &[u8] {
     if bytes.len() >= 10 && &bytes[0..3] == b"ID3" {
         let size = ((bytes[6] as usize & 0x7F) << 21)
@@ -233,6 +237,7 @@ fn strip_id3v2(bytes: &[u8]) -> &[u8] {
 }
 
 /// Strip a trailing ID3v1 tag (last 128 bytes start with "TAG").
+#[inline]
 fn strip_id3v1(bytes: &[u8]) -> &[u8] {
     if bytes.len() >= 128 && &bytes[bytes.len() - 128..bytes.len() - 125] == b"TAG" {
         return &bytes[..bytes.len() - 128];
@@ -242,6 +247,7 @@ fn strip_id3v1(bytes: &[u8]) -> &[u8] {
 
 /// Strip a trailing APEv2 tag (footer "APETAGEX" at the end; its size field
 /// covers the whole tag including the footer).
+#[inline]
 fn strip_ape(bytes: &[u8]) -> &[u8] {
     if bytes.len() >= 32 && &bytes[bytes.len() - 32..bytes.len() - 24] == b"APETAGEX" {
         let size = u32::from_le_bytes([
@@ -261,20 +267,59 @@ fn write_mp3_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerErr
     let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
 
     if data.is_empty() {
-        return Ok(audio.to_vec());
+        let mut out = Vec::with_capacity(audio.len());
+        out.extend_from_slice(audio);
+        return Ok(out);
     }
 
     let mut lo_tag = LoftyTag::new(TagType::Id3v2);
     apply_tag_to_lofty_tag(&data, &mut lo_tag)?;
 
-    let mut tag_bytes = Vec::new();
+    let mut tag_bytes = Vec::with_capacity(1024);
     lo_tag
         .dump_to(&mut tag_bytes, WriteOptions::new())
         .map_err(|e| HaudiotaggerError::Write {
             message: format!("Could not serialize tag: {e:?}"),
         })?;
 
-    let mut out = tag_bytes;
+    let mut out = Vec::with_capacity(tag_bytes.len() + audio.len());
+    out.extend_from_slice(&tag_bytes);
+    out.extend_from_slice(audio);
+    Ok(out)
+}
+
+/// Shared helper: strip existing tags from MP3 bytes, build a new lofty Tag via
+/// the supplied closure, serialize, and concatenate with the raw audio.
+/// This avoids duplicating the strip→build→dump→concat pattern across
+/// `write_to_bytes`, `set_custom_tag_from_bytes`, and `remove_custom_tag_from_bytes`.
+fn write_lofty_tag_to_mp3_bytes<F>(
+    bytes: &[u8],
+    build: F,
+) -> Result<Vec<u8>, HaudiotaggerError>
+where
+    F: FnOnce(LoftyTag) -> Result<LoftyTag, HaudiotaggerError>,
+{
+    let audio = strip_ape(strip_id3v1(strip_id3v2(bytes)));
+    let file = get_file_from_bytes(bytes)?;
+    let tag_type = file.primary_tag_type();
+
+    let mut lo_tag = LoftyTag::new(tag_type);
+    if let Some(existing_tag) = file.primary_tag() {
+        let std_tag = Tag::from(existing_tag);
+        apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
+    }
+
+    let lo_tag = build(lo_tag)?;
+
+    let mut tag_bytes = Vec::with_capacity(1024);
+    lo_tag
+        .dump_to(&mut tag_bytes, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        })?;
+
+    let mut out = Vec::with_capacity(tag_bytes.len() + audio.len());
+    out.extend_from_slice(&tag_bytes);
     out.extend_from_slice(audio);
     Ok(out)
 }
@@ -433,14 +478,83 @@ pub fn batch_update_changes(paths: Vec<String>, changes: TagChanges) -> BatchRes
     }
 }
 
-/// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
-pub fn batch_write_from_bytes(byte_arrays: Vec<Vec<u8>>, data: Tag) -> BatchBytesResult {
-    let mut results = Vec::new();
-    let mut failures = 0u32;
-    let mut errors = Vec::new();
+/// Helper: return a BatchBytesResult with the same error for all `count` entries.
+fn err_result(count: usize, err: HaudiotaggerError) -> BatchBytesResult {
+    let msg = err.to_string();
+    BatchBytesResult {
+        results: Vec::new(),
+        failures: count as u32,
+        errors: (0..count as u32).map(|i| (i, msg.clone())).collect(),
+    }
+}
 
-    for (i, bytes) in byte_arrays.into_iter().enumerate() {
-        match write_to_bytes(bytes, data.clone()) {
+/// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
+///
+/// Optimized path: builds the lofty tag and serializes it **once**, then
+/// reuses the pre-serialized bytes for every file. This eliminates redundant
+/// tag construction and serialization across the batch.
+pub fn batch_write_from_bytes(byte_arrays: Vec<Vec<u8>>, data: Tag) -> BatchBytesResult {
+    let len = byte_arrays.len();
+
+    // Pre-build and serialize the tag once for all files.
+    let prebuilt_tag: Result<Vec<u8>, HaudiotaggerError> = if data.is_empty() {
+        Ok(Vec::new())
+    } else {
+        let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+        let mut tag_bytes = Vec::with_capacity(1024);
+        match apply_tag_to_lofty_tag(&data, &mut lo_tag) {
+            Ok(()) => {}
+            Err(e) => return err_result(len, e),
+        }
+        match lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()) {
+            Ok(()) => Ok(tag_bytes),
+            Err(e) => {
+                return err_result(
+                    len,
+                    HaudiotaggerError::Write {
+                        message: format!("Could not serialize tag: {e:?}"),
+                    },
+                );
+            }
+        }
+    };
+
+    let processed: Vec<(usize, Result<Vec<u8>, HaudiotaggerError>)> = match &prebuilt_tag {
+        Ok(tag_bytes) => {
+            // Fast path: tag already serialized, just strip audio and concat.
+            byte_arrays
+                .into_par_iter()
+                .enumerate()
+                .map(|(i, bytes)| {
+                    let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+                    let mut out = Vec::with_capacity(tag_bytes.len() + audio.len());
+                    out.extend_from_slice(tag_bytes);
+                    out.extend_from_slice(audio);
+                    (i, Ok(out))
+                })
+                .collect()
+        }
+        Err(e) => {
+            // Tag build failed — return error for all files.
+            let err_msg = e.to_string();
+            byte_arrays
+                .into_iter()
+                .enumerate()
+                .map(|(i, _)| {
+                    (i, Err(HaudiotaggerError::Write {
+                        message: err_msg.clone(),
+                    }))
+                })
+                .collect()
+        }
+    };
+
+    let mut results = Vec::with_capacity(len);
+    let mut errors = Vec::new();
+    let mut failures = 0u32;
+
+    for (i, result) in processed {
+        match result {
             Ok(modified) => results.push(modified),
             Err(e) => {
                 failures += 1;
@@ -461,12 +575,22 @@ pub fn batch_update_changes_from_bytes(
     byte_arrays: Vec<Vec<u8>>,
     changes: TagChanges,
 ) -> BatchBytesResult {
-    let mut results = Vec::new();
-    let mut failures = 0u32;
-    let mut errors = Vec::new();
+    let len = byte_arrays.len();
 
-    for (i, bytes) in byte_arrays.into_iter().enumerate() {
-        match super::tag_changes::update_from_bytes(bytes, changes.clone()) {
+    let processed: Vec<(usize, Result<Vec<u8>, HaudiotaggerError>)> = byte_arrays
+        .into_par_iter()
+        .enumerate()
+        .map(|(i, bytes)| {
+            (i, super::tag_changes::update_from_bytes(bytes, changes.clone()))
+        })
+        .collect();
+
+    let mut results = Vec::with_capacity(len);
+    let mut errors = Vec::new();
+    let mut failures = 0u32;
+
+    for (i, result) in processed {
+        match result {
             Ok(modified) => results.push(modified),
             Err(e) => {
                 failures += 1;
@@ -674,39 +798,23 @@ pub fn set_custom_tag_from_bytes(
     value: String,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
     if is_mp3("", &bytes) {
-        let file = get_file_from_bytes(&bytes)?;
-        let mut lo_tag = LoftyTag::new(file.primary_tag_type());
-        if let Some(existing_tag) = file.primary_tag() {
-            let std_tag = Tag::from(existing_tag);
-            apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
-        }
-        match file.primary_tag_type() {
-            TagType::Id3v2 => {
-                let mut id3v2: lofty::id3::v2::Id3v2Tag = lo_tag.into();
-                id3v2.insert_user_text(key, value);
-                lo_tag = id3v2.into();
-            }
-            TagType::VorbisComments => {
-                let mut vorbis: lofty::ogg::tag::VorbisComments = lo_tag.into();
-                vorbis.insert(key, value);
-                lo_tag = vorbis.into();
-            }
-            _ => {
-                return Err(HaudiotaggerError::Write {
+        return write_lofty_tag_to_mp3_bytes(&bytes, |lo_tag| {
+            match lo_tag.tag_type() {
+                TagType::Id3v2 => {
+                    let mut id3v2: lofty::id3::v2::Id3v2Tag = lo_tag.into();
+                    id3v2.insert_user_text(key, value);
+                    Ok(id3v2.into())
+                }
+                TagType::VorbisComments => {
+                    let mut vorbis: lofty::ogg::tag::VorbisComments = lo_tag.into();
+                    vorbis.insert(key, value);
+                    Ok(vorbis.into())
+                }
+                _ => Err(HaudiotaggerError::Write {
                     message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
-                });
+                }),
             }
-        }
-        let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
-        let mut tag_bytes = Vec::new();
-        lo_tag
-            .dump_to(&mut tag_bytes, WriteOptions::new())
-            .map_err(|e| HaudiotaggerError::Write {
-                message: format!("Could not serialize tag: {e:?}"),
-            })?;
-        let mut out = tag_bytes;
-        out.extend_from_slice(audio);
-        return Ok(out);
+        });
     }
     let mut file = get_file_from_bytes(&bytes)?;
     let new_tag = set_custom_tag_impl(&file, key, value)?;
@@ -770,40 +878,23 @@ pub fn remove_custom_tag_from_bytes(
     key: String,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
     if is_mp3("", &bytes) {
-        let file = get_file_from_bytes(&bytes)?;
-        let tag_type = file.primary_tag_type();
-        let mut lo_tag = LoftyTag::new(tag_type);
-        if let Some(existing_tag) = file.primary_tag() {
-            let std_tag = Tag::from(existing_tag);
-            apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
-        }
-        match tag_type {
-            TagType::Id3v2 => {
-                let mut id3v2: lofty::id3::v2::Id3v2Tag = lo_tag.into();
-                id3v2.remove_user_text(&key);
-                lo_tag = id3v2.into();
-            }
-            TagType::VorbisComments => {
-                let mut vorbis: lofty::ogg::tag::VorbisComments = lo_tag.into();
-                for _ in vorbis.remove(&key) {}
-                lo_tag = vorbis.into();
-            }
-            _ => {
-                return Err(HaudiotaggerError::Write {
+        return write_lofty_tag_to_mp3_bytes(&bytes, |lo_tag| {
+            match lo_tag.tag_type() {
+                TagType::Id3v2 => {
+                    let mut id3v2: lofty::id3::v2::Id3v2Tag = lo_tag.into();
+                    id3v2.remove_user_text(&key);
+                    Ok(id3v2.into())
+                }
+                TagType::VorbisComments => {
+                    let mut vorbis: lofty::ogg::tag::VorbisComments = lo_tag.into();
+                    for _ in vorbis.remove(&key) {}
+                    Ok(vorbis.into())
+                }
+                _ => Err(HaudiotaggerError::Write {
                     message: "Custom tags only supported for ID3v2 and Vorbis formats".to_string(),
-                });
+                }),
             }
-        }
-        let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
-        let mut tag_bytes = Vec::new();
-        lo_tag
-            .dump_to(&mut tag_bytes, WriteOptions::new())
-            .map_err(|e| HaudiotaggerError::Write {
-                message: format!("Could not serialize tag: {e:?}"),
-            })?;
-        let mut out = tag_bytes;
-        out.extend_from_slice(audio);
-        return Ok(out);
+        });
     }
     let mut file = get_file_from_bytes(&bytes)?;
     let new_tag = remove_custom_tag_impl(&file, key)?;

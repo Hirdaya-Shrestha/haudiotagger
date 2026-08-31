@@ -1,3 +1,9 @@
+## 1.2.5
+
+- Performance optimizations: rayon parallelism for batch operations, pre-allocated output buffers, consolidated MP3 byte manipulation
+- Added performance benchmarks to README
+- Code cleanup: removed duplicated MP3 byte manipulation logic into shared helper
+
 ## 1.2.4
 
 - Added `validate` / `validateFromBytes` / `validateTag` — detect metadata issues (missing fields, invalid track/disc numbers, bad BPM/year)

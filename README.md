@@ -45,7 +45,7 @@ Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Window
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.4
+  haudiotagger: ^1.2.5
 ```
 
 ## Quick Start
@@ -378,6 +378,41 @@ await Haudiotagger.update('song.mp3', TagChanges(
   replayGainTrackGain: '-6.43',
 ));
 ```
+
+---
+
+## ⚡ Performance Benchmarks
+
+Benchmarks were performed using **hAudiotagger 1.2.5** on a Linux system with a representative collection of MP3 files.
+
+### Benchmark Environment
+
+| Property | Value |
+|---|---|
+| **hAudiotagger** | `1.2.5` |
+| **OS** | Linux |
+| **Distro** | Arch Linux |
+| **CPU** | AMD Ryzen 5 4500U |
+| **RAM** | 16 GB (DDR4) |
+| **Storage** | 256 GB NVMe SSD |
+| **Dart** | `v3.13.2` (stable) |
+| **lofty** | `v0.25.1` |
+| **flutter_rust_bridge** | `v2.13.0` |
+| **Rust** | `v1.98.0` (stable) |
+| **File Format** | MP3 |
+| **Average File Size** | 8.1 MB |
+
+### Results
+
+| Operation | 10 Files | 100 Files | 1,000 Files |
+|:---|---:|---:|---:|
+| **Read** | `72 files/s` | **`76 files/s`** | `74 files/s` |
+| **Update** | **`23 files/s`** | `21 files/s` | `21 files/s` |
+| **Batch Write** | `25 files/s` | **`29 files/s`** | `28 files/s` |
+| **Custom Tag** | `20 files/s` | **`22 files/s`** | `21 files/s` |
+
+> [!NOTE]
+> *Results represent files processed per second. Actual performance may vary depending on hardware, storage speed, file size, metadata complexity, embedded artwork, and operating system.*
 
 ---
 
