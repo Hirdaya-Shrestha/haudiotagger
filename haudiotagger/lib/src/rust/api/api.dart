@@ -11,8 +11,8 @@ import 'tag.dart';
 import 'tag_changes.dart';
 import 'tag_field.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `fmt`, `fmt`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
     RustLib.instance.api.crateApiApiRead(path: path);
@@ -79,6 +79,78 @@ Future<List<String>> getTagFormats({required String path}) =>
 Future<List<String>> getTagFormatsFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiGetTagFormatsFromBytes(bytes: bytes);
 
+/// Get all custom tags from the file at `path`.
+/// Returns a map of key -> value for format-specific custom tags.
+/// For ID3v2: TXXX frames (user-defined text).
+/// For Vorbis Comments: non-standard keys.
+/// For APE: non-standard keys.
+Future<Map<String, String>> getCustomTags({required String path}) =>
+    RustLib.instance.api.crateApiApiGetCustomTags(path: path);
+
+/// Get all custom tags from in-memory `bytes`.
+Future<Map<String, String>> getCustomTagsFromBytes(
+        {required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiGetCustomTagsFromBytes(bytes: bytes);
+
+/// Set a custom tag on the file at `path`.
+/// For ID3v2: creates a TXXX frame with the key as description.
+/// For Vorbis Comments: inserts with the key directly.
+/// For APE: inserts with the key directly.
+Future<void> setCustomTag(
+        {required String path, required String key, required String value}) =>
+    RustLib.instance.api
+        .crateApiApiSetCustomTag(path: path, key: key, value: value);
+
+/// Set a custom tag on in-memory `bytes`, returning the modified bytes.
+Future<Uint8List> setCustomTagFromBytes(
+        {required List<int> bytes,
+        required String key,
+        required String value}) =>
+    RustLib.instance.api
+        .crateApiApiSetCustomTagFromBytes(bytes: bytes, key: key, value: value);
+
+/// Remove a custom tag from the file at `path`.
+Future<void> removeCustomTag({required String path, required String key}) =>
+    RustLib.instance.api.crateApiApiRemoveCustomTag(path: path, key: key);
+
+/// Remove a custom tag from in-memory `bytes`, returning the modified bytes.
+Future<Uint8List> removeCustomTagFromBytes(
+        {required List<int> bytes, required String key}) =>
+    RustLib.instance.api
+        .crateApiApiRemoveCustomTagFromBytes(bytes: bytes, key: key);
+
+/// Get the ID3v2 version of the tag in the file at `path`.
+/// Returns None if the file has no ID3v2 tag.
+Future<Id3v2Version?> getId3V2Version({required String path}) =>
+    RustLib.instance.api.crateApiApiGetId3V2Version(path: path);
+
+/// Get the ID3v2 version of the tag in in-memory `bytes`.
+/// Returns None if the bytes have no ID3v2 tag.
+Future<Id3v2Version?> getId3V2VersionFromBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiGetId3V2VersionFromBytes(bytes: bytes);
+
+/// Convert the ID3v2 tag in the file at `path` to the specified version.
+/// ID3v2.2 is not supported for writing (lofty doesn't support it).
+/// ID3v2.3 uses `WriteOptions::use_id3v23(true)`.
+/// ID3v2.4 uses default `WriteOptions`.
+Future<void> convertId3V2(
+        {required String path, required Id3v2Version version}) =>
+    RustLib.instance.api.crateApiApiConvertId3V2(path: path, version: version);
+
+/// Convert the ID3v2 tag in in-memory `bytes` to the specified version, returning modified bytes.
+Future<Uint8List> convertId3V2FromBytes(
+        {required List<int> bytes, required Id3v2Version version}) =>
+    RustLib.instance.api
+        .crateApiApiConvertId3V2FromBytes(bytes: bytes, version: version);
+
+/// Remove the ID3v1 tag from the file at `path`.
+Future<void> removeId3V1({required String path}) =>
+    RustLib.instance.api.crateApiApiRemoveId3V1(path: path);
+
+/// Remove the ID3v1 tag from in-memory `bytes`, returning the modified bytes.
+Future<Uint8List> removeId3V1FromBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiRemoveId3V1FromBytes(bytes: bytes);
+
 /// Result of a batch operation on in-memory bytes.
 class BatchBytesResult {
   /// Successfully processed byte arrays, in the same order as input.
@@ -137,4 +209,17 @@ class BatchResult {
           successes == other.successes &&
           failures == other.failures &&
           errors == other.errors;
+}
+
+/// Represents the ID3v2 version to use when writing.
+enum Id3v2Version {
+  /// ID3v2.2 (3-character frame IDs, limited features)
+  v2,
+
+  /// ID3v2.3 (widely supported, recommended for compatibility)
+  v3,
+
+  /// ID3v2.4 (latest spec, but less software support)
+  v4,
+  ;
 }
