@@ -130,6 +130,8 @@ jobs:
         if: matrix.target == 'linux'
         run: flutter test
         working-directory: haudiotagger
+        env:
+          LD_LIBRARY_PATH: ${{ github.workspace }}/haudiotagger/linux
 
   build_web:
     name: Build Web WASM
