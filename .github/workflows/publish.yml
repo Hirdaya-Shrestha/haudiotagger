@@ -11,6 +11,51 @@ permissions:
 
 jobs:
   # ============================================================
+  # BUILD FRAMEWORKS (iOS/macOS SPM)
+  # ============================================================
+  build_frameworks:
+    name: Build Frameworks
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          cache: true
+      - uses: dtolnay/rust-toolchain@stable
+      - run: flutter pub get
+        working-directory: haudiotagger
+      - run: cd cli && flutter pub get
+
+      - name: Build iOS xcframework
+        run: dart run cli build ios -v
+
+      - name: Build macOS xcframework
+        run: dart run cli build macos -v
+
+      - name: Stage frameworks for SPM
+        run: |
+          mkdir -p haudiotagger/ios/haudiotagger/Frameworks \
+                 haudiotagger/macos/haudiotagger/Frameworks
+          cp -R haudiotagger/ios/Frameworks/haudiotagger.xcframework \
+                 haudiotagger/ios/haudiotagger/Frameworks/
+          cp -R haudiotagger/macos/Frameworks/haudiotagger.xcframework \
+                 haudiotagger/macos/haudiotagger/Frameworks/
+
+      - name: Commit frameworks
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add haudiotagger/ios/haudiotagger/Frameworks \
+                  haudiotagger/macos/haudiotagger/Frameworks
+          if git diff --cached --quiet; then
+            echo "No framework changes to commit"
+          else
+            git commit -m "build: update committed iOS/macOS xcframeworks (SPM)"
+            git push
+          fi
+
+  # ============================================================
   # LINT
   # ============================================================
   rust_lint:
@@ -77,7 +122,7 @@ jobs:
   # ============================================================
   build_and_upload:
     name: Build ${{ matrix.target }}
-    needs: [rust_lint, dart_lint, dart_cli_lint]
+    needs: [build_frameworks, rust_lint, dart_lint, dart_cli_lint]
     strategy:
       fail-fast: false
       matrix:
@@ -137,7 +182,7 @@ jobs:
   # ============================================================
   build_web:
     name: Build Web WASM
-    needs: [rust_lint, dart_lint, dart_cli_lint]
+    needs: [build_frameworks, rust_lint, dart_lint, dart_cli_lint]
     runs-on: ubuntu-latest
     env:
       RUSTUP_TOOLCHAIN: nightly
