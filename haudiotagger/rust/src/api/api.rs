@@ -685,10 +685,7 @@ pub fn set_custom_tag_from_bytes(
     Ok(out.into_inner())
 }
 
-fn remove_custom_tag_impl(
-    file: &TaggedFile,
-    key: String,
-) -> Result<LoftyTag, HaudiotaggerError> {
+fn remove_custom_tag_impl(file: &TaggedFile, key: String) -> Result<LoftyTag, HaudiotaggerError> {
     let tag_type = file.primary_tag_type();
 
     let mut new_tag = LoftyTag::new(tag_type);
@@ -1077,17 +1074,12 @@ pub fn normalize(path: String) -> Result<Tag, HaudiotaggerError> {
 /// Normalize in-memory bytes using default options, returning the cleaned bytes.
 pub fn normalize_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
     let tag = read_from_bytes(bytes.clone())?;
-    let normalized = super::normalization::normalize(
-        &tag,
-        &super::normalization::NormalizeOptions::default(),
-    );
+    let normalized =
+        super::normalization::normalize(&tag, &super::normalization::NormalizeOptions::default());
     write_to_bytes(bytes, normalized)
 }
 
 /// Normalize a Tag directly with custom options.
-pub fn normalize_tag(
-    tag: Tag,
-    options: super::normalization::NormalizeOptions,
-) -> Tag {
+pub fn normalize_tag(tag: Tag, options: super::normalization::NormalizeOptions) -> Tag {
     super::normalization::normalize(&tag, &options)
 }
