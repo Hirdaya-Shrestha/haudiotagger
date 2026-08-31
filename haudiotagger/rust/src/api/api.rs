@@ -955,3 +955,127 @@ pub fn remove_id3v1_from_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerEr
         })?;
     Ok(out.into_inner())
 }
+
+use super::audio_properties::AudioProperties;
+use super::picture::Picture;
+
+/// Comprehensive info about an audio file, returned by `inspect`.
+#[derive(Debug, Clone)]
+pub struct AudioFileInfo {
+    /// The audio format (e.g. `MP3`, `FLAC`).
+    pub format: String,
+    /// The tag format (e.g. `ID3v2`, `VorbisComments`).
+    pub tag_format: String,
+    /// Technical audio properties.
+    pub properties: AudioProperties,
+    /// The metadata tag, if present.
+    pub metadata: Option<Tag>,
+    /// Embedded pictures, if any.
+    pub pictures: Vec<Picture>,
+    /// File size in bytes.
+    pub size: u64,
+}
+
+fn tag_format_name(file: &TaggedFile) -> String {
+    let primary = file.primary_tag().map(|t| t.tag_type());
+    match primary {
+        Some(TagType::Id3v2) => "ID3v2".into(),
+        Some(TagType::Id3v1) => "ID3v1".into(),
+        Some(TagType::VorbisComments) => "VorbisComments".into(),
+        Some(TagType::Ape) => "APE".into(),
+        Some(TagType::Mp4Ilst) => "iTunes".into(),
+        Some(TagType::RiffInfo) => "RiffInfo".into(),
+        Some(TagType::AiffText) => "AiffText".into(),
+        _ => "Unknown".into(),
+    }
+}
+
+fn file_format_name(ft: FileType) -> String {
+    match ft {
+        FileType::Aac => "AAC",
+        FileType::Aiff => "AIFF",
+        FileType::Ape => "APE",
+        FileType::Flac => "FLAC",
+        FileType::Mpeg => "MP3",
+        FileType::Mp4 => "MP4",
+        FileType::Mpc => "Musepack",
+        FileType::Opus => "Opus",
+        FileType::Vorbis => "Ogg Vorbis",
+        FileType::Speex => "Speex",
+        FileType::Wav => "WAV",
+        FileType::WavPack => "WavPack",
+        _ => "Unknown",
+    }
+    .into()
+}
+
+fn build_file_info(file: &TaggedFile, file_size: u64) -> AudioFileInfo {
+    use lofty::file::AudioFile;
+    let format = file_format_name(file.file_type());
+    let tag_format = tag_format_name(file);
+
+    let props = file.properties();
+    let (codec, container_format, lossless) = match file.file_type() {
+        FileType::Aac => ("AAC".into(), "ADTS".into(), false),
+        FileType::Aiff => ("AIFF".into(), "AIFF".into(), false),
+        FileType::Ape => ("APE".into(), "APE".into(), true),
+        FileType::Flac => ("FLAC".into(), "FLAC".into(), true),
+        FileType::Mpeg => ("MP3".into(), "MP3".into(), false),
+        FileType::Mp4 => ("AAC".into(), "MP4".into(), false),
+        FileType::Mpc => ("Musepack".into(), "Musepack".into(), false),
+        FileType::Opus => ("Opus".into(), "Ogg".into(), false),
+        FileType::Vorbis => ("Vorbis".into(), "Ogg".into(), false),
+        FileType::Speex => ("Speex".into(), "Ogg".into(), false),
+        FileType::Wav => ("PCM".into(), "WAV".into(), true),
+        FileType::WavPack => ("WavPack".into(), "WavPack".into(), true),
+        _ => ("Unknown".into(), "Unknown".into(), false),
+    };
+
+    let properties = AudioProperties {
+        duration_micros: Some(props.duration().as_micros() as i64),
+        bitrate: props.overall_bitrate().or_else(|| props.audio_bitrate()),
+        sample_rate: props.sample_rate(),
+        channels: props.channels().map(u32::from),
+        bits_per_sample: props.bit_depth().map(u32::from),
+        codec,
+        container_format,
+        lossless,
+        bitrate_mode: super::audio_properties::BitrateMode::Unknown,
+        file_size: Some(file_size),
+    };
+
+    let (metadata, pictures) = match tag_from_file(file) {
+        Ok(tag) => {
+            let pictures = tag.pictures.clone();
+            (Some(tag), pictures)
+        }
+        Err(_) => (None, vec![]),
+    };
+
+    AudioFileInfo {
+        format,
+        tag_format,
+        properties,
+        metadata,
+        pictures,
+        size: file_size,
+    }
+}
+
+/// Inspect an audio file, returning all available information in one call.
+pub fn inspect(path: String) -> Result<AudioFileInfo, HaudiotaggerError> {
+    let file = get_file(&path)?;
+    let file_size =
+        std::fs::metadata(&path)
+            .map(|m| m.len())
+            .map_err(|e| HaudiotaggerError::OpenFile {
+                message: format!("Cannot read file metadata: {e}"),
+            })?;
+    Ok(build_file_info(&file, file_size))
+}
+
+/// Inspect audio data from in-memory bytes.
+pub fn inspect_from_bytes(bytes: Vec<u8>) -> Result<AudioFileInfo, HaudiotaggerError> {
+    let file = get_file_from_bytes(&bytes)?;
+    Ok(build_file_info(&file, bytes.len() as u64))
+}
