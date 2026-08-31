@@ -48,9 +48,6 @@ dependencies:
   haudiotagger: ^1.2.4
 ```
 
-> [!NOTE]
-> On the web, browsers cannot access arbitrary local files via file paths due to security sandboxing. Use the `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`) which accept and return raw byte arrays. On native platforms (Android, iOS, Linux, macOS, Windows), both file path and bytes APIs are available.
-
 ## Quick Start
 
 ```dart
