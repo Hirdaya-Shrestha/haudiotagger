@@ -4,6 +4,7 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+import 'audio_properties.dart';
 import 'error.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
@@ -11,8 +12,8 @@ import 'tag.dart';
 import 'tag_changes.dart';
 import 'tag_field.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `clear_field`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_mp3_bytes`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_format_name`, `tag_from_file`, `write_mp3_bytes`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
     RustLib.instance.api.crateApiApiRead(path: path);
@@ -150,6 +151,65 @@ Future<void> removeId3V1({required String path}) =>
 /// Remove the ID3v1 tag from in-memory `bytes`, returning the modified bytes.
 Future<Uint8List> removeId3V1FromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiRemoveId3V1FromBytes(bytes: bytes);
+
+/// Inspect an audio file, returning all available information in one call.
+Future<AudioFileInfo> inspect({required String path}) =>
+    RustLib.instance.api.crateApiApiInspect(path: path);
+
+/// Inspect audio data from in-memory bytes.
+Future<AudioFileInfo> inspectFromBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiInspectFromBytes(bytes: bytes);
+
+/// Comprehensive info about an audio file, returned by `inspect`.
+class AudioFileInfo {
+  /// The audio format (e.g. `MP3`, `FLAC`).
+  final String format;
+
+  /// The tag format (e.g. `ID3v2`, `VorbisComments`).
+  final String tagFormat;
+
+  /// Technical audio properties.
+  final AudioProperties properties;
+
+  /// The metadata tag, if present.
+  final Tag? metadata;
+
+  /// Embedded pictures, if any.
+  final List<Picture> pictures;
+
+  /// File size in bytes.
+  final BigInt size;
+
+  const AudioFileInfo({
+    required this.format,
+    required this.tagFormat,
+    required this.properties,
+    this.metadata,
+    required this.pictures,
+    required this.size,
+  });
+
+  @override
+  int get hashCode =>
+      format.hashCode ^
+      tagFormat.hashCode ^
+      properties.hashCode ^
+      metadata.hashCode ^
+      pictures.hashCode ^
+      size.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AudioFileInfo &&
+          runtimeType == other.runtimeType &&
+          format == other.format &&
+          tagFormat == other.tagFormat &&
+          properties == other.properties &&
+          metadata == other.metadata &&
+          pictures == other.pictures &&
+          size == other.size;
+}
 
 /// Result of a batch operation on in-memory bytes.
 class BatchBytesResult {

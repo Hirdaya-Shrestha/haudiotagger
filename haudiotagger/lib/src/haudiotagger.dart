@@ -3,7 +3,8 @@ import 'dart:typed_data';
 import 'rust/frb_generated.dart';
 
 import 'rust/api/api.dart' as api;
-import 'rust/api/api.dart' show BatchResult, BatchBytesResult, Id3v2Version;
+import 'rust/api/api.dart'
+    show BatchResult, BatchBytesResult, Id3v2Version, AudioFileInfo;
 import 'rust/api/tag.dart';
 import 'rust/api/error.dart';
 import 'rust/api/audio_properties.dart' as ap;
@@ -16,7 +17,8 @@ export 'rust/api/error.dart';
 export 'rust/api/audio_properties.dart';
 export 'rust/api/tag_changes.dart';
 export 'rust/api/tag_field.dart';
-export 'rust/api/api.dart' show BatchResult, BatchBytesResult, Id3v2Version;
+export 'rust/api/api.dart'
+    show BatchResult, BatchBytesResult, Id3v2Version, AudioFileInfo;
 
 /// Progress information for batch operations.
 class BatchProgress {
@@ -412,6 +414,107 @@ class Haudiotagger {
     await _ensureInit();
     return await api.removeId3V1FromBytes(bytes: bytes);
   }
+
+  /// Inspect an audio file, returning all available information in one call.
+  /// Works on native only.
+  static Future<AudioFileInfo> inspect(String path) async {
+    await _ensureInit();
+    return await api.inspect(path: path);
+  }
+
+  /// Inspect audio data from in-memory bytes, returning all available
+  /// information in one call. Works on web and native.
+  static Future<AudioFileInfo> inspectFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.inspectFromBytes(bytes: bytes);
+  }
+
+  /// Compare two tags and return a [MetadataDiff] describing every field
+  /// that changed between [oldTag] and [newTag].
+  static MetadataDiff diff(Tag oldTag, Tag newTag) {
+    final changes = <MetadataChange>[];
+
+    void check<T>(TagField field, T? oldVal, T? newVal) {
+      if (oldVal == newVal) return;
+      if (oldVal == null) {
+        changes.add(MetadataChange(
+            field: field,
+            oldValue: null,
+            newValue: newVal,
+            type: ChangeType.added));
+      } else if (newVal == null) {
+        changes.add(MetadataChange(
+            field: field,
+            oldValue: oldVal,
+            newValue: null,
+            type: ChangeType.removed));
+      } else {
+        changes.add(MetadataChange(
+            field: field,
+            oldValue: oldVal,
+            newValue: newVal,
+            type: ChangeType.updated));
+      }
+    }
+
+    check<String>(TagField.title, oldTag.title, newTag.title);
+    check<String>(TagField.artist, oldTag.trackArtist, newTag.trackArtist);
+    check<String>(TagField.album, oldTag.album, newTag.album);
+    check<String>(TagField.albumArtist, oldTag.albumArtist, newTag.albumArtist);
+    check<int>(TagField.year, oldTag.year, newTag.year);
+    check<String>(TagField.genre, oldTag.genre, newTag.genre);
+    check<int>(TagField.trackNumber, oldTag.trackNumber, newTag.trackNumber);
+    check<int>(TagField.trackTotal, oldTag.trackTotal, newTag.trackTotal);
+    check<int>(TagField.discNumber, oldTag.discNumber, newTag.discNumber);
+    check<int>(TagField.discTotal, oldTag.discTotal, newTag.discTotal);
+    check<String>(TagField.lyrics, oldTag.lyrics, newTag.lyrics);
+    check<String>(TagField.comment, oldTag.comment, newTag.comment);
+    check<double>(TagField.bpm, oldTag.bpm, newTag.bpm);
+
+    return MetadataDiff(changes: changes);
+  }
+}
+
+/// The type of change for a single field.
+enum ChangeType { added, updated, removed }
+
+/// A single field change between two tags.
+class MetadataChange<T> {
+  final TagField field;
+  final T? oldValue;
+  final T? newValue;
+  final ChangeType type;
+
+  const MetadataChange({
+    required this.field,
+    required this.oldValue,
+    required this.newValue,
+    required this.type,
+  });
+
+  @override
+  String toString() => '${field.name}: $oldValue → $newValue';
+}
+
+/// Result of comparing two tags.
+class MetadataDiff {
+  final List<MetadataChange> changes;
+
+  const MetadataDiff({required this.changes});
+
+  /// Number of fields that changed.
+  int get length => changes.length;
+
+  /// True if no fields changed.
+  bool get isEmpty => changes.isEmpty;
+
+  /// True if at least one field changed.
+  bool get isNotEmpty => changes.isNotEmpty;
+
+  @override
+  String toString() => changes.isEmpty
+      ? 'No changes'
+      : '${changes.length} change${changes.length == 1 ? '' : 's'}';
 }
 
 /// Convenience accessors for [ap.AudioProperties].
