@@ -36,6 +36,14 @@ pub struct Tag {
     pub pictures: Vec<Picture>,
     /// Beats per minute.
     pub bpm: Option<f32>,
+    /// ReplayGain track gain in dB (e.g. "-6.43").
+    pub replay_gain_track_gain: Option<String>,
+    /// ReplayGain track peak (e.g. "0.981201").
+    pub replay_gain_track_peak: Option<String>,
+    /// ReplayGain album gain in dB.
+    pub replay_gain_album_gain: Option<String>,
+    /// ReplayGain album peak.
+    pub replay_gain_album_peak: Option<String>,
 }
 
 impl Tag {
@@ -56,6 +64,10 @@ impl Tag {
             && self.lyrics.is_none()
             && self.comment.is_none()
             && self.bpm.is_none()
+            && self.replay_gain_track_gain.is_none()
+            && self.replay_gain_track_peak.is_none()
+            && self.replay_gain_album_gain.is_none()
+            && self.replay_gain_album_peak.is_none()
     }
 }
 
@@ -102,6 +114,18 @@ impl From<&lofty::tag::Tag> for Tag {
             pictures,
             duration: None,
             bpm,
+            replay_gain_track_gain: tag
+                .get_string(ItemKey::ReplayGainTrackGain)
+                .map(|s| s.to_string()),
+            replay_gain_track_peak: tag
+                .get_string(ItemKey::ReplayGainTrackPeak)
+                .map(|s| s.to_string()),
+            replay_gain_album_gain: tag
+                .get_string(ItemKey::ReplayGainAlbumGain)
+                .map(|s| s.to_string()),
+            replay_gain_album_peak: tag
+                .get_string(ItemKey::ReplayGainAlbumPeak)
+                .map(|s| s.to_string()),
         }
     }
 }

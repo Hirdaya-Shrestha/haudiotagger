@@ -10,6 +10,9 @@ import 'rust/api/error.dart';
 import 'rust/api/audio_properties.dart' as ap;
 import 'rust/api/tag_changes.dart' as tc;
 import 'rust/api/tag_field.dart';
+import 'rust/api/validation.dart' show ValidationResult;
+import 'rust/api/normalization.dart' show NormalizeOptions;
+import 'copy_with.dart';
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -19,6 +22,10 @@ export 'rust/api/tag_changes.dart';
 export 'rust/api/tag_field.dart';
 export 'rust/api/api.dart'
     show BatchResult, BatchBytesResult, Id3v2Version, AudioFileInfo;
+export 'rust/api/validation.dart'
+    show ValidationResult, ValidationIssue, ValidationSeverity;
+export 'rust/api/normalization.dart' show NormalizeOptions;
+export 'copy_with.dart';
 
 /// Progress information for batch operations.
 class BatchProgress {
@@ -429,6 +436,120 @@ class Haudiotagger {
     return await api.inspectFromBytes(bytes: bytes);
   }
 
+  /// Validate the tag at [path] and return any issues found.
+  /// Works on native only.
+  static Future<ValidationResult> validate(String path) async {
+    await _ensureInit();
+    return await api.validate(path: path);
+  }
+
+  /// Validate in-memory [bytes] and return any issues found.
+  /// Works on web and native.
+  static Future<ValidationResult> validateFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.validateFromBytes(bytes: bytes);
+  }
+
+  /// Validate a [Tag] directly (for use after manual edits).
+  static Future<ValidationResult> validateTag(Tag tag) async {
+    await _ensureInit();
+    return await api.validateTag(tag: tag);
+  }
+
+  /// Normalize the tag at [path] using default options, returning the cleaned tag.
+  /// Does NOT write to disk — use [write] to persist the result.
+  /// Works on native only.
+  static Future<Tag> normalize(String path) async {
+    await _ensureInit();
+    return await api.normalize(path: path);
+  }
+
+  /// Normalize in-memory [bytes] using default options, returning the modified bytes.
+  /// Works on web and native.
+  static Future<Uint8List> normalizeBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.normalizeBytes(bytes: bytes);
+  }
+
+  /// Normalize a [Tag] directly with custom [options].
+  static Future<Tag> normalizeTag(Tag tag, {NormalizeOptions? options}) async {
+    await _ensureInit();
+    final opts = options ?? await NormalizeOptions.default_();
+    return await api.normalizeTag(tag: tag, options: opts);
+  }
+
+  /// Copy metadata from [source] file to [destination] file.
+  ///
+  /// By default copies all metadata. Use options to exclude specific fields:
+  /// - [includeArtwork]: copy embedded pictures (default: true)
+  /// - [includeLyrics]: copy lyrics (default: true)
+  /// - [includeCustomTags]: copy format-specific custom tags (default: true)
+  ///
+  /// Works on native only.
+  static Future<void> copyMetadata(
+    String source,
+    String destination, {
+    bool includeArtwork = true,
+    bool includeLyrics = true,
+    bool includeCustomTags = true,
+  }) async {
+    await _ensureInit();
+    var tag = await api.read(path: source);
+
+    if (!includeArtwork) {
+      tag = tag.copyWith(pictures: []);
+    }
+    if (!includeLyrics) {
+      tag = tag.copyWith(lyrics: null);
+    }
+
+    await api.write(path: destination, data: tag);
+
+    if (includeCustomTags) {
+      final customTags = await api.getCustomTags(path: source);
+      for (final entry in customTags.entries) {
+        await api.setCustomTag(
+            path: destination, key: entry.key, value: entry.value);
+      }
+    }
+  }
+
+  /// Copy metadata from [sourceBytes] to [destinationBytes], returning modified bytes.
+  ///
+  /// By default copies all metadata. Use options to exclude specific fields.
+  /// Works on web and native.
+  static Future<Uint8List> copyMetadataFromBytes(
+    Uint8List sourceBytes,
+    Uint8List destinationBytes, {
+    bool includeArtwork = true,
+    bool includeLyrics = true,
+    bool includeCustomTags = true,
+  }) async {
+    await _ensureInit();
+    var tag = await api.readFromBytes(bytes: sourceBytes);
+
+    if (!includeArtwork) {
+      tag = tag.copyWith(pictures: []);
+    }
+    if (!includeLyrics) {
+      tag = tag.copyWith(lyrics: null);
+    }
+
+    var result = await api.writeToBytes(bytes: destinationBytes, data: tag);
+
+    if (includeCustomTags) {
+      final customTags = await api.getCustomTagsFromBytes(bytes: sourceBytes);
+      if (customTags.isNotEmpty) {
+        for (final entry in customTags.entries) {
+          result = await api.setCustomTagFromBytes(
+              bytes: result, key: entry.key, value: entry.value);
+        }
+      }
+    }
+
+    return result;
+  }
+
   /// Compare two tags and return a [MetadataDiff] describing every field
   /// that changed between [oldTag] and [newTag].
   static MetadataDiff diff(Tag oldTag, Tag newTag) {
@@ -473,6 +594,50 @@ class Haudiotagger {
 
     return MetadataDiff(changes: changes);
   }
+
+  /// Merge two tags using the given [strategy].
+  ///
+  /// - [MergeStrategy.preferFirst]: [tagA] wins for all fields.
+  /// - [MergeStrategy.preferSecond]: [tagB] wins for all fields.
+  /// - [MergeStrategy.preferFirstNonEmpty]: [tagA] wins unless empty, then [tagB].
+  /// - [MergeStrategy.preferSecondNonEmpty]: [tagB] wins unless empty, then [tagA].
+  ///
+  /// Pictures are concatenated (both sources kept).
+  /// Returns a new [Tag] without modifying the originals.
+  static Tag mergeTags(
+    Tag tagA,
+    Tag tagB, {
+    MergeStrategy strategy = MergeStrategy.preferFirstNonEmpty,
+  }) {
+    T pick<T>(T? a, T? b) {
+      return switch (strategy) {
+        MergeStrategy.preferFirst => a ?? b as T,
+        MergeStrategy.preferSecond => b ?? a as T,
+        MergeStrategy.preferFirstNonEmpty =>
+          (a != null && a != '' && a != 0) ? a : b as T,
+        MergeStrategy.preferSecondNonEmpty =>
+          (b != null && b != '' && b != 0) ? b : a as T,
+      };
+    }
+
+    return Tag(
+      title: pick<String?>(tagA.title, tagB.title),
+      trackArtist: pick<String?>(tagA.trackArtist, tagB.trackArtist),
+      album: pick<String?>(tagA.album, tagB.album),
+      albumArtist: pick<String?>(tagA.albumArtist, tagB.albumArtist),
+      year: pick<int?>(tagA.year, tagB.year),
+      genre: pick<String?>(tagA.genre, tagB.genre),
+      trackNumber: pick<int?>(tagA.trackNumber, tagB.trackNumber),
+      trackTotal: pick<int?>(tagA.trackTotal, tagB.trackTotal),
+      discNumber: pick<int?>(tagA.discNumber, tagB.discNumber),
+      discTotal: pick<int?>(tagA.discTotal, tagB.discTotal),
+      lyrics: pick<String?>(tagA.lyrics, tagB.lyrics),
+      comment: pick<String?>(tagA.comment, tagB.comment),
+      bpm: pick<double?>(tagA.bpm, tagB.bpm),
+      duration: tagA.duration ?? tagB.duration,
+      pictures: [...tagA.pictures, ...tagB.pictures],
+    );
+  }
 }
 
 /// The type of change for a single field.
@@ -515,6 +680,21 @@ class MetadataDiff {
   String toString() => changes.isEmpty
       ? 'No changes'
       : '${changes.length} change${changes.length == 1 ? '' : 's'}';
+}
+
+/// Strategy for merging two tags.
+enum MergeStrategy {
+  /// [tagA] wins for all fields.
+  preferFirst,
+
+  /// [tagB] wins for all fields.
+  preferSecond,
+
+  /// [tagA] wins unless empty, then [tagB].
+  preferFirstNonEmpty,
+
+  /// [tagB] wins unless empty, then [tagA].
+  preferSecondNonEmpty,
 }
 
 /// Convenience accessors for [ap.AudioProperties].

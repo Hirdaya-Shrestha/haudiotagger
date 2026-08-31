@@ -40,6 +40,10 @@ class TagChanges {
   final String? comment;
   final List<Picture>? pictures;
   final double? bpm;
+  final String? replayGainTrackGain;
+  final String? replayGainTrackPeak;
+  final String? replayGainAlbumGain;
+  final String? replayGainAlbumPeak;
 
   const TagChanges({
     this.title,
@@ -56,6 +60,10 @@ class TagChanges {
     this.comment,
     this.pictures,
     this.bpm,
+    this.replayGainTrackGain,
+    this.replayGainTrackPeak,
+    this.replayGainAlbumGain,
+    this.replayGainAlbumPeak,
   });
 
   static Future<TagChanges> default_() =>
@@ -82,7 +90,11 @@ class TagChanges {
       lyrics.hashCode ^
       comment.hashCode ^
       pictures.hashCode ^
-      bpm.hashCode;
+      bpm.hashCode ^
+      replayGainTrackGain.hashCode ^
+      replayGainTrackPeak.hashCode ^
+      replayGainAlbumGain.hashCode ^
+      replayGainAlbumPeak.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -102,5 +114,9 @@ class TagChanges {
           lyrics == other.lyrics &&
           comment == other.comment &&
           pictures == other.pictures &&
-          bpm == other.bpm;
+          bpm == other.bpm &&
+          replayGainTrackGain == other.replayGainTrackGain &&
+          replayGainTrackPeak == other.replayGainTrackPeak &&
+          replayGainAlbumGain == other.replayGainAlbumGain &&
+          replayGainAlbumPeak == other.replayGainAlbumPeak;
 }

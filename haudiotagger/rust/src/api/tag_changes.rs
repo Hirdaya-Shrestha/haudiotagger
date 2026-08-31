@@ -23,6 +23,10 @@ pub struct TagChanges {
     pub comment: Option<String>,
     pub pictures: Option<Vec<Picture>>,
     pub bpm: Option<f32>,
+    pub replay_gain_track_gain: Option<String>,
+    pub replay_gain_track_peak: Option<String>,
+    pub replay_gain_album_gain: Option<String>,
+    pub replay_gain_album_peak: Option<String>,
 }
 
 impl TagChanges {
@@ -42,6 +46,10 @@ impl TagChanges {
             && self.comment.is_none()
             && self.pictures.is_none()
             && self.bpm.is_none()
+            && self.replay_gain_track_gain.is_none()
+            && self.replay_gain_track_peak.is_none()
+            && self.replay_gain_album_gain.is_none()
+            && self.replay_gain_album_peak.is_none()
     }
 
     /// Merges these changes onto `base`, returning the combined tag.
@@ -72,6 +80,22 @@ impl TagChanges {
                 .unwrap_or_default(),
             duration: base.duration,
             bpm: self.bpm.or(base.bpm),
+            replay_gain_track_gain: self
+                .replay_gain_track_gain
+                .clone()
+                .or_else(|| base.replay_gain_track_gain.clone()),
+            replay_gain_track_peak: self
+                .replay_gain_track_peak
+                .clone()
+                .or_else(|| base.replay_gain_track_peak.clone()),
+            replay_gain_album_gain: self
+                .replay_gain_album_gain
+                .clone()
+                .or_else(|| base.replay_gain_album_gain.clone()),
+            replay_gain_album_peak: self
+                .replay_gain_album_peak
+                .clone()
+                .or_else(|| base.replay_gain_album_peak.clone()),
         }
     }
 }

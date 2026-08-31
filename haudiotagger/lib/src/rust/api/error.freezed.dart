@@ -309,7 +309,9 @@ class HaudiotaggerError_OpenFile extends HaudiotaggerError {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message);
+  int get hashCode {
+    return Object.hash(runtimeType, message);
+  }
 
   @override
   String toString() {
@@ -374,7 +376,9 @@ class HaudiotaggerError_Write extends HaudiotaggerError {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, message);
+  int get hashCode {
+    return Object.hash(runtimeType, message);
+  }
 
   @override
   String toString() {

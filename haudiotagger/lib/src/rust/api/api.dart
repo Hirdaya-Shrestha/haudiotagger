@@ -6,13 +6,15 @@
 import '../frb_generated.dart';
 import 'audio_properties.dart';
 import 'error.dart';
+import 'normalization.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
 import 'tag.dart';
 import 'tag_changes.dart';
 import 'tag_field.dart';
+import 'validation.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_format_name`, `tag_from_file`, `write_mp3_bytes`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `convert_id3v2_impl`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_format_name`, `tag_from_file`, `write_mp3_bytes`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
@@ -159,6 +161,32 @@ Future<AudioFileInfo> inspect({required String path}) =>
 /// Inspect audio data from in-memory bytes.
 Future<AudioFileInfo> inspectFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiInspectFromBytes(bytes: bytes);
+
+/// Validate the tag at `path` and return any issues found.
+Future<ValidationResult> validate({required String path}) =>
+    RustLib.instance.api.crateApiApiValidate(path: path);
+
+/// Validate in-memory `bytes` and return any issues found.
+Future<ValidationResult> validateFromBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiValidateFromBytes(bytes: bytes);
+
+/// Validate a Tag directly (for use after manual edits).
+Future<ValidationResult> validateTag({required Tag tag}) =>
+    RustLib.instance.api.crateApiApiValidateTag(tag: tag);
+
+/// Normalize the tag at [path] using default options, returning the cleaned tag.
+/// Does NOT write to disk — use [write] to persist the result.
+Future<Tag> normalize({required String path}) =>
+    RustLib.instance.api.crateApiApiNormalize(path: path);
+
+/// Normalize in-memory bytes using default options, returning the cleaned bytes.
+Future<Uint8List> normalizeBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiNormalizeBytes(bytes: bytes);
+
+/// Normalize a Tag directly with custom options.
+Future<Tag> normalizeTag(
+        {required Tag tag, required NormalizeOptions options}) =>
+    RustLib.instance.api.crateApiApiNormalizeTag(tag: tag, options: options);
 
 /// Comprehensive info about an audio file, returned by `inspect`.
 class AudioFileInfo {
