@@ -3,7 +3,7 @@ use lofty::tag::{Accessor, ItemKey};
 use super::picture::Picture;
 
 /// Represents the metadata of the file.
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, PartialEq)]
 pub struct Tag {
     /// The title of the song.
     pub title: Option<String>,
@@ -49,25 +49,7 @@ pub struct Tag {
 impl Tag {
     /// Returns `true` if the tag has no data.
     pub fn is_empty(&self) -> bool {
-        self.title.is_none()
-            && self.track_artist.is_none()
-            && self.album.is_none()
-            && self.album_artist.is_none()
-            && self.year.is_none()
-            && self.genre.is_none()
-            && self.track_number.is_none()
-            && self.track_total.is_none()
-            && self.disc_number.is_none()
-            && self.disc_total.is_none()
-            && self.duration.is_none()
-            && self.pictures.is_empty()
-            && self.lyrics.is_none()
-            && self.comment.is_none()
-            && self.bpm.is_none()
-            && self.replay_gain_track_gain.is_none()
-            && self.replay_gain_track_peak.is_none()
-            && self.replay_gain_album_gain.is_none()
-            && self.replay_gain_album_peak.is_none()
+        *self == Self::default()
     }
 }
 

@@ -431,12 +431,74 @@ pub struct BatchBytesResult {
 
 /// Write the same tag to multiple files. Returns the number of successes and failures.
 pub fn batch_write(paths: Vec<String>, data: Tag) -> BatchResult {
+    let len = paths.len();
+
+    // Pre-build and serialize the tag once for all files.
+    let prebuilt_tag: Result<Vec<u8>, HaudiotaggerError> = if data.is_empty() {
+        Ok(Vec::new())
+    } else {
+        let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+        let mut tag_bytes = Vec::with_capacity(1024);
+        match apply_tag_to_lofty_tag(&data, &mut lo_tag) {
+            Ok(()) => {}
+            Err(e) => return err_result_batch(len, e),
+        }
+        match lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()) {
+            Ok(()) => Ok(tag_bytes),
+            Err(e) => {
+                return err_result_batch(
+                    len,
+                    HaudiotaggerError::Write {
+                        message: format!("Could not serialize tag: {e:?}"),
+                    },
+                );
+            }
+        }
+    };
+
+    let processed: Vec<(String, Result<(), HaudiotaggerError>)> = match &prebuilt_tag {
+        Ok(tag_bytes) => {
+            // Fast path: tag already serialized, just strip audio and concat.
+            paths
+                .into_par_iter()
+                .map(|path| {
+                    let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+                        message: format!("Could not read file: {e}"),
+                    })?;
+                    let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
+                    let mut out = Vec::with_capacity(tag_bytes.len() + audio.len());
+                    out.extend_from_slice(tag_bytes);
+                    out.extend_from_slice(audio);
+                    std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
+                        message: format!("Could not write file: {e}"),
+                    })?;
+                    Ok(())
+                })
+                .map(|r| (String::new(), r))
+                .collect()
+        }
+        Err(e) => {
+            let err_msg = e.to_string();
+            paths
+                .into_iter()
+                .map(|path| {
+                    (
+                        path,
+                        Err(HaudiotaggerError::Write {
+                            message: err_msg.clone(),
+                        }),
+                    )
+                })
+                .collect()
+        }
+    };
+
     let mut successes = 0u32;
     let mut failures = 0u32;
     let mut errors = Vec::new();
 
-    for path in paths {
-        match write(path.clone(), data.clone()) {
+    for (path, result) in processed {
+        match result {
             Ok(()) => successes += 1,
             Err(e) => {
                 failures += 1;
@@ -454,12 +516,25 @@ pub fn batch_write(paths: Vec<String>, data: Tag) -> BatchResult {
 
 /// Apply the same [TagChanges] to multiple files. Returns the number of successes and failures.
 pub fn batch_update_changes(paths: Vec<String>, changes: TagChanges) -> BatchResult {
+    let processed: Vec<(String, Result<(), HaudiotaggerError>)> = paths
+        .into_par_iter()
+        .map(|path| {
+            let base = match read_or_empty(&path) {
+                Ok(tag) => tag,
+                Err(e) => return (path, Err(e)),
+            };
+            let merged = changes.merge(&base);
+            let result = write(path.clone(), merged);
+            (path, result)
+        })
+        .collect();
+
     let mut successes = 0u32;
     let mut failures = 0u32;
     let mut errors = Vec::new();
 
-    for path in paths {
-        match super::tag_changes::update(path.clone(), changes.clone()) {
+    for (path, result) in processed {
+        match result {
             Ok(()) => successes += 1,
             Err(e) => {
                 failures += 1;
@@ -482,6 +557,18 @@ fn err_result(count: usize, err: HaudiotaggerError) -> BatchBytesResult {
         results: Vec::new(),
         failures: count as u32,
         errors: (0..count as u32).map(|i| (i, msg.clone())).collect(),
+    }
+}
+
+/// Helper: return a BatchResult with the same error for all `count` entries.
+fn err_result_batch(count: usize, err: HaudiotaggerError) -> BatchResult {
+    let msg = err.to_string();
+    BatchResult {
+        successes: 0,
+        failures: count as u32,
+        errors: (0..count)
+            .map(|i| (format!("file_{i}"), msg.clone()))
+            .collect(),
     }
 }
 

@@ -45,7 +45,7 @@ Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Window
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.5
+  haudiotagger: ^1.2.6
 ```
 
 ## Quick Start
@@ -383,36 +383,42 @@ await Haudiotagger.update('song.mp3', TagChanges(
 
 ## ⚡ Performance Benchmarks
 
-Benchmarks were performed using **hAudiotagger 1.2.5** on a Linux system with a representative collection of MP3 files.
+Benchmarks were performed using **hAudiotagger 1.2.6** on a Linux system with 500 MP3 files (~8 MB each).
 
 ### Benchmark Environment
 
 | Property | Value |
 |---|---|
-| **hAudiotagger** | `1.2.5` |
-| **OS** | Linux |
-| **Distro** | Arch Linux |
+| **hAudiotagger** | `1.2.6` |
+| **OS** | Linux (Arch) |
 | **CPU** | AMD Ryzen 5 4500U |
-| **RAM** | 16 GB (DDR4) |
+| **RAM** | 16 GB DDR4 |
 | **Storage** | 256 GB NVMe SSD |
-| **Dart** | `v3.13.2` (stable) |
+| **Dart** | `v3.13.2` |
+| **Rust** | `v1.98.0` |
 | **lofty** | `v0.25.1` |
 | **flutter_rust_bridge** | `v2.13.0` |
-| **Rust** | `v1.98.0` (stable) |
-| **File Format** | MP3 |
-| **Average File Size** | 8.1 MB |
 
-### Results
+### Bytes API (Web + Native)
 
-| Operation | 10 Files | 100 Files | 1,000 Files |
-|:---|---:|---:|---:|
-| **Read** | `72 files/s` | **`76 files/s`** | `74 files/s` |
-| **Update** | **`23 files/s`** | `21 files/s` | `21 files/s` |
-| **Batch Write** | `25 files/s` | **`29 files/s`** | `28 files/s` |
-| **Custom Tag** | `20 files/s` | **`22 files/s`** | `21 files/s` |
+| Operation | 1 File | 10 Files | 50 Files | 100 Files |
+|:---|---:|---:|---:|---:|
+| **Read** | 59 f/s | 63 f/s | 78 f/s | 76 f/s |
+| **Update** | 28 f/s | 22 f/s | 20 f/s | 20 f/s |
+| **Batch Write** | 19 f/s | 26 f/s | 30 f/s | 30 f/s |
+| **Custom Tag** | 24 f/s | 18 f/s | 22 f/s | 22 f/s |
+
+### File-Path API (Native, Rayon Parallel)
+
+| Operation | 1 File | 10 Files | 50 Files | 100 Files |
+|:---|---:|---:|---:|---:|
+| **Read** | 500 f/s | 1,000 f/s | 1,064 f/s | 1,282 f/s |
+| **Update** | 26 f/s | 30 f/s | 63 f/s | 71 f/s |
+| **Batch Write** | 29 f/s | 36 f/s | 198 f/s | 197 f/s |
+| **Batch Update** | 25 f/s | 36 f/s | 202 f/s | 197 f/s |
 
 > [!NOTE]
-> *Results represent files processed per second. Actual performance may vary depending on hardware, storage speed, file size, metadata complexity, embedded artwork, and operating system.*
+> All values in files per second (f/s). File-path APIs are significantly faster because Rust reads files directly without FFI data transfer. Bytes APIs require serializing/deserializing all data across the Dart↔Rust boundary, which becomes the bottleneck at scale. Use file-path APIs on native for maximum throughput; bytes APIs are designed for web where file paths are unavailable.
 
 ---
 

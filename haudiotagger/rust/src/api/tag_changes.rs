@@ -7,7 +7,7 @@ use crate::api::tag::Tag;
 ///
 /// Every field is optional. When applying via `update`, a `Some` value replaces
 /// the corresponding field on the existing tag, while `None` leaves it untouched.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct TagChanges {
     pub title: Option<String>,
     pub track_artist: Option<String>,
@@ -32,70 +32,51 @@ pub struct TagChanges {
 impl TagChanges {
     /// Returns `true` if no fields are set.
     pub fn is_empty(&self) -> bool {
-        self.title.is_none()
-            && self.track_artist.is_none()
-            && self.album.is_none()
-            && self.album_artist.is_none()
-            && self.year.is_none()
-            && self.genre.is_none()
-            && self.track_number.is_none()
-            && self.track_total.is_none()
-            && self.disc_number.is_none()
-            && self.disc_total.is_none()
-            && self.lyrics.is_none()
-            && self.comment.is_none()
-            && self.pictures.is_none()
-            && self.bpm.is_none()
-            && self.replay_gain_track_gain.is_none()
-            && self.replay_gain_track_peak.is_none()
-            && self.replay_gain_album_gain.is_none()
-            && self.replay_gain_album_peak.is_none()
+        *self == Self::default()
     }
 
     /// Merges these changes onto `base`, returning the combined tag.
-    fn merge(&self, base: &Tag) -> Tag {
+    pub(crate) fn merge(&self, base: &Tag) -> Tag {
+        macro_rules! or_clone {
+            ($self:expr, $base:expr) => {
+                $self.clone().or_else(|| $base.clone())
+            };
+        }
         Tag {
-            title: self.title.clone().or_else(|| base.title.clone()),
-            track_artist: self
-                .track_artist
-                .clone()
-                .or_else(|| base.track_artist.clone()),
-            album: self.album.clone().or_else(|| base.album.clone()),
-            album_artist: self
-                .album_artist
-                .clone()
-                .or_else(|| base.album_artist.clone()),
+            title: or_clone!(self.title, base.title),
+            track_artist: or_clone!(self.track_artist, base.track_artist),
+            album: or_clone!(self.album, base.album),
+            album_artist: or_clone!(self.album_artist, base.album_artist),
             year: self.year.or(base.year),
-            genre: self.genre.clone().or_else(|| base.genre.clone()),
+            genre: or_clone!(self.genre, base.genre),
             track_number: self.track_number.or(base.track_number),
             track_total: self.track_total.or(base.track_total),
             disc_number: self.disc_number.or(base.disc_number),
             disc_total: self.disc_total.or(base.disc_total),
-            lyrics: self.lyrics.clone().or_else(|| base.lyrics.clone()),
-            comment: self.comment.clone().or_else(|| base.comment.clone()),
+            lyrics: or_clone!(self.lyrics, base.lyrics),
+            comment: or_clone!(self.comment, base.comment),
             pictures: self
                 .pictures
                 .clone()
-                .or_else(|| Some(base.pictures.clone()))
-                .unwrap_or_default(),
+                .unwrap_or_else(|| base.pictures.clone()),
             duration: base.duration,
             bpm: self.bpm.or(base.bpm),
-            replay_gain_track_gain: self
-                .replay_gain_track_gain
-                .clone()
-                .or_else(|| base.replay_gain_track_gain.clone()),
-            replay_gain_track_peak: self
-                .replay_gain_track_peak
-                .clone()
-                .or_else(|| base.replay_gain_track_peak.clone()),
-            replay_gain_album_gain: self
-                .replay_gain_album_gain
-                .clone()
-                .or_else(|| base.replay_gain_album_gain.clone()),
-            replay_gain_album_peak: self
-                .replay_gain_album_peak
-                .clone()
-                .or_else(|| base.replay_gain_album_peak.clone()),
+            replay_gain_track_gain: or_clone!(
+                self.replay_gain_track_gain,
+                base.replay_gain_track_gain
+            ),
+            replay_gain_track_peak: or_clone!(
+                self.replay_gain_track_peak,
+                base.replay_gain_track_peak
+            ),
+            replay_gain_album_gain: or_clone!(
+                self.replay_gain_album_gain,
+                base.replay_gain_album_gain
+            ),
+            replay_gain_album_peak: or_clone!(
+                self.replay_gain_album_peak,
+                base.replay_gain_album_peak
+            ),
         }
     }
 }

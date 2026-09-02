@@ -1,3 +1,11 @@
+## 1.2.6
+
+- Performance improved in `batch_update_changes`
+- Code quality: added `PartialEq` derives to `Tag`, `TagChanges`, `Picture`, `PictureType`, `MimeType`
+- Simplified `is_empty()` on `Tag`, `TagChanges::merge()` with `or_clone!` macro and `TagChanges` — delegates to `PartialEq` against default
+- Added rayon parallelism to file-path `batch_write` and `batch_update_changes`
+- Updated README benchmarks with both bytes and file-path API results
+
 ## 1.2.5
 
 - Performance optimizations: rayon parallelism for batch operations, pre-allocated output buffers, consolidated MP3 byte manipulation
