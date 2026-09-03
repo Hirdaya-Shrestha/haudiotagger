@@ -12,6 +12,8 @@
   <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/v/haudiotagger.svg?label=pub.dev&color=0175C2" alt="pub.dev"></a>
   <a href="https://github.com/Hirdaya-Shrestha/haudiotagger/actions"><img src="https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-4285F4.svg" alt="MIT License"></a>
+  <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/dm/haudiotagger?label=Downloads&logo=dart" alt="pub.dev downloads"></a>
+  <a href="https://haudiotagger.hirdaya-shrestha.com.np/"><img src="https://img.shields.io/badge/Web_Live-Demo-448cf3" alt="Live Demo"></a>
 </p>
 
 ---
@@ -19,6 +21,12 @@
 Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/aspect-build/aspect).
 
 ![hAudiotagger](/haudiotagger/cover.png)
+
+### 🌐 Live Web Demo
+
+Try hAudiotagger working demo directly in your browser - no install required:
+
+**[hAudiotagger](https://haudiotagger.hirdaya-shrestha.com.np/)**
 
 ## Features
 
