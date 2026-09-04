@@ -1,3 +1,11 @@
+## 1.2.8
+
+- Moved `copyMetadata`, `processFile`, `processBytes`, `processBatch`, `processBatchBytes` to Rust for single FFI call (was 3+ calls)
+- TagPipeline bytes support: `processFromBytes`, `processBatchFromBytes`, `previewFromBytes`
+- Code quality audit: removed duplicate `tag_format_name`, inline `type_info`, `apply_pipeline` wrapper
+- Extracted `prebuild_tag_bytes` and `collect_batch_result` helpers to deduplicate batch logic
+- `extract_tag_formats` uses `sort`+`dedup` instead of `HashSet` roundtrip
+
 ## 1.2.7
 
 - **TagPipeline**: metadata transformation engine with 56 rule variants

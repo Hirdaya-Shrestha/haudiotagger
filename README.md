@@ -45,6 +45,9 @@ Try hAudiotagger working demo directly in your browser - no install required:
 | Copy metadata between files | All |
 | Merge tags with configurable strategy | All |
 | ReplayGain support (track/album gain/peak) | All |
+| TagPipeline — 56-rule metadata transformation engine | All |
+| Format filenames from tag metadata | All |
+| Rename files based on metadata patterns | All |
 
 > [!NOTE]
 > On the web, browsers cannot access arbitrary local files via file paths due to security sandboxing. Use the `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`) which accept and return raw byte arrays. On native platforms (Android, iOS, Linux, macOS, Windows), both file path and bytes APIs are available. Also see [Web Setup](#web-setup).
@@ -53,7 +56,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.7
+  haudiotagger: ^1.2.8
 ```
 
 ## Quick Start
@@ -457,13 +460,13 @@ final modifiedList = await pipeline.processBatchFromBytes([bytes1, bytes2]);
 
 ## ⚡ Performance Benchmarks
 
-Benchmarks were performed using **hAudiotagger 1.2.7** on a Linux system with 500 MP3 files (~8 MB each).
+Benchmarks were performed using **hAudiotagger 1.2.8** on a Linux system with 500 MP3 files (~8 MB each).
 
 ### Benchmark Environment
 
 | Property | Value |
 |---|---|
-| **hAudiotagger** | `1.2.7` |
+| **hAudiotagger** | `1.2.8` |
 | **OS** | Linux (Arch) |
 | **CPU** | AMD Ryzen 5 4500U |
 | **RAM** | 16 GB DDR4 |
