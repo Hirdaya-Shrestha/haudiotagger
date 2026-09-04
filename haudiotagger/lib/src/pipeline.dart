@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'haudiotagger.dart';
 import 'rust/api/api.dart' as api;
 import 'rust/api/pipeline.dart' as rpc;
-import 'rust/api/pipeline.dart' show TransformRule;
 
 /// Result of previewing a pipeline transformation.
 class PreviewResult {
@@ -480,7 +479,7 @@ class TagPipeline {
   /// Apply the pipeline to a byte array and return the modified bytes.
   Future<Uint8List> processFromBytes(Uint8List bytes) async {
     final result = await api.processBytes(bytes: bytes, rules: _rules);
-    return result as Uint8List;
+    return result;
   }
 
   /// Apply the pipeline to multiple files.
@@ -501,7 +500,7 @@ class TagPipeline {
       byteArrays: byteArrays,
       rules: _rules,
     );
-    return result.results.map((e) => e as Uint8List).toList();
+    return result.results.toList();
   }
 
   /// Get the list of rules in this pipeline.
