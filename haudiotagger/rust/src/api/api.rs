@@ -439,11 +439,11 @@ fn prebuild_tag_bytes(data: &Tag) -> Result<Vec<u8>, HaudiotaggerError> {
         message: format!("Could not apply tag: {e:?}"),
     })?;
     let mut tag_bytes = Vec::with_capacity(1024);
-    lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()).map_err(|e| {
-        HaudiotaggerError::Write {
+    lo_tag
+        .dump_to(&mut tag_bytes, WriteOptions::new())
+        .map_err(|e| HaudiotaggerError::Write {
             message: format!("Could not serialize tag: {e:?}"),
-        }
-    })?;
+        })?;
     Ok(tag_bytes)
 }
 
@@ -523,7 +523,11 @@ fn collect_batch_result(processed: Vec<(String, Result<(), HaudiotaggerError>)>)
             }
         }
     }
-    BatchResult { successes, failures, errors }
+    BatchResult {
+        successes,
+        failures,
+        errors,
+    }
 }
 
 /// Helper: collect processed bytes results into a BatchBytesResult.
@@ -542,7 +546,11 @@ fn collect_batch_bytes_result(
             }
         }
     }
-    BatchBytesResult { results, failures, errors }
+    BatchBytesResult {
+        results,
+        failures,
+        errors,
+    }
 }
 
 /// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
