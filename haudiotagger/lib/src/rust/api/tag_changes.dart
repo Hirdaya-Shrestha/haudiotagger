@@ -9,7 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
 
 // These functions are ignored because they are not marked as `pub`: `merge`, `read_bytes_or_empty`, `read_or_empty`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `fmt`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `eq`, `fmt`
 
 /// Apply [changes] to the tag at `path`, preserving any fields not mentioned.
 Future<void> update({required String path, required TagChanges changes}) =>

@@ -53,7 +53,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.6
+  haudiotagger: ^1.2.7
 ```
 
 ## Quick Start
@@ -387,17 +387,83 @@ await Haudiotagger.update('song.mp3', TagChanges(
 ));
 ```
 
+### Format Filename
+
+Format a filename from tag metadata using placeholders.
+
+```dart
+final name = Haudiotagger.formatFilename(
+  tag,
+  pattern: '{track}. {title}',
+);
+// "01. My Song"
+```
+
+**Placeholders**: `{title}`, `{artist}`, `{album}`, `{albumArtist}`, `{track}`, `{trackTotal}`, `{disc}`, `{discTotal}`, `{year}`, `{genre}`
+
+### Rename Files
+
+Rename a file based on its metadata.
+
+```dart
+final newPath = await Haudiotagger.rename(
+  '/path/to/song.mp3',
+  pattern: '{track} - {title}',
+);
+// Renames to "/path/to/01 - My Song.mp3"
+```
+
+### TagPipeline — Transformation Engine
+
+Apply batch transformations to metadata with a reusable pipeline.
+
+```dart
+final pipeline = TagPipeline()
+  ..trimWhitespace()
+  ..normalizeUnicode()
+  ..setAlbumArtist('Various Artists')
+  ..removeLyrics()
+  ..setGenre('Rock');
+
+// Preview changes before writing
+final result = await pipeline.preview('/path/to/song.mp3');
+final resultFromBytes = await pipeline.previewFromBytes(fileBytes);
+print(result.changes);
+// [title: "  Hello  " → "Hello", genre: null → "Rock"]
+
+// Process multiple files
+await pipeline.process(files);
+
+// Process byte arrays (web + native)
+final modifiedBytes = await pipeline.processFromBytes(fileBytes);
+final modifiedList = await pipeline.processBatchFromBytes([bytes1, bytes2]);
+```
+
+#### Available Rules (56)
+
+| Category | Rules |
+|----------|-------|
+| **Setters** | `setTitle`, `setArtist`, `setAlbum`, `setAlbumArtist`, `setGenre`, `setYear`, `setTrackNumber`, `setDiscNumber`, `setTrackTotal`, `setDiscTotal`, `setBpm`, `setComment` |
+| **Remove** | `removeTitle`, `removeArtist`, `removeAlbum`, `removeAlbumArtist`, `removeGenre`, `removeYear`, `removeTrackNumber`, `removeDiscNumber`, `removeLyrics`, `removeComment`, `removePictures`, `removeBpm`, `removeReplayGain` |
+| **Normalize** | `trimWhitespace`, `normalizeWhitespace`, `normalizeUnicode`, `normalizeTrackNumbers`, `normalizeDiscNumbers`, `normalizeYear` |
+| **Copy** | `copyArtistToAlbumArtist`, `copyAlbumArtistToArtist`, `copyTitleToComment` |
+| **Prefix/Suffix** | `prefixTitle`, `suffixTitle`, `prefixAlbum`, `suffixAlbum`, `prefixArtist`, `suffixArtist` |
+| **Case** | `titleCaseTitle`, `titleCaseArtist`, `titleCaseAlbum`, `lowerCaseAll`, `upperCaseAll` |
+| **Search/Replace** | `replaceInTitle`, `replaceInArtist`, `replaceInAlbum`, `replaceInAll` |
+| **Conditional** | `setTitleIfEmpty`, `setArtistIfEmpty`, `setAlbumIfEmpty`, `setGenreIfEmpty`, `setAlbumArtistIfEmpty` |
+| **Cleanup** | `removeEmptyFields`, `removeNonCoverPictures` |
+
 ---
 
 ## ⚡ Performance Benchmarks
 
-Benchmarks were performed using **hAudiotagger 1.2.6** on a Linux system with 500 MP3 files (~8 MB each).
+Benchmarks were performed using **hAudiotagger 1.2.7** on a Linux system with 500 MP3 files (~8 MB each).
 
 ### Benchmark Environment
 
 | Property | Value |
 |---|---|
-| **hAudiotagger** | `1.2.6` |
+| **hAudiotagger** | `1.2.7` |
 | **OS** | Linux (Arch) |
 | **CPU** | AMD Ryzen 5 4500U |
 | **RAM** | 16 GB DDR4 |

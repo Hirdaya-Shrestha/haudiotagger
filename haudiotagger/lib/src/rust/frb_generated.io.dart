@@ -8,6 +8,7 @@ import 'api/audio_properties.dart';
 import 'api/error.dart';
 import 'api/normalization.dart';
 import 'api/picture.dart';
+import 'api/pipeline.dart';
 import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
@@ -72,6 +73,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TagChanges dco_decode_box_autoadd_tag_changes(dynamic raw);
 
   @protected
+  TagPipeline dco_decode_box_autoadd_tag_pipeline(dynamic raw);
+
+  @protected
+  TransformRule dco_decode_box_autoadd_transform_rule(dynamic raw);
+
+  @protected
   int dco_decode_box_autoadd_u_32(dynamic raw);
 
   @protected
@@ -118,6 +125,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<TagField> dco_decode_list_tag_field(dynamic raw);
+
+  @protected
+  List<TransformRule> dco_decode_list_transform_rule(dynamic raw);
 
   @protected
   List<ValidationIssue> dco_decode_list_validation_issue(dynamic raw);
@@ -177,6 +187,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TagField dco_decode_tag_field(dynamic raw);
 
   @protected
+  TagPipeline dco_decode_tag_pipeline(dynamic raw);
+
+  @protected
+  TransformRule dco_decode_transform_rule(dynamic raw);
+
+  @protected
   int dco_decode_u_32(dynamic raw);
 
   @protected
@@ -187,6 +203,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void dco_decode_unit(dynamic raw);
+
+  @protected
+  BigInt dco_decode_usize(dynamic raw);
 
   @protected
   ValidationIssue dco_decode_validation_issue(dynamic raw);
@@ -246,6 +265,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TagChanges sse_decode_box_autoadd_tag_changes(SseDeserializer deserializer);
 
   @protected
+  TagPipeline sse_decode_box_autoadd_tag_pipeline(SseDeserializer deserializer);
+
+  @protected
+  TransformRule sse_decode_box_autoadd_transform_rule(
+      SseDeserializer deserializer);
+
+  @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
 
   @protected
@@ -296,6 +322,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<TagField> sse_decode_list_tag_field(SseDeserializer deserializer);
+
+  @protected
+  List<TransformRule> sse_decode_list_transform_rule(
+      SseDeserializer deserializer);
 
   @protected
   List<ValidationIssue> sse_decode_list_validation_issue(
@@ -358,6 +388,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   TagField sse_decode_tag_field(SseDeserializer deserializer);
 
   @protected
+  TagPipeline sse_decode_tag_pipeline(SseDeserializer deserializer);
+
+  @protected
+  TransformRule sse_decode_transform_rule(SseDeserializer deserializer);
+
+  @protected
   int sse_decode_u_32(SseDeserializer deserializer);
 
   @protected
@@ -368,6 +404,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_decode_unit(SseDeserializer deserializer);
+
+  @protected
+  BigInt sse_decode_usize(SseDeserializer deserializer);
 
   @protected
   ValidationIssue sse_decode_validation_issue(SseDeserializer deserializer);
@@ -433,6 +472,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       TagChanges self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_tag_pipeline(
+      TagPipeline self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_transform_rule(
+      TransformRule self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
 
   @protected
@@ -485,6 +532,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_tag_field(List<TagField> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_list_transform_rule(
+      List<TransformRule> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_validation_issue(
@@ -552,6 +603,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_tag_field(TagField self, SseSerializer serializer);
 
   @protected
+  void sse_encode_tag_pipeline(TagPipeline self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_transform_rule(TransformRule self, SseSerializer serializer);
+
+  @protected
   void sse_encode_u_32(int self, SseSerializer serializer);
 
   @protected
@@ -562,6 +619,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_usize(BigInt self, SseSerializer serializer);
 
   @protected
   void sse_encode_validation_issue(

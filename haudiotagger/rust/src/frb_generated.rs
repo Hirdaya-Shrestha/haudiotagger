@@ -39,7 +39,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1769373144;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = -934278012;
 
 // Section: executor
 
@@ -47,6 +47,150 @@ flutter_rust_bridge::frb_generated_default_handler!();
 
 // Section: wire_funcs
 
+fn wire__crate__api__api__apply_pipeline_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "apply_pipeline",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
+            let api_rules =
+                <Vec<crate::api::pipeline::TransformRule>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::api::apply_pipeline(api_tag, api_rules))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__apply_pipeline_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "apply_pipeline",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
+            let api_pipeline = <crate::api::pipeline::TagPipeline>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::pipeline::apply_pipeline(
+                        &api_tag,
+                        &api_pipeline,
+                    ))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__apply_rule_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "apply_rule",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
+            let api_rule = <crate::api::pipeline::TransformRule>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::pipeline::apply_rule(&api_tag, &api_rule))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__api__batch_transform_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "batch_transform",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_paths = <Vec<String>>::sse_decode(&mut deserializer);
+            let api_rules =
+                <Vec<crate::api::pipeline::TransformRule>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::api::batch_transform(api_paths, api_rules))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
 fn wire__crate__api__api__batch_update_changes_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -327,6 +471,41 @@ fn wire__crate__api__api__convert_id3v2_from_bytes_impl(
                     std::result::Result::Ok(output_ok)
                 })(
                 ))
+            }
+        },
+    )
+}
+fn wire__crate__api__api__format_filename_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "format_filename",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
+            let api_pattern = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::api::format_filename(&api_tag, &api_pattern))?;
+                    std::result::Result::Ok(output_ok)
+                })())
             }
         },
     )
@@ -1163,6 +1342,41 @@ fn wire__crate__api__api__remove_id3v1_from_bytes_impl(
         },
     )
 }
+fn wire__crate__api__api__rename_file_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "rename_file",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_path = <String>::sse_decode(&mut deserializer);
+            let api_pattern = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, crate::api::error::HaudiotaggerError>((move || {
+                    let output_ok = crate::api::api::rename_file(api_path, api_pattern)?;
+                    std::result::Result::Ok(output_ok)
+                })(
+                ))
+            }
+        },
+    )
+}
 fn wire__crate__api__api__set_custom_tag_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -1361,6 +1575,208 @@ fn wire__crate__api__tag__tag_is_empty_impl(
             move |context| {
                 transform_result_sse::<_, ()>((move || {
                     let output_ok = Ok::<_, ()>(crate::api::tag::Tag::is_empty(&api_that))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__tag_pipeline_apply_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_pipeline_apply",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <crate::api::pipeline::TagPipeline>::sse_decode(&mut deserializer);
+            let api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::pipeline::TagPipeline::apply(
+                        &api_that, &api_tag,
+                    ))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__tag_pipeline_default_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_pipeline_default",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::pipeline::TagPipeline::default())?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__tag_pipeline_from_rules_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_pipeline_from_rules",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_rules =
+                <Vec<crate::api::pipeline::TransformRule>>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::pipeline::TagPipeline::from_rules(api_rules))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__tag_pipeline_is_empty_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_pipeline_is_empty",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <crate::api::pipeline::TagPipeline>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok =
+                        Ok::<_, ()>(crate::api::pipeline::TagPipeline::is_empty(&api_that))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__tag_pipeline_len_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_pipeline_len",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <crate::api::pipeline::TagPipeline>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::pipeline::TagPipeline::len(&api_that))?;
+                    std::result::Result::Ok(output_ok)
+                })())
+            }
+        },
+    )
+}
+fn wire__crate__api__pipeline__tag_pipeline_new_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "tag_pipeline_new",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| {
+                transform_result_sse::<_, ()>((move || {
+                    let output_ok = Ok::<_, ()>(crate::api::pipeline::TagPipeline::new())?;
                     std::result::Result::Ok(output_ok)
                 })())
             }
@@ -1943,6 +2359,20 @@ impl SseDecode for Vec<crate::api::tag_field::TagField> {
     }
 }
 
+impl SseDecode for Vec<crate::api::pipeline::TransformRule> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut len_ = <i32>::sse_decode(deserializer);
+        let mut ans_ = Vec::with_capacity(len_ as usize);
+        for idx_ in 0..len_ {
+            ans_.push(<crate::api::pipeline::TransformRule>::sse_decode(
+                deserializer,
+            ));
+        }
+        return ans_;
+    }
+}
+
 impl SseDecode for Vec<crate::api::validation::ValidationIssue> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2267,6 +2697,237 @@ impl SseDecode for crate::api::tag_field::TagField {
     }
 }
 
+impl SseDecode for crate::api::pipeline::TagPipeline {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut var_rules = <Vec<crate::api::pipeline::TransformRule>>::sse_decode(deserializer);
+        return crate::api::pipeline::TagPipeline { rules: var_rules };
+    }
+}
+
+impl SseDecode for crate::api::pipeline::TransformRule {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        let mut tag_ = <i32>::sse_decode(deserializer);
+        match tag_ {
+            0 => {
+                return crate::api::pipeline::TransformRule::TrimWhitespace;
+            }
+            1 => {
+                return crate::api::pipeline::TransformRule::NormalizeWhitespace;
+            }
+            2 => {
+                return crate::api::pipeline::TransformRule::NormalizeUnicode;
+            }
+            3 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetTitle(var_field0);
+            }
+            4 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetArtist(var_field0);
+            }
+            5 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetAlbum(var_field0);
+            }
+            6 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetAlbumArtist(var_field0);
+            }
+            7 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetGenre(var_field0);
+            }
+            8 => {
+                let mut var_field0 = <u32>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetYear(var_field0);
+            }
+            9 => {
+                let mut var_field0 = <u32>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetTrackNumber(var_field0);
+            }
+            10 => {
+                let mut var_field0 = <u32>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetDiscNumber(var_field0);
+            }
+            11 => {
+                let mut var_field0 = <u32>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetTrackTotal(var_field0);
+            }
+            12 => {
+                let mut var_field0 = <u32>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetDiscTotal(var_field0);
+            }
+            13 => {
+                let mut var_field0 = <f32>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetBpm(var_field0);
+            }
+            14 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetComment(var_field0);
+            }
+            15 => {
+                return crate::api::pipeline::TransformRule::RemoveLyrics;
+            }
+            16 => {
+                return crate::api::pipeline::TransformRule::RemoveComment;
+            }
+            17 => {
+                return crate::api::pipeline::TransformRule::RemovePictures;
+            }
+            18 => {
+                return crate::api::pipeline::TransformRule::RemoveBpm;
+            }
+            19 => {
+                return crate::api::pipeline::TransformRule::RemoveReplayGain;
+            }
+            20 => {
+                return crate::api::pipeline::TransformRule::RemoveTitle;
+            }
+            21 => {
+                return crate::api::pipeline::TransformRule::RemoveArtist;
+            }
+            22 => {
+                return crate::api::pipeline::TransformRule::RemoveAlbum;
+            }
+            23 => {
+                return crate::api::pipeline::TransformRule::RemoveAlbumArtist;
+            }
+            24 => {
+                return crate::api::pipeline::TransformRule::RemoveGenre;
+            }
+            25 => {
+                return crate::api::pipeline::TransformRule::RemoveYear;
+            }
+            26 => {
+                return crate::api::pipeline::TransformRule::RemoveTrackNumber;
+            }
+            27 => {
+                return crate::api::pipeline::TransformRule::RemoveDiscNumber;
+            }
+            28 => {
+                return crate::api::pipeline::TransformRule::NormalizeTrackNumbers;
+            }
+            29 => {
+                return crate::api::pipeline::TransformRule::NormalizeDiscNumbers;
+            }
+            30 => {
+                return crate::api::pipeline::TransformRule::NormalizeYear;
+            }
+            31 => {
+                return crate::api::pipeline::TransformRule::CopyArtistToAlbumArtist;
+            }
+            32 => {
+                return crate::api::pipeline::TransformRule::CopyAlbumArtistToArtist;
+            }
+            33 => {
+                return crate::api::pipeline::TransformRule::CopyTitleToComment;
+            }
+            34 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::PrefixTitle(var_field0);
+            }
+            35 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SuffixTitle(var_field0);
+            }
+            36 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::PrefixAlbum(var_field0);
+            }
+            37 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SuffixAlbum(var_field0);
+            }
+            38 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::PrefixArtist(var_field0);
+            }
+            39 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SuffixArtist(var_field0);
+            }
+            40 => {
+                return crate::api::pipeline::TransformRule::TitleCaseTitle;
+            }
+            41 => {
+                return crate::api::pipeline::TransformRule::TitleCaseArtist;
+            }
+            42 => {
+                return crate::api::pipeline::TransformRule::TitleCaseAlbum;
+            }
+            43 => {
+                return crate::api::pipeline::TransformRule::LowerCaseAll;
+            }
+            44 => {
+                return crate::api::pipeline::TransformRule::UpperCaseAll;
+            }
+            45 => {
+                let mut var_find = <String>::sse_decode(deserializer);
+                let mut var_replace = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::ReplaceInTitle {
+                    find: var_find,
+                    replace: var_replace,
+                };
+            }
+            46 => {
+                let mut var_find = <String>::sse_decode(deserializer);
+                let mut var_replace = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::ReplaceInArtist {
+                    find: var_find,
+                    replace: var_replace,
+                };
+            }
+            47 => {
+                let mut var_find = <String>::sse_decode(deserializer);
+                let mut var_replace = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::ReplaceInAlbum {
+                    find: var_find,
+                    replace: var_replace,
+                };
+            }
+            48 => {
+                let mut var_find = <String>::sse_decode(deserializer);
+                let mut var_replace = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::ReplaceInAll {
+                    find: var_find,
+                    replace: var_replace,
+                };
+            }
+            49 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetTitleIfEmpty(var_field0);
+            }
+            50 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetArtistIfEmpty(var_field0);
+            }
+            51 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetAlbumIfEmpty(var_field0);
+            }
+            52 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetGenreIfEmpty(var_field0);
+            }
+            53 => {
+                let mut var_field0 = <String>::sse_decode(deserializer);
+                return crate::api::pipeline::TransformRule::SetAlbumArtistIfEmpty(var_field0);
+            }
+            54 => {
+                return crate::api::pipeline::TransformRule::RemoveEmptyFields;
+            }
+            55 => {
+                return crate::api::pipeline::TransformRule::RemoveNonCoverPictures;
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
 impl SseDecode for u32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -2291,6 +2952,13 @@ impl SseDecode for u8 {
 impl SseDecode for () {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {}
+}
+
+impl SseDecode for usize {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        deserializer.cursor.read_u64::<NativeEndian>().unwrap() as _
+    }
 }
 
 impl SseDecode for crate::api::validation::ValidationIssue {
@@ -2338,116 +3006,142 @@ fn pde_ffi_dispatcher_primary_impl(
 ) {
     // Codec=Pde (Serialization + dispatch), see doc to use other codecs
     match func_id {
-        1 => wire__crate__api__api__batch_update_changes_impl(port, ptr, rust_vec_len, data_len),
-        2 => wire__crate__api__api__batch_update_changes_from_bytes_impl(
+        1 => wire__crate__api__api__apply_pipeline_impl(port, ptr, rust_vec_len, data_len),
+        2 => wire__crate__api__pipeline__apply_pipeline_impl(port, ptr, rust_vec_len, data_len),
+        3 => wire__crate__api__pipeline__apply_rule_impl(port, ptr, rust_vec_len, data_len),
+        4 => wire__crate__api__api__batch_transform_impl(port, ptr, rust_vec_len, data_len),
+        5 => wire__crate__api__api__batch_update_changes_impl(port, ptr, rust_vec_len, data_len),
+        6 => wire__crate__api__api__batch_update_changes_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        3 => wire__crate__api__api__batch_write_impl(port, ptr, rust_vec_len, data_len),
-        4 => wire__crate__api__api__batch_write_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        5 => wire__crate__api__api__clear_impl(port, ptr, rust_vec_len, data_len),
-        6 => wire__crate__api__api__clear_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        7 => wire__crate__api__api__convert_id3v2_impl(port, ptr, rust_vec_len, data_len),
-        8 => {
+        7 => wire__crate__api__api__batch_write_impl(port, ptr, rust_vec_len, data_len),
+        8 => wire__crate__api__api__batch_write_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        9 => wire__crate__api__api__clear_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__api__api__clear_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        11 => wire__crate__api__api__convert_id3v2_impl(port, ptr, rust_vec_len, data_len),
+        12 => {
             wire__crate__api__api__convert_id3v2_from_bytes_impl(port, ptr, rust_vec_len, data_len)
         }
-        9 => wire__crate__api__api__get_custom_tags_impl(port, ptr, rust_vec_len, data_len),
-        10 => wire__crate__api__api__get_custom_tags_from_bytes_impl(
+        13 => wire__crate__api__api__format_filename_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__api__api__get_custom_tags_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire__crate__api__api__get_custom_tags_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        11 => wire__crate__api__api__get_id3v2_version_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire__crate__api__api__get_id3v2_version_from_bytes_impl(
+        16 => wire__crate__api__api__get_id3v2_version_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__api__get_id3v2_version_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        13 => wire__crate__api__api__get_tag_formats_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire__crate__api__api__get_tag_formats_from_bytes_impl(
+        18 => wire__crate__api__api__get_tag_formats_impl(port, ptr, rust_vec_len, data_len),
+        19 => wire__crate__api__api__get_tag_formats_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        15 => wire__crate__api__api__inspect_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__api__inspect_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        17 => wire__crate__api__api__normalize_impl(port, ptr, rust_vec_len, data_len),
-        18 => wire__crate__api__normalization__normalize_impl(port, ptr, rust_vec_len, data_len),
-        19 => wire__crate__api__api__normalize_bytes_impl(port, ptr, rust_vec_len, data_len),
-        20 => wire__crate__api__normalization__normalize_options_default_impl(
+        20 => wire__crate__api__api__inspect_impl(port, ptr, rust_vec_len, data_len),
+        21 => wire__crate__api__api__inspect_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        22 => wire__crate__api__api__normalize_impl(port, ptr, rust_vec_len, data_len),
+        23 => wire__crate__api__normalization__normalize_impl(port, ptr, rust_vec_len, data_len),
+        24 => wire__crate__api__api__normalize_bytes_impl(port, ptr, rust_vec_len, data_len),
+        25 => wire__crate__api__normalization__normalize_options_default_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        21 => wire__crate__api__api__normalize_tag_impl(port, ptr, rust_vec_len, data_len),
-        22 => wire__crate__api__picture__picture_new_impl(port, ptr, rust_vec_len, data_len),
-        23 => wire__crate__api__api__read_impl(port, ptr, rust_vec_len, data_len),
-        24 => wire__crate__api__api__read_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        25 => wire__crate__api__audio_properties__read_properties_impl(
+        26 => wire__crate__api__api__normalize_tag_impl(port, ptr, rust_vec_len, data_len),
+        27 => wire__crate__api__picture__picture_new_impl(port, ptr, rust_vec_len, data_len),
+        28 => wire__crate__api__api__read_impl(port, ptr, rust_vec_len, data_len),
+        29 => wire__crate__api__api__read_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        30 => wire__crate__api__audio_properties__read_properties_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        26 => wire__crate__api__audio_properties__read_properties_from_bytes_impl(
+        31 => wire__crate__api__audio_properties__read_properties_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        27 => wire__crate__api__api__remove_impl(port, ptr, rust_vec_len, data_len),
-        28 => wire__crate__api__api__remove_custom_tag_impl(port, ptr, rust_vec_len, data_len),
-        29 => wire__crate__api__api__remove_custom_tag_from_bytes_impl(
+        32 => wire__crate__api__api__remove_impl(port, ptr, rust_vec_len, data_len),
+        33 => wire__crate__api__api__remove_custom_tag_impl(port, ptr, rust_vec_len, data_len),
+        34 => wire__crate__api__api__remove_custom_tag_from_bytes_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        30 => wire__crate__api__api__remove_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        31 => wire__crate__api__api__remove_id3v1_impl(port, ptr, rust_vec_len, data_len),
-        32 => {
+        35 => wire__crate__api__api__remove_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        36 => wire__crate__api__api__remove_id3v1_impl(port, ptr, rust_vec_len, data_len),
+        37 => {
             wire__crate__api__api__remove_id3v1_from_bytes_impl(port, ptr, rust_vec_len, data_len)
         }
-        33 => wire__crate__api__api__set_custom_tag_impl(port, ptr, rust_vec_len, data_len),
-        34 => {
+        38 => wire__crate__api__api__rename_file_impl(port, ptr, rust_vec_len, data_len),
+        39 => wire__crate__api__api__set_custom_tag_impl(port, ptr, rust_vec_len, data_len),
+        40 => {
             wire__crate__api__api__set_custom_tag_from_bytes_impl(port, ptr, rust_vec_len, data_len)
         }
-        35 => wire__crate__api__tag_changes__tag_changes_default_impl(
+        41 => wire__crate__api__tag_changes__tag_changes_default_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        36 => wire__crate__api__tag_changes__tag_changes_is_empty_impl(
+        42 => wire__crate__api__tag_changes__tag_changes_is_empty_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        37 => wire__crate__api__tag__tag_default_impl(port, ptr, rust_vec_len, data_len),
-        38 => wire__crate__api__tag__tag_is_empty_impl(port, ptr, rust_vec_len, data_len),
-        39 => wire__crate__api__tag_changes__update_impl(port, ptr, rust_vec_len, data_len),
-        40 => {
+        43 => wire__crate__api__tag__tag_default_impl(port, ptr, rust_vec_len, data_len),
+        44 => wire__crate__api__tag__tag_is_empty_impl(port, ptr, rust_vec_len, data_len),
+        45 => {
+            wire__crate__api__pipeline__tag_pipeline_apply_impl(port, ptr, rust_vec_len, data_len)
+        }
+        46 => {
+            wire__crate__api__pipeline__tag_pipeline_default_impl(port, ptr, rust_vec_len, data_len)
+        }
+        47 => wire__crate__api__pipeline__tag_pipeline_from_rules_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        48 => wire__crate__api__pipeline__tag_pipeline_is_empty_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        49 => wire__crate__api__pipeline__tag_pipeline_len_impl(port, ptr, rust_vec_len, data_len),
+        50 => wire__crate__api__pipeline__tag_pipeline_new_impl(port, ptr, rust_vec_len, data_len),
+        51 => wire__crate__api__tag_changes__update_impl(port, ptr, rust_vec_len, data_len),
+        52 => {
             wire__crate__api__tag_changes__update_from_bytes_impl(port, ptr, rust_vec_len, data_len)
         }
-        41 => wire__crate__api__api__validate_impl(port, ptr, rust_vec_len, data_len),
-        42 => wire__crate__api__validation__validate_impl(port, ptr, rust_vec_len, data_len),
-        43 => wire__crate__api__api__validate_from_bytes_impl(port, ptr, rust_vec_len, data_len),
-        44 => wire__crate__api__api__validate_tag_impl(port, ptr, rust_vec_len, data_len),
-        45 => wire__crate__api__validation__validation_result_is_valid_impl(
+        53 => wire__crate__api__api__validate_impl(port, ptr, rust_vec_len, data_len),
+        54 => wire__crate__api__validation__validate_impl(port, ptr, rust_vec_len, data_len),
+        55 => wire__crate__api__api__validate_from_bytes_impl(port, ptr, rust_vec_len, data_len),
+        56 => wire__crate__api__api__validate_tag_impl(port, ptr, rust_vec_len, data_len),
+        57 => wire__crate__api__validation__validation_result_is_valid_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        46 => wire__crate__api__api__write_impl(port, ptr, rust_vec_len, data_len),
-        47 => wire__crate__api__api__write_to_bytes_impl(port, ptr, rust_vec_len, data_len),
+        58 => wire__crate__api__api__write_impl(port, ptr, rust_vec_len, data_len),
+        59 => wire__crate__api__api__write_to_bytes_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }
@@ -2838,6 +3532,176 @@ impl flutter_rust_bridge::IntoIntoDart<crate::api::tag_field::TagField>
     }
 }
 // Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::pipeline::TagPipeline {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        [self.rules.into_into_dart().into_dart()].into_dart()
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::pipeline::TagPipeline
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::pipeline::TagPipeline>
+    for crate::api::pipeline::TagPipeline
+{
+    fn into_into_dart(self) -> crate::api::pipeline::TagPipeline {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
+impl flutter_rust_bridge::IntoDart for crate::api::pipeline::TransformRule {
+    fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
+        match self {
+            crate::api::pipeline::TransformRule::TrimWhitespace => [0.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::NormalizeWhitespace => [1.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::NormalizeUnicode => [2.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::SetTitle(field0) => {
+                [3.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetArtist(field0) => {
+                [4.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetAlbum(field0) => {
+                [5.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetAlbumArtist(field0) => {
+                [6.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetGenre(field0) => {
+                [7.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetYear(field0) => {
+                [8.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetTrackNumber(field0) => {
+                [9.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetDiscNumber(field0) => {
+                [10.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetTrackTotal(field0) => {
+                [11.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetDiscTotal(field0) => {
+                [12.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetBpm(field0) => {
+                [13.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetComment(field0) => {
+                [14.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::RemoveLyrics => [15.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveComment => [16.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemovePictures => [17.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveBpm => [18.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveReplayGain => [19.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveTitle => [20.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveArtist => [21.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveAlbum => [22.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveAlbumArtist => [23.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveGenre => [24.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveYear => [25.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveTrackNumber => [26.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveDiscNumber => [27.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::NormalizeTrackNumbers => {
+                [28.into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::NormalizeDiscNumbers => {
+                [29.into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::NormalizeYear => [30.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::CopyArtistToAlbumArtist => {
+                [31.into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::CopyAlbumArtistToArtist => {
+                [32.into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::CopyTitleToComment => [33.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::PrefixTitle(field0) => {
+                [34.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SuffixTitle(field0) => {
+                [35.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::PrefixAlbum(field0) => {
+                [36.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SuffixAlbum(field0) => {
+                [37.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::PrefixArtist(field0) => {
+                [38.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SuffixArtist(field0) => {
+                [39.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::TitleCaseTitle => [40.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::TitleCaseArtist => [41.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::TitleCaseAlbum => [42.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::LowerCaseAll => [43.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::UpperCaseAll => [44.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::ReplaceInTitle { find, replace } => [
+                45.into_dart(),
+                find.into_into_dart().into_dart(),
+                replace.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::api::pipeline::TransformRule::ReplaceInArtist { find, replace } => [
+                46.into_dart(),
+                find.into_into_dart().into_dart(),
+                replace.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::api::pipeline::TransformRule::ReplaceInAlbum { find, replace } => [
+                47.into_dart(),
+                find.into_into_dart().into_dart(),
+                replace.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::api::pipeline::TransformRule::ReplaceInAll { find, replace } => [
+                48.into_dart(),
+                find.into_into_dart().into_dart(),
+                replace.into_into_dart().into_dart(),
+            ]
+            .into_dart(),
+            crate::api::pipeline::TransformRule::SetTitleIfEmpty(field0) => {
+                [49.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetArtistIfEmpty(field0) => {
+                [50.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetAlbumIfEmpty(field0) => {
+                [51.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetGenreIfEmpty(field0) => {
+                [52.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::SetAlbumArtistIfEmpty(field0) => {
+                [53.into_dart(), field0.into_into_dart().into_dart()].into_dart()
+            }
+            crate::api::pipeline::TransformRule::RemoveEmptyFields => [54.into_dart()].into_dart(),
+            crate::api::pipeline::TransformRule::RemoveNonCoverPictures => {
+                [55.into_dart()].into_dart()
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+impl flutter_rust_bridge::for_generated::IntoDartExceptPrimitive
+    for crate::api::pipeline::TransformRule
+{
+}
+impl flutter_rust_bridge::IntoIntoDart<crate::api::pipeline::TransformRule>
+    for crate::api::pipeline::TransformRule
+{
+    fn into_into_dart(self) -> crate::api::pipeline::TransformRule {
+        self
+    }
+}
+// Codec=Dco (DartCObject based), see doc to use other codecs
 impl flutter_rust_bridge::IntoDart for crate::api::validation::ValidationIssue {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         [
@@ -3115,6 +3979,16 @@ impl SseEncode for Vec<crate::api::tag_field::TagField> {
     }
 }
 
+impl SseEncode for Vec<crate::api::pipeline::TransformRule> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <i32>::sse_encode(self.len() as _, serializer);
+        for item in self {
+            <crate::api::pipeline::TransformRule>::sse_encode(item, serializer);
+        }
+    }
+}
+
 impl SseEncode for Vec<crate::api::validation::ValidationIssue> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3381,6 +4255,223 @@ impl SseEncode for crate::api::tag_field::TagField {
     }
 }
 
+impl SseEncode for crate::api::pipeline::TagPipeline {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <Vec<crate::api::pipeline::TransformRule>>::sse_encode(self.rules, serializer);
+    }
+}
+
+impl SseEncode for crate::api::pipeline::TransformRule {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        match self {
+            crate::api::pipeline::TransformRule::TrimWhitespace => {
+                <i32>::sse_encode(0, serializer);
+            }
+            crate::api::pipeline::TransformRule::NormalizeWhitespace => {
+                <i32>::sse_encode(1, serializer);
+            }
+            crate::api::pipeline::TransformRule::NormalizeUnicode => {
+                <i32>::sse_encode(2, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetTitle(field0) => {
+                <i32>::sse_encode(3, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetArtist(field0) => {
+                <i32>::sse_encode(4, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetAlbum(field0) => {
+                <i32>::sse_encode(5, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetAlbumArtist(field0) => {
+                <i32>::sse_encode(6, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetGenre(field0) => {
+                <i32>::sse_encode(7, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetYear(field0) => {
+                <i32>::sse_encode(8, serializer);
+                <u32>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetTrackNumber(field0) => {
+                <i32>::sse_encode(9, serializer);
+                <u32>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetDiscNumber(field0) => {
+                <i32>::sse_encode(10, serializer);
+                <u32>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetTrackTotal(field0) => {
+                <i32>::sse_encode(11, serializer);
+                <u32>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetDiscTotal(field0) => {
+                <i32>::sse_encode(12, serializer);
+                <u32>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetBpm(field0) => {
+                <i32>::sse_encode(13, serializer);
+                <f32>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetComment(field0) => {
+                <i32>::sse_encode(14, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveLyrics => {
+                <i32>::sse_encode(15, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveComment => {
+                <i32>::sse_encode(16, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemovePictures => {
+                <i32>::sse_encode(17, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveBpm => {
+                <i32>::sse_encode(18, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveReplayGain => {
+                <i32>::sse_encode(19, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveTitle => {
+                <i32>::sse_encode(20, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveArtist => {
+                <i32>::sse_encode(21, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveAlbum => {
+                <i32>::sse_encode(22, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveAlbumArtist => {
+                <i32>::sse_encode(23, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveGenre => {
+                <i32>::sse_encode(24, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveYear => {
+                <i32>::sse_encode(25, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveTrackNumber => {
+                <i32>::sse_encode(26, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveDiscNumber => {
+                <i32>::sse_encode(27, serializer);
+            }
+            crate::api::pipeline::TransformRule::NormalizeTrackNumbers => {
+                <i32>::sse_encode(28, serializer);
+            }
+            crate::api::pipeline::TransformRule::NormalizeDiscNumbers => {
+                <i32>::sse_encode(29, serializer);
+            }
+            crate::api::pipeline::TransformRule::NormalizeYear => {
+                <i32>::sse_encode(30, serializer);
+            }
+            crate::api::pipeline::TransformRule::CopyArtistToAlbumArtist => {
+                <i32>::sse_encode(31, serializer);
+            }
+            crate::api::pipeline::TransformRule::CopyAlbumArtistToArtist => {
+                <i32>::sse_encode(32, serializer);
+            }
+            crate::api::pipeline::TransformRule::CopyTitleToComment => {
+                <i32>::sse_encode(33, serializer);
+            }
+            crate::api::pipeline::TransformRule::PrefixTitle(field0) => {
+                <i32>::sse_encode(34, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SuffixTitle(field0) => {
+                <i32>::sse_encode(35, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::PrefixAlbum(field0) => {
+                <i32>::sse_encode(36, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SuffixAlbum(field0) => {
+                <i32>::sse_encode(37, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::PrefixArtist(field0) => {
+                <i32>::sse_encode(38, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SuffixArtist(field0) => {
+                <i32>::sse_encode(39, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::TitleCaseTitle => {
+                <i32>::sse_encode(40, serializer);
+            }
+            crate::api::pipeline::TransformRule::TitleCaseArtist => {
+                <i32>::sse_encode(41, serializer);
+            }
+            crate::api::pipeline::TransformRule::TitleCaseAlbum => {
+                <i32>::sse_encode(42, serializer);
+            }
+            crate::api::pipeline::TransformRule::LowerCaseAll => {
+                <i32>::sse_encode(43, serializer);
+            }
+            crate::api::pipeline::TransformRule::UpperCaseAll => {
+                <i32>::sse_encode(44, serializer);
+            }
+            crate::api::pipeline::TransformRule::ReplaceInTitle { find, replace } => {
+                <i32>::sse_encode(45, serializer);
+                <String>::sse_encode(find, serializer);
+                <String>::sse_encode(replace, serializer);
+            }
+            crate::api::pipeline::TransformRule::ReplaceInArtist { find, replace } => {
+                <i32>::sse_encode(46, serializer);
+                <String>::sse_encode(find, serializer);
+                <String>::sse_encode(replace, serializer);
+            }
+            crate::api::pipeline::TransformRule::ReplaceInAlbum { find, replace } => {
+                <i32>::sse_encode(47, serializer);
+                <String>::sse_encode(find, serializer);
+                <String>::sse_encode(replace, serializer);
+            }
+            crate::api::pipeline::TransformRule::ReplaceInAll { find, replace } => {
+                <i32>::sse_encode(48, serializer);
+                <String>::sse_encode(find, serializer);
+                <String>::sse_encode(replace, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetTitleIfEmpty(field0) => {
+                <i32>::sse_encode(49, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetArtistIfEmpty(field0) => {
+                <i32>::sse_encode(50, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetAlbumIfEmpty(field0) => {
+                <i32>::sse_encode(51, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetGenreIfEmpty(field0) => {
+                <i32>::sse_encode(52, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::SetAlbumArtistIfEmpty(field0) => {
+                <i32>::sse_encode(53, serializer);
+                <String>::sse_encode(field0, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveEmptyFields => {
+                <i32>::sse_encode(54, serializer);
+            }
+            crate::api::pipeline::TransformRule::RemoveNonCoverPictures => {
+                <i32>::sse_encode(55, serializer);
+            }
+            _ => {
+                unimplemented!("");
+            }
+        }
+    }
+}
+
 impl SseEncode for u32 {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
@@ -3405,6 +4496,16 @@ impl SseEncode for u8 {
 impl SseEncode for () {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {}
+}
+
+impl SseEncode for usize {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        serializer
+            .cursor
+            .write_u64::<NativeEndian>(self as _)
+            .unwrap();
+    }
 }
 
 impl SseEncode for crate::api::validation::ValidationIssue {

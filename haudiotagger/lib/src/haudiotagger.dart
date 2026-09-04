@@ -26,6 +26,7 @@ export 'rust/api/validation.dart'
     show ValidationResult, ValidationIssue, ValidationSeverity;
 export 'rust/api/normalization.dart' show NormalizeOptions;
 export 'copy_with.dart';
+export 'pipeline.dart' show TagPipeline, PreviewResult, FieldChange;
 
 /// Progress information for batch operations.
 class BatchProgress {
@@ -637,6 +638,67 @@ class Haudiotagger {
       duration: tagA.duration ?? tagB.duration,
       pictures: [...tagA.pictures, ...tagB.pictures],
     );
+  }
+
+  /// Format a filename from a tag using a pattern string.
+  ///
+  /// Supported placeholders:
+  /// `{title}`, `{artist}`, `{album}`, `{albumArtist}`, `{track}`,
+  /// `{trackTotal}`, `{disc}`, `{discTotal}`, `{year}`, `{genre}`
+  ///
+  /// Example:
+  /// ```dart
+  /// final name = Haudiotagger.formatFilename(
+  ///   tag,
+  ///   pattern: '{track}. {title}',
+  /// );
+  /// // Result: "01. My Song"
+  /// ```
+  static String formatFilename(Tag tag, {required String pattern}) {
+    final replacements = <String, String>{
+      '{title}': tag.title ?? '',
+      '{artist}': tag.trackArtist ?? '',
+      '{album}': tag.album ?? '',
+      '{albumArtist}': tag.albumArtist ?? '',
+      '{track}': tag.trackNumber != null
+          ? tag.trackNumber.toString().padLeft(2, '0')
+          : '',
+      '{trackTotal}': tag.trackTotal?.toString() ?? '',
+      '{disc}': tag.discNumber?.toString() ?? '',
+      '{discTotal}': tag.discTotal?.toString() ?? '',
+      '{year}': tag.year?.toString() ?? '',
+      '{genre}': tag.genre ?? '',
+    };
+
+    var result = pattern;
+    for (final entry in replacements.entries) {
+      result = result.replaceAll(entry.key, entry.value);
+    }
+
+    // Clean up multiple spaces and trim
+    result = result.replaceAll(RegExp(r' {2,}'), ' ').trim();
+
+    // Remove trailing dots, dashes, or spaces
+    result = result.replaceAll(RegExp(r'[\.\-\s]+$'), '');
+
+    return result;
+  }
+
+  /// Rename a file based on its metadata using a pattern.
+  ///
+  /// Returns the new file path on success.
+  ///
+  /// Example:
+  /// ```dart
+  /// final newPath = await Haudiotagger.rename(
+  ///   '/path/to/song.mp3',
+  ///   pattern: '{track} - {title}',
+  /// );
+  /// // Renames to "/path/to/01 - My Song.mp3"
+  /// ```
+  static Future<String> rename(String path, {required String pattern}) async {
+    await _ensureInit();
+    return api.renameFile(path: path, pattern: pattern);
   }
 }
 

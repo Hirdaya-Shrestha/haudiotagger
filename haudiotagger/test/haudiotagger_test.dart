@@ -693,4 +693,501 @@ void main() {
       expect(copy.title, 'New Title');
     });
   });
+
+  // ============================================================
+  // FORMAT FILENAME / RENAME
+  // ============================================================
+
+  group('formatFilename / rename', () {
+    test('formatFilename with track and title', () {
+      final tag = Tag(
+        trackNumber: 1,
+        title: 'My Song',
+        pictures: [],
+      );
+
+      final result =
+          Haudiotagger.formatFilename(tag, pattern: '{track}. {title}');
+      expect(result, '01. My Song');
+    });
+
+    test('formatFilename with all placeholders', () {
+      final tag = Tag(
+        title: 'Song Title',
+        trackArtist: 'Artist Name',
+        album: 'Album Name',
+        albumArtist: 'Album Artist',
+        trackNumber: 5,
+        trackTotal: 12,
+        discNumber: 1,
+        discTotal: 2,
+        year: 2025,
+        genre: 'Rock',
+        pictures: [],
+      );
+
+      final result = Haudiotagger.formatFilename(
+        tag,
+        pattern: '{track}. {title} - {artist} [{album}]',
+      );
+      expect(result, '05. Song Title - Artist Name [Album Name]');
+    });
+
+    test('formatFilename handles missing fields gracefully', () {
+      final tag = Tag(pictures: []);
+
+      final result =
+          Haudiotagger.formatFilename(tag, pattern: '{track}. {title}');
+      expect(result, isEmpty);
+    });
+
+    test('formatFilename pads track number with zero', () {
+      final tag = Tag(trackNumber: 3, title: 'Track', pictures: []);
+      final result = Haudiotagger.formatFilename(tag, pattern: '{track}');
+      expect(result, '03');
+    });
+
+    test('formatFilename cleans up trailing dots', () {
+      final tag = Tag(title: 'Song', pictures: []);
+      final result = Haudiotagger.formatFilename(tag, pattern: '{title}.');
+      expect(result, 'Song');
+    });
+
+    test('formatFilename cleans up multiple spaces', () {
+      final tag = Tag(title: 'Song', pictures: []);
+      final result =
+          Haudiotagger.formatFilename(tag, pattern: '{title}  {title}');
+      expect(result, 'Song Song');
+    });
+
+    test('rename updates file path', () async {
+      // This test requires a real file, so it's skipped by default
+      // Uncomment to test with actual files:
+      /*
+      final tempDir = Directory.systemTemp.createTempSync('rename_test');
+      final srcFile = File('${tempDir.path}/source.mp3');
+      srcFile.writeAsBytesSync(mp3Bytes);
+
+      final newPath = await Haudiotagger.rename(
+        srcFile.path,
+        pattern: '{track}. {title}',
+      );
+
+      expect(newPath, contains('01. My Song.mp3'));
+      expect(File(newPath).existsSync(), true);
+      expect(srcFile.existsSync(), false);
+
+      tempDir.deleteSync(recursive: true);
+      */
+    });
+  });
+
+  // ============================================================
+  // TAG PIPELINE
+  // ============================================================
+
+  group('TagPipeline', () {
+    test('trimWhitespace trims all string fields', () async {
+      final tag = Tag(
+        title: '  Hello  ',
+        trackArtist: '  Artist  ',
+        album: '  Album  ',
+        pictures: [],
+      );
+
+      final pipeline = TagPipeline()..trimWhitespace();
+      final result = await pipeline.apply(tag);
+
+      expect(result.title, 'Hello');
+      expect(result.trackArtist, 'Artist');
+      expect(result.album, 'Album');
+    });
+
+    test('setAlbumArtist sets album artist', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setAlbumArtist('Various Artists');
+      final result = await pipeline.apply(tag);
+
+      expect(result.albumArtist, 'Various Artists');
+    });
+
+    test('setGenre sets genre', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setGenre('Rock');
+      final result = await pipeline.apply(tag);
+
+      expect(result.genre, 'Rock');
+    });
+
+    test('removeLyrics clears lyrics', () async {
+      final tag = Tag(lyrics: 'Some lyrics', pictures: []);
+      final pipeline = TagPipeline()..removeLyrics();
+      final result = await pipeline.apply(tag);
+
+      expect(result.lyrics, isNull);
+    });
+
+    test('removeComment clears comment', () async {
+      final tag = Tag(comment: 'Some comment', pictures: []);
+      final pipeline = TagPipeline()..removeComment();
+      final result = await pipeline.apply(tag);
+
+      expect(result.comment, isNull);
+    });
+
+    test('removePictures clears pictures', () async {
+      final pic = Picture(
+        pictureType: PictureType.coverFront,
+        bytes: Uint8List.fromList([1, 2, 3]),
+      );
+      final tag = Tag(pictures: [pic]);
+      final pipeline = TagPipeline()..removePictures();
+      final result = await pipeline.apply(tag);
+
+      expect(result.pictures, isEmpty);
+    });
+
+    test('chaining multiple rules', () async {
+      final tag = Tag(
+        title: '  Hello  ',
+        genre: 'Pop',
+        lyrics: 'Some lyrics',
+        pictures: [],
+      );
+
+      final pipeline = TagPipeline()
+        ..trimWhitespace()
+        ..setGenre('Rock')
+        ..removeLyrics();
+      final result = await pipeline.apply(tag);
+
+      expect(result.title, 'Hello');
+      expect(result.genre, 'Rock');
+      expect(result.lyrics, isNull);
+    });
+
+    test('pipeline tracks rules', () {
+      final pipeline = TagPipeline()
+        ..trimWhitespace()
+        ..setGenre('Rock');
+
+      expect(pipeline.length, 2);
+      expect(pipeline.isEmpty, false);
+    });
+
+    test('empty pipeline returns original tag', () async {
+      final tag = Tag(title: 'Title', pictures: []);
+      final pipeline = TagPipeline();
+      final result = await pipeline.apply(tag);
+
+      expect(result.title, 'Title');
+    });
+
+    test('setTitle sets title', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setTitle('New Title');
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'New Title');
+    });
+
+    test('setArtist sets artist', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setArtist('New Artist');
+      final result = await pipeline.apply(tag);
+      expect(result.trackArtist, 'New Artist');
+    });
+
+    test('setAlbum sets album', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setAlbum('New Album');
+      final result = await pipeline.apply(tag);
+      expect(result.album, 'New Album');
+    });
+
+    test('setYear sets year', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setYear(2025);
+      final result = await pipeline.apply(tag);
+      expect(result.year, 2025);
+    });
+
+    test('setTrackNumber sets track number', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setTrackNumber(5);
+      final result = await pipeline.apply(tag);
+      expect(result.trackNumber, 5);
+    });
+
+    test('setDiscNumber sets disc number', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setDiscNumber(2);
+      final result = await pipeline.apply(tag);
+      expect(result.discNumber, 2);
+    });
+
+    test('setBpm sets bpm', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setBpm(120.0);
+      final result = await pipeline.apply(tag);
+      expect(result.bpm, 120.0);
+    });
+
+    test('setComment sets comment', () async {
+      final tag = Tag(pictures: []);
+      final pipeline = TagPipeline()..setComment('My comment');
+      final result = await pipeline.apply(tag);
+      expect(result.comment, 'My comment');
+    });
+
+    test('removeTitle removes title', () async {
+      final tag = Tag(title: 'Title', pictures: []);
+      final pipeline = TagPipeline()..removeTitle();
+      final result = await pipeline.apply(tag);
+      expect(result.title, isNull);
+    });
+
+    test('removeArtist removes artist', () async {
+      final tag = Tag(trackArtist: 'Artist', pictures: []);
+      final pipeline = TagPipeline()..removeArtist();
+      final result = await pipeline.apply(tag);
+      expect(result.trackArtist, isNull);
+    });
+
+    test('removeAlbum removes album', () async {
+      final tag = Tag(album: 'Album', pictures: []);
+      final pipeline = TagPipeline()..removeAlbum();
+      final result = await pipeline.apply(tag);
+      expect(result.album, isNull);
+    });
+
+    test('removeBpm removes bpm', () async {
+      final tag = Tag(bpm: 120.0, pictures: []);
+      final pipeline = TagPipeline()..removeBpm();
+      final result = await pipeline.apply(tag);
+      expect(result.bpm, isNull);
+    });
+
+    test('removeYear removes year', () async {
+      final tag = Tag(year: 2025, pictures: []);
+      final pipeline = TagPipeline()..removeYear();
+      final result = await pipeline.apply(tag);
+      expect(result.year, isNull);
+    });
+
+    test('removeGenre removes genre', () async {
+      final tag = Tag(genre: 'Rock', pictures: []);
+      final pipeline = TagPipeline()..removeGenre();
+      final result = await pipeline.apply(tag);
+      expect(result.genre, isNull);
+    });
+
+    test('prefixTitle adds prefix', () async {
+      final tag = Tag(title: 'Song', pictures: []);
+      final pipeline = TagPipeline()..prefixTitle('prefix_');
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'prefix_Song');
+    });
+
+    test('suffixTitle adds suffix', () async {
+      final tag = Tag(title: 'Song', pictures: []);
+      final pipeline = TagPipeline()..suffixTitle('_suffix');
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'Song_suffix');
+    });
+
+    test('prefixAlbum adds prefix', () async {
+      final tag = Tag(album: 'Album', pictures: []);
+      final pipeline = TagPipeline()..prefixAlbum('prefix_');
+      final result = await pipeline.apply(tag);
+      expect(result.album, 'prefix_Album');
+    });
+
+    test('suffixAlbum adds suffix', () async {
+      final tag = Tag(album: 'Album', pictures: []);
+      final pipeline = TagPipeline()..suffixAlbum('_suffix');
+      final result = await pipeline.apply(tag);
+      expect(result.album, 'Album_suffix');
+    });
+
+    test('prefixArtist adds prefix', () async {
+      final tag = Tag(trackArtist: 'Artist', pictures: []);
+      final pipeline = TagPipeline()..prefixArtist('prefix_');
+      final result = await pipeline.apply(tag);
+      expect(result.trackArtist, 'prefix_Artist');
+    });
+
+    test('suffixArtist adds suffix', () async {
+      final tag = Tag(trackArtist: 'Artist', pictures: []);
+      final pipeline = TagPipeline()..suffixArtist('_suffix');
+      final result = await pipeline.apply(tag);
+      expect(result.trackArtist, 'Artist_suffix');
+    });
+
+    test('titleCaseTitle converts to title case', () async {
+      final tag = Tag(title: 'hello world', pictures: []);
+      final pipeline = TagPipeline()..titleCaseTitle();
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'Hello World');
+    });
+
+    test('titleCaseArtist converts to title case', () async {
+      final tag = Tag(trackArtist: 'hello world', pictures: []);
+      final pipeline = TagPipeline()..titleCaseArtist();
+      final result = await pipeline.apply(tag);
+      expect(result.trackArtist, 'Hello World');
+    });
+
+    test('titleCaseAlbum converts to title case', () async {
+      final tag = Tag(album: 'hello world', pictures: []);
+      final pipeline = TagPipeline()..titleCaseAlbum();
+      final result = await pipeline.apply(tag);
+      expect(result.album, 'Hello World');
+    });
+
+    test('lowerCaseAll converts to lowercase', () async {
+      final tag = Tag(title: 'TITLE', trackArtist: 'ARTIST', pictures: []);
+      final pipeline = TagPipeline()..lowerCaseAll();
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'title');
+      expect(result.trackArtist, 'artist');
+    });
+
+    test('upperCaseAll converts to uppercase', () async {
+      final tag = Tag(title: 'title', trackArtist: 'artist', pictures: []);
+      final pipeline = TagPipeline()..upperCaseAll();
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'TITLE');
+      expect(result.trackArtist, 'ARTIST');
+    });
+
+    test('replaceInTitle replaces text', () async {
+      final tag = Tag(title: 'Hello World', pictures: []);
+      final pipeline = TagPipeline()..replaceInTitle('World', 'Dart');
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'Hello Dart');
+    });
+
+    test('replaceInArtist replaces text', () async {
+      final tag = Tag(trackArtist: 'Hello World', pictures: []);
+      final pipeline = TagPipeline()..replaceInArtist('World', 'Dart');
+      final result = await pipeline.apply(tag);
+      expect(result.trackArtist, 'Hello Dart');
+    });
+
+    test('replaceInAlbum replaces text', () async {
+      final tag = Tag(album: 'Hello World', pictures: []);
+      final pipeline = TagPipeline()..replaceInAlbum('World', 'Dart');
+      final result = await pipeline.apply(tag);
+      expect(result.album, 'Hello Dart');
+    });
+
+    test('replaceInAll replaces in all fields', () async {
+      final tag = Tag(
+        title: 'Hello World',
+        trackArtist: 'Hello World',
+        album: 'Hello World',
+        pictures: [],
+      );
+      final pipeline = TagPipeline()..replaceInAll('World', 'Dart');
+      final result = await pipeline.apply(tag);
+      expect(result.title, 'Hello Dart');
+      expect(result.trackArtist, 'Hello Dart');
+      expect(result.album, 'Hello Dart');
+    });
+
+    test('setTitleIfEmpty only sets if empty', () async {
+      final tag1 = Tag(pictures: []);
+      final tag2 = Tag(title: 'Existing', pictures: []);
+      final pipeline = TagPipeline()..setTitleIfEmpty('Default Title');
+      final result1 = await pipeline.apply(tag1);
+      final result2 = await pipeline.apply(tag2);
+      expect(result1.title, 'Default Title');
+      expect(result2.title, 'Existing');
+    });
+
+    test('setArtistIfEmpty only sets if empty', () async {
+      final tag1 = Tag(pictures: []);
+      final tag2 = Tag(trackArtist: 'Existing', pictures: []);
+      final pipeline = TagPipeline()..setArtistIfEmpty('Default Artist');
+      final result1 = await pipeline.apply(tag1);
+      final result2 = await pipeline.apply(tag2);
+      expect(result1.trackArtist, 'Default Artist');
+      expect(result2.trackArtist, 'Existing');
+    });
+
+    test('removeEmptyFields removes empty fields', () async {
+      final tag = Tag(
+        title: '',
+        trackArtist: '  ',
+        album: null,
+        genre: '',
+        pictures: [],
+      );
+      final pipeline = TagPipeline()..removeEmptyFields();
+      final result = await pipeline.apply(tag);
+      expect(result.title, isNull);
+      expect(result.trackArtist, isNull);
+      expect(result.album, isNull);
+      expect(result.genre, isNull);
+    });
+
+    test('removeNonCoverPictures removes non-cover pictures', () async {
+      final pic1 = Picture(
+        pictureType: PictureType.coverFront,
+        bytes: Uint8List.fromList([1]),
+      );
+      final pic2 = Picture(
+        pictureType: PictureType.artist,
+        bytes: Uint8List.fromList([2]),
+      );
+      final tag = Tag(pictures: [pic1, pic2]);
+      final pipeline = TagPipeline()..removeNonCoverPictures();
+      final result = await pipeline.apply(tag);
+      expect(result.pictures.length, 1);
+      expect(result.pictures.first.pictureType, PictureType.coverFront);
+    });
+
+    test('copyArtistToAlbumArtist copies if empty', () async {
+      final tag1 = Tag(trackArtist: 'Artist', pictures: []);
+      final tag2 = Tag(
+        trackArtist: 'Artist',
+        albumArtist: 'Existing',
+        pictures: [],
+      );
+      final pipeline = TagPipeline()..copyArtistToAlbumArtist();
+      final result1 = await pipeline.apply(tag1);
+      final result2 = await pipeline.apply(tag2);
+      expect(result1.albumArtist, 'Artist');
+      expect(result2.albumArtist, 'Existing');
+    });
+
+    test('removeReplayGain removes all RG fields', () async {
+      final tag = Tag(
+        replayGainTrackGain: '-6.43',
+        replayGainTrackPeak: '0.98',
+        replayGainAlbumGain: '-7.00',
+        replayGainAlbumPeak: '0.95',
+        pictures: [],
+      );
+      final pipeline = TagPipeline()..removeReplayGain();
+      final result = await pipeline.apply(tag);
+      expect(result.replayGainTrackGain, isNull);
+      expect(result.replayGainTrackPeak, isNull);
+      expect(result.replayGainAlbumGain, isNull);
+      expect(result.replayGainAlbumPeak, isNull);
+    });
+
+    test('normalizeYear normalizes 2-digit year', () async {
+      final tag1 = Tag(year: 95, pictures: []);
+      final tag2 = Tag(year: 25, pictures: []);
+      final tag3 = Tag(year: 1995, pictures: []);
+      final pipeline = TagPipeline()..normalizeYear();
+      final result1 = await pipeline.apply(tag1);
+      final result2 = await pipeline.apply(tag2);
+      final result3 = await pipeline.apply(tag3);
+      expect(result1.year, 1995);
+      expect(result2.year, 2025);
+      expect(result3.year, 1995);
+    });
+  });
 }

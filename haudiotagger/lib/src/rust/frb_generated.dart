@@ -8,6 +8,7 @@ import 'api/audio_properties.dart';
 import 'api/error.dart';
 import 'api/normalization.dart';
 import 'api/picture.dart';
+import 'api/pipeline.dart';
 import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
@@ -76,7 +77,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 1769373144;
+  int get rustContentHash => -934278012;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -88,6 +89,18 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
+  Future<Tag> crateApiApiApplyPipeline(
+      {required Tag tag, required List<TransformRule> rules});
+
+  Future<Tag> crateApiPipelineApplyPipeline(
+      {required Tag tag, required TagPipeline pipeline});
+
+  Future<Tag> crateApiPipelineApplyRule(
+      {required Tag tag, required TransformRule rule});
+
+  Future<BatchResult> crateApiApiBatchTransform(
+      {required List<String> paths, required List<TransformRule> rules});
+
   Future<BatchResult> crateApiApiBatchUpdateChanges(
       {required List<String> paths, required TagChanges changes});
 
@@ -109,6 +122,9 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiApiConvertId3V2FromBytes(
       {required List<int> bytes, required Id3v2Version version});
+
+  Future<String> crateApiApiFormatFilename(
+      {required Tag tag, required String pattern});
 
   Future<Map<String, String>> crateApiApiGetCustomTags({required String path});
 
@@ -172,6 +188,9 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiApiRemoveId3V1FromBytes({required List<int> bytes});
 
+  Future<String> crateApiApiRenameFile(
+      {required String path, required String pattern});
+
   Future<void> crateApiApiSetCustomTag(
       {required String path, required String key, required String value});
 
@@ -185,6 +204,20 @@ abstract class RustLibApi extends BaseApi {
   Future<Tag> crateApiTagTagDefault();
 
   Future<bool> crateApiTagTagIsEmpty({required Tag that});
+
+  Future<Tag> crateApiPipelineTagPipelineApply(
+      {required TagPipeline that, required Tag tag});
+
+  Future<TagPipeline> crateApiPipelineTagPipelineDefault();
+
+  Future<TagPipeline> crateApiPipelineTagPipelineFromRules(
+      {required List<TransformRule> rules});
+
+  Future<bool> crateApiPipelineTagPipelineIsEmpty({required TagPipeline that});
+
+  Future<BigInt> crateApiPipelineTagPipelineLen({required TagPipeline that});
+
+  Future<TagPipeline> crateApiPipelineTagPipelineNew();
 
   Future<void> crateApiTagChangesUpdate(
       {required String path, required TagChanges changes});
@@ -219,6 +252,111 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
+  Future<Tag> crateApiApiApplyPipeline(
+      {required Tag tag, required List<TransformRule> rules}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        sse_encode_list_transform_rule(rules, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 1, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiApiApplyPipelineConstMeta,
+      argValues: [tag, rules],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiApplyPipelineConstMeta => const TaskConstMeta(
+        debugName: "apply_pipeline",
+        argNames: ["tag", "rules"],
+      );
+
+  @override
+  Future<Tag> crateApiPipelineApplyPipeline(
+      {required Tag tag, required TagPipeline pipeline}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        sse_encode_box_autoadd_tag_pipeline(pipeline, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 2, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineApplyPipelineConstMeta,
+      argValues: [tag, pipeline],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineApplyPipelineConstMeta =>
+      const TaskConstMeta(
+        debugName: "apply_pipeline",
+        argNames: ["tag", "pipeline"],
+      );
+
+  @override
+  Future<Tag> crateApiPipelineApplyRule(
+      {required Tag tag, required TransformRule rule}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        sse_encode_box_autoadd_transform_rule(rule, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 3, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineApplyRuleConstMeta,
+      argValues: [tag, rule],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineApplyRuleConstMeta => const TaskConstMeta(
+        debugName: "apply_rule",
+        argNames: ["tag", "rule"],
+      );
+
+  @override
+  Future<BatchResult> crateApiApiBatchTransform(
+      {required List<String> paths, required List<TransformRule> rules}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_String(paths, serializer);
+        sse_encode_list_transform_rule(rules, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 4, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_batch_result,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiApiBatchTransformConstMeta,
+      argValues: [paths, rules],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiBatchTransformConstMeta => const TaskConstMeta(
+        debugName: "batch_transform",
+        argNames: ["paths", "rules"],
+      );
+
+  @override
   Future<BatchResult> crateApiApiBatchUpdateChanges(
       {required List<String> paths, required TagChanges changes}) {
     return handler.executeNormal(NormalTask(
@@ -227,7 +365,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_String(paths, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 1, port: port_);
+            funcId: 5, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_batch_result,
@@ -254,7 +392,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 2, port: port_);
+            funcId: 6, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_batch_bytes_result,
@@ -281,7 +419,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_String(paths, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 3, port: port_);
+            funcId: 7, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_batch_result,
@@ -307,7 +445,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 4, port: port_);
+            funcId: 8, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_batch_bytes_result,
@@ -332,7 +470,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 5, port: port_);
+            funcId: 9, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -356,7 +494,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 6, port: port_);
+            funcId: 10, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -382,7 +520,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_id_3_v_2_version(version, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 7, port: port_);
+            funcId: 11, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -408,7 +546,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_id_3_v_2_version(version, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 8, port: port_);
+            funcId: 12, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -427,13 +565,39 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<String> crateApiApiFormatFilename(
+      {required Tag tag, required String pattern}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        sse_encode_String(pattern, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 13, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_String,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiApiFormatFilenameConstMeta,
+      argValues: [tag, pattern],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiFormatFilenameConstMeta => const TaskConstMeta(
+        debugName: "format_filename",
+        argNames: ["tag", "pattern"],
+      );
+
+  @override
   Future<Map<String, String>> crateApiApiGetCustomTags({required String path}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 9, port: port_);
+            funcId: 14, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_Map_String_String_None,
@@ -458,7 +622,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 10, port: port_);
+            funcId: 15, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_Map_String_String_None,
@@ -483,7 +647,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 11, port: port_);
+            funcId: 16, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
@@ -508,7 +672,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 12, port: port_);
+            funcId: 17, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
@@ -533,7 +697,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 13, port: port_);
+            funcId: 18, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -558,7 +722,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 14, port: port_);
+            funcId: 19, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -583,7 +747,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 15, port: port_);
+            funcId: 20, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_file_info,
@@ -608,7 +772,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 16, port: port_);
+            funcId: 21, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_file_info,
@@ -633,7 +797,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 17, port: port_);
+            funcId: 22, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -659,7 +823,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_tag(tag, serializer);
         sse_encode_box_autoadd_normalize_options(opts, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 18, port: port_);
+            funcId: 23, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -684,7 +848,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 19, port: port_);
+            funcId: 24, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -707,7 +871,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 20, port: port_);
+            funcId: 25, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_normalize_options,
@@ -734,7 +898,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_tag(tag, serializer);
         sse_encode_box_autoadd_normalize_options(options, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 21, port: port_);
+            funcId: 26, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -763,7 +927,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_opt_box_autoadd_mime_type(mimeType, serializer);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 22, port: port_);
+            funcId: 27, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_picture,
@@ -787,7 +951,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 23, port: port_);
+            funcId: 28, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -811,7 +975,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 24, port: port_);
+            funcId: 29, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -836,7 +1000,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 25, port: port_);
+            funcId: 30, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -862,7 +1026,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 26, port: port_);
+            funcId: 31, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -889,7 +1053,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_list_tag_field(fields, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 27, port: port_);
+            funcId: 32, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -915,7 +1079,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_String(key, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 28, port: port_);
+            funcId: 33, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -941,7 +1105,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_String(key, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 29, port: port_);
+            funcId: 34, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -968,7 +1132,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_tag_field(fields, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 30, port: port_);
+            funcId: 35, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -992,7 +1156,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 31, port: port_);
+            funcId: 36, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1017,7 +1181,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 32, port: port_);
+            funcId: 37, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1036,6 +1200,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<String> crateApiApiRenameFile(
+      {required String path, required String pattern}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        sse_encode_String(pattern, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 38, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_String,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiApiRenameFileConstMeta,
+      argValues: [path, pattern],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiApiRenameFileConstMeta => const TaskConstMeta(
+        debugName: "rename_file",
+        argNames: ["path", "pattern"],
+      );
+
+  @override
   Future<void> crateApiApiSetCustomTag(
       {required String path, required String key, required String value}) {
     return handler.executeNormal(NormalTask(
@@ -1045,7 +1235,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(key, serializer);
         sse_encode_String(value, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 33, port: port_);
+            funcId: 39, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1072,7 +1262,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(key, serializer);
         sse_encode_String(value, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 34, port: port_);
+            funcId: 40, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1096,7 +1286,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 35, port: port_);
+            funcId: 41, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_changes,
@@ -1121,7 +1311,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag_changes(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 36, port: port_);
+            funcId: 42, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1145,7 +1335,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 37, port: port_);
+            funcId: 43, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1169,7 +1359,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 38, port: port_);
+            funcId: 44, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1187,6 +1377,157 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<Tag> crateApiPipelineTagPipelineApply(
+      {required TagPipeline that, required Tag tag}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag_pipeline(that, serializer);
+        sse_encode_box_autoadd_tag(tag, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 45, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineTagPipelineApplyConstMeta,
+      argValues: [that, tag],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineTagPipelineApplyConstMeta =>
+      const TaskConstMeta(
+        debugName: "tag_pipeline_apply",
+        argNames: ["that", "tag"],
+      );
+
+  @override
+  Future<TagPipeline> crateApiPipelineTagPipelineDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 46, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag_pipeline,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineTagPipelineDefaultConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineTagPipelineDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "tag_pipeline_default",
+        argNames: [],
+      );
+
+  @override
+  Future<TagPipeline> crateApiPipelineTagPipelineFromRules(
+      {required List<TransformRule> rules}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_transform_rule(rules, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 47, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag_pipeline,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineTagPipelineFromRulesConstMeta,
+      argValues: [rules],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineTagPipelineFromRulesConstMeta =>
+      const TaskConstMeta(
+        debugName: "tag_pipeline_from_rules",
+        argNames: ["rules"],
+      );
+
+  @override
+  Future<bool> crateApiPipelineTagPipelineIsEmpty({required TagPipeline that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag_pipeline(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 48, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_bool,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineTagPipelineIsEmptyConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineTagPipelineIsEmptyConstMeta =>
+      const TaskConstMeta(
+        debugName: "tag_pipeline_is_empty",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<BigInt> crateApiPipelineTagPipelineLen({required TagPipeline that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_tag_pipeline(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 49, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_usize,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineTagPipelineLenConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineTagPipelineLenConstMeta =>
+      const TaskConstMeta(
+        debugName: "tag_pipeline_len",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<TagPipeline> crateApiPipelineTagPipelineNew() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 50, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_tag_pipeline,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiPipelineTagPipelineNewConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiPipelineTagPipelineNewConstMeta =>
+      const TaskConstMeta(
+        debugName: "tag_pipeline_new",
+        argNames: [],
+      );
+
+  @override
   Future<void> crateApiTagChangesUpdate(
       {required String path, required TagChanges changes}) {
     return handler.executeNormal(NormalTask(
@@ -1195,7 +1536,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 39, port: port_);
+            funcId: 51, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1221,7 +1562,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 40, port: port_);
+            funcId: 52, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1246,7 +1587,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 41, port: port_);
+            funcId: 53, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -1270,7 +1611,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(tag, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 42, port: port_);
+            funcId: 54, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -1295,7 +1636,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 43, port: port_);
+            funcId: 55, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -1320,7 +1661,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(tag, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 44, port: port_);
+            funcId: 56, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -1345,7 +1686,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_validation_result(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 45, port: port_);
+            funcId: 57, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1371,7 +1712,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 46, port: port_);
+            funcId: 58, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1397,7 +1738,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 47, port: port_);
+            funcId: 59, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1544,6 +1885,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TagPipeline dco_decode_box_autoadd_tag_pipeline(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_tag_pipeline(raw);
+  }
+
+  @protected
+  TransformRule dco_decode_box_autoadd_transform_rule(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_transform_rule(raw);
+  }
+
+  @protected
   int dco_decode_box_autoadd_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
@@ -1652,6 +2005,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   List<TagField> dco_decode_list_tag_field(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_tag_field).toList();
+  }
+
+  @protected
+  List<TransformRule> dco_decode_list_transform_rule(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return (raw as List<dynamic>).map(dco_decode_transform_rule).toList();
   }
 
   @protected
@@ -1843,6 +2202,196 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TagPipeline dco_decode_tag_pipeline(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 1)
+      throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
+    return TagPipeline(
+      rules: dco_decode_list_transform_rule(arr[0]),
+    );
+  }
+
+  @protected
+  TransformRule dco_decode_transform_rule(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    switch (raw[0]) {
+      case 0:
+        return TransformRule_TrimWhitespace();
+      case 1:
+        return TransformRule_NormalizeWhitespace();
+      case 2:
+        return TransformRule_NormalizeUnicode();
+      case 3:
+        return TransformRule_SetTitle(
+          dco_decode_String(raw[1]),
+        );
+      case 4:
+        return TransformRule_SetArtist(
+          dco_decode_String(raw[1]),
+        );
+      case 5:
+        return TransformRule_SetAlbum(
+          dco_decode_String(raw[1]),
+        );
+      case 6:
+        return TransformRule_SetAlbumArtist(
+          dco_decode_String(raw[1]),
+        );
+      case 7:
+        return TransformRule_SetGenre(
+          dco_decode_String(raw[1]),
+        );
+      case 8:
+        return TransformRule_SetYear(
+          dco_decode_u_32(raw[1]),
+        );
+      case 9:
+        return TransformRule_SetTrackNumber(
+          dco_decode_u_32(raw[1]),
+        );
+      case 10:
+        return TransformRule_SetDiscNumber(
+          dco_decode_u_32(raw[1]),
+        );
+      case 11:
+        return TransformRule_SetTrackTotal(
+          dco_decode_u_32(raw[1]),
+        );
+      case 12:
+        return TransformRule_SetDiscTotal(
+          dco_decode_u_32(raw[1]),
+        );
+      case 13:
+        return TransformRule_SetBpm(
+          dco_decode_f_32(raw[1]),
+        );
+      case 14:
+        return TransformRule_SetComment(
+          dco_decode_String(raw[1]),
+        );
+      case 15:
+        return TransformRule_RemoveLyrics();
+      case 16:
+        return TransformRule_RemoveComment();
+      case 17:
+        return TransformRule_RemovePictures();
+      case 18:
+        return TransformRule_RemoveBpm();
+      case 19:
+        return TransformRule_RemoveReplayGain();
+      case 20:
+        return TransformRule_RemoveTitle();
+      case 21:
+        return TransformRule_RemoveArtist();
+      case 22:
+        return TransformRule_RemoveAlbum();
+      case 23:
+        return TransformRule_RemoveAlbumArtist();
+      case 24:
+        return TransformRule_RemoveGenre();
+      case 25:
+        return TransformRule_RemoveYear();
+      case 26:
+        return TransformRule_RemoveTrackNumber();
+      case 27:
+        return TransformRule_RemoveDiscNumber();
+      case 28:
+        return TransformRule_NormalizeTrackNumbers();
+      case 29:
+        return TransformRule_NormalizeDiscNumbers();
+      case 30:
+        return TransformRule_NormalizeYear();
+      case 31:
+        return TransformRule_CopyArtistToAlbumArtist();
+      case 32:
+        return TransformRule_CopyAlbumArtistToArtist();
+      case 33:
+        return TransformRule_CopyTitleToComment();
+      case 34:
+        return TransformRule_PrefixTitle(
+          dco_decode_String(raw[1]),
+        );
+      case 35:
+        return TransformRule_SuffixTitle(
+          dco_decode_String(raw[1]),
+        );
+      case 36:
+        return TransformRule_PrefixAlbum(
+          dco_decode_String(raw[1]),
+        );
+      case 37:
+        return TransformRule_SuffixAlbum(
+          dco_decode_String(raw[1]),
+        );
+      case 38:
+        return TransformRule_PrefixArtist(
+          dco_decode_String(raw[1]),
+        );
+      case 39:
+        return TransformRule_SuffixArtist(
+          dco_decode_String(raw[1]),
+        );
+      case 40:
+        return TransformRule_TitleCaseTitle();
+      case 41:
+        return TransformRule_TitleCaseArtist();
+      case 42:
+        return TransformRule_TitleCaseAlbum();
+      case 43:
+        return TransformRule_LowerCaseAll();
+      case 44:
+        return TransformRule_UpperCaseAll();
+      case 45:
+        return TransformRule_ReplaceInTitle(
+          find: dco_decode_String(raw[1]),
+          replace: dco_decode_String(raw[2]),
+        );
+      case 46:
+        return TransformRule_ReplaceInArtist(
+          find: dco_decode_String(raw[1]),
+          replace: dco_decode_String(raw[2]),
+        );
+      case 47:
+        return TransformRule_ReplaceInAlbum(
+          find: dco_decode_String(raw[1]),
+          replace: dco_decode_String(raw[2]),
+        );
+      case 48:
+        return TransformRule_ReplaceInAll(
+          find: dco_decode_String(raw[1]),
+          replace: dco_decode_String(raw[2]),
+        );
+      case 49:
+        return TransformRule_SetTitleIfEmpty(
+          dco_decode_String(raw[1]),
+        );
+      case 50:
+        return TransformRule_SetArtistIfEmpty(
+          dco_decode_String(raw[1]),
+        );
+      case 51:
+        return TransformRule_SetAlbumIfEmpty(
+          dco_decode_String(raw[1]),
+        );
+      case 52:
+        return TransformRule_SetGenreIfEmpty(
+          dco_decode_String(raw[1]),
+        );
+      case 53:
+        return TransformRule_SetAlbumArtistIfEmpty(
+          dco_decode_String(raw[1]),
+        );
+      case 54:
+        return TransformRule_RemoveEmptyFields();
+      case 55:
+        return TransformRule_RemoveNonCoverPictures();
+      default:
+        throw Exception("unreachable");
+    }
+  }
+
+  @protected
   int dco_decode_u_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as int;
@@ -1864,6 +2413,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   void dco_decode_unit(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return;
+  }
+
+  @protected
+  BigInt dco_decode_usize(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dcoDecodeU64(raw);
   }
 
   @protected
@@ -2033,6 +2588,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TagPipeline sse_decode_box_autoadd_tag_pipeline(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_tag_pipeline(deserializer));
+  }
+
+  @protected
+  TransformRule sse_decode_box_autoadd_transform_rule(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_transform_rule(deserializer));
+  }
+
+  @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_u_32(deserializer));
@@ -2183,6 +2752,19 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var ans_ = <TagField>[];
     for (var idx_ = 0; idx_ < len_; ++idx_) {
       ans_.add(sse_decode_tag_field(deserializer));
+    }
+    return ans_;
+  }
+
+  @protected
+  List<TransformRule> sse_decode_list_transform_rule(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var len_ = sse_decode_i_32(deserializer);
+    var ans_ = <TransformRule>[];
+    for (var idx_ = 0; idx_ < len_; ++idx_) {
+      ans_.add(sse_decode_transform_rule(deserializer));
     }
     return ans_;
   }
@@ -2449,6 +3031,170 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  TagPipeline sse_decode_tag_pipeline(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_rules = sse_decode_list_transform_rule(deserializer);
+    return TagPipeline(rules: var_rules);
+  }
+
+  @protected
+  TransformRule sse_decode_transform_rule(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    var tag_ = sse_decode_i_32(deserializer);
+    switch (tag_) {
+      case 0:
+        return TransformRule_TrimWhitespace();
+      case 1:
+        return TransformRule_NormalizeWhitespace();
+      case 2:
+        return TransformRule_NormalizeUnicode();
+      case 3:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetTitle(var_field0);
+      case 4:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetArtist(var_field0);
+      case 5:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetAlbum(var_field0);
+      case 6:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetAlbumArtist(var_field0);
+      case 7:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetGenre(var_field0);
+      case 8:
+        var var_field0 = sse_decode_u_32(deserializer);
+        return TransformRule_SetYear(var_field0);
+      case 9:
+        var var_field0 = sse_decode_u_32(deserializer);
+        return TransformRule_SetTrackNumber(var_field0);
+      case 10:
+        var var_field0 = sse_decode_u_32(deserializer);
+        return TransformRule_SetDiscNumber(var_field0);
+      case 11:
+        var var_field0 = sse_decode_u_32(deserializer);
+        return TransformRule_SetTrackTotal(var_field0);
+      case 12:
+        var var_field0 = sse_decode_u_32(deserializer);
+        return TransformRule_SetDiscTotal(var_field0);
+      case 13:
+        var var_field0 = sse_decode_f_32(deserializer);
+        return TransformRule_SetBpm(var_field0);
+      case 14:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetComment(var_field0);
+      case 15:
+        return TransformRule_RemoveLyrics();
+      case 16:
+        return TransformRule_RemoveComment();
+      case 17:
+        return TransformRule_RemovePictures();
+      case 18:
+        return TransformRule_RemoveBpm();
+      case 19:
+        return TransformRule_RemoveReplayGain();
+      case 20:
+        return TransformRule_RemoveTitle();
+      case 21:
+        return TransformRule_RemoveArtist();
+      case 22:
+        return TransformRule_RemoveAlbum();
+      case 23:
+        return TransformRule_RemoveAlbumArtist();
+      case 24:
+        return TransformRule_RemoveGenre();
+      case 25:
+        return TransformRule_RemoveYear();
+      case 26:
+        return TransformRule_RemoveTrackNumber();
+      case 27:
+        return TransformRule_RemoveDiscNumber();
+      case 28:
+        return TransformRule_NormalizeTrackNumbers();
+      case 29:
+        return TransformRule_NormalizeDiscNumbers();
+      case 30:
+        return TransformRule_NormalizeYear();
+      case 31:
+        return TransformRule_CopyArtistToAlbumArtist();
+      case 32:
+        return TransformRule_CopyAlbumArtistToArtist();
+      case 33:
+        return TransformRule_CopyTitleToComment();
+      case 34:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_PrefixTitle(var_field0);
+      case 35:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SuffixTitle(var_field0);
+      case 36:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_PrefixAlbum(var_field0);
+      case 37:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SuffixAlbum(var_field0);
+      case 38:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_PrefixArtist(var_field0);
+      case 39:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SuffixArtist(var_field0);
+      case 40:
+        return TransformRule_TitleCaseTitle();
+      case 41:
+        return TransformRule_TitleCaseArtist();
+      case 42:
+        return TransformRule_TitleCaseAlbum();
+      case 43:
+        return TransformRule_LowerCaseAll();
+      case 44:
+        return TransformRule_UpperCaseAll();
+      case 45:
+        var var_find = sse_decode_String(deserializer);
+        var var_replace = sse_decode_String(deserializer);
+        return TransformRule_ReplaceInTitle(
+            find: var_find, replace: var_replace);
+      case 46:
+        var var_find = sse_decode_String(deserializer);
+        var var_replace = sse_decode_String(deserializer);
+        return TransformRule_ReplaceInArtist(
+            find: var_find, replace: var_replace);
+      case 47:
+        var var_find = sse_decode_String(deserializer);
+        var var_replace = sse_decode_String(deserializer);
+        return TransformRule_ReplaceInAlbum(
+            find: var_find, replace: var_replace);
+      case 48:
+        var var_find = sse_decode_String(deserializer);
+        var var_replace = sse_decode_String(deserializer);
+        return TransformRule_ReplaceInAll(find: var_find, replace: var_replace);
+      case 49:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetTitleIfEmpty(var_field0);
+      case 50:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetArtistIfEmpty(var_field0);
+      case 51:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetAlbumIfEmpty(var_field0);
+      case 52:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetGenreIfEmpty(var_field0);
+      case 53:
+        var var_field0 = sse_decode_String(deserializer);
+        return TransformRule_SetAlbumArtistIfEmpty(var_field0);
+      case 54:
+        return TransformRule_RemoveEmptyFields();
+      case 55:
+        return TransformRule_RemoveNonCoverPictures();
+      default:
+        throw UnimplementedError('');
+    }
+  }
+
+  @protected
   int sse_decode_u_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return deserializer.buffer.getUint32();
@@ -2469,6 +3215,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_decode_unit(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  BigInt sse_decode_usize(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return deserializer.buffer.getBigUint64();
   }
 
   @protected
@@ -2615,6 +3367,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_tag_pipeline(
+      TagPipeline self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_tag_pipeline(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_transform_rule(
+      TransformRule self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_transform_rule(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self, serializer);
@@ -2748,6 +3514,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_tag_field(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_list_transform_rule(
+      List<TransformRule> self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_i_32(self.length, serializer);
+    for (final item in self) {
+      sse_encode_transform_rule(item, serializer);
     }
   }
 
@@ -2955,6 +3731,171 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_tag_pipeline(TagPipeline self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_list_transform_rule(self.rules, serializer);
+  }
+
+  @protected
+  void sse_encode_transform_rule(TransformRule self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    switch (self) {
+      case TransformRule_TrimWhitespace():
+        sse_encode_i_32(0, serializer);
+      case TransformRule_NormalizeWhitespace():
+        sse_encode_i_32(1, serializer);
+      case TransformRule_NormalizeUnicode():
+        sse_encode_i_32(2, serializer);
+      case TransformRule_SetTitle(field0: final field0):
+        sse_encode_i_32(3, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetArtist(field0: final field0):
+        sse_encode_i_32(4, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetAlbum(field0: final field0):
+        sse_encode_i_32(5, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetAlbumArtist(field0: final field0):
+        sse_encode_i_32(6, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetGenre(field0: final field0):
+        sse_encode_i_32(7, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetYear(field0: final field0):
+        sse_encode_i_32(8, serializer);
+        sse_encode_u_32(field0, serializer);
+      case TransformRule_SetTrackNumber(field0: final field0):
+        sse_encode_i_32(9, serializer);
+        sse_encode_u_32(field0, serializer);
+      case TransformRule_SetDiscNumber(field0: final field0):
+        sse_encode_i_32(10, serializer);
+        sse_encode_u_32(field0, serializer);
+      case TransformRule_SetTrackTotal(field0: final field0):
+        sse_encode_i_32(11, serializer);
+        sse_encode_u_32(field0, serializer);
+      case TransformRule_SetDiscTotal(field0: final field0):
+        sse_encode_i_32(12, serializer);
+        sse_encode_u_32(field0, serializer);
+      case TransformRule_SetBpm(field0: final field0):
+        sse_encode_i_32(13, serializer);
+        sse_encode_f_32(field0, serializer);
+      case TransformRule_SetComment(field0: final field0):
+        sse_encode_i_32(14, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_RemoveLyrics():
+        sse_encode_i_32(15, serializer);
+      case TransformRule_RemoveComment():
+        sse_encode_i_32(16, serializer);
+      case TransformRule_RemovePictures():
+        sse_encode_i_32(17, serializer);
+      case TransformRule_RemoveBpm():
+        sse_encode_i_32(18, serializer);
+      case TransformRule_RemoveReplayGain():
+        sse_encode_i_32(19, serializer);
+      case TransformRule_RemoveTitle():
+        sse_encode_i_32(20, serializer);
+      case TransformRule_RemoveArtist():
+        sse_encode_i_32(21, serializer);
+      case TransformRule_RemoveAlbum():
+        sse_encode_i_32(22, serializer);
+      case TransformRule_RemoveAlbumArtist():
+        sse_encode_i_32(23, serializer);
+      case TransformRule_RemoveGenre():
+        sse_encode_i_32(24, serializer);
+      case TransformRule_RemoveYear():
+        sse_encode_i_32(25, serializer);
+      case TransformRule_RemoveTrackNumber():
+        sse_encode_i_32(26, serializer);
+      case TransformRule_RemoveDiscNumber():
+        sse_encode_i_32(27, serializer);
+      case TransformRule_NormalizeTrackNumbers():
+        sse_encode_i_32(28, serializer);
+      case TransformRule_NormalizeDiscNumbers():
+        sse_encode_i_32(29, serializer);
+      case TransformRule_NormalizeYear():
+        sse_encode_i_32(30, serializer);
+      case TransformRule_CopyArtistToAlbumArtist():
+        sse_encode_i_32(31, serializer);
+      case TransformRule_CopyAlbumArtistToArtist():
+        sse_encode_i_32(32, serializer);
+      case TransformRule_CopyTitleToComment():
+        sse_encode_i_32(33, serializer);
+      case TransformRule_PrefixTitle(field0: final field0):
+        sse_encode_i_32(34, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SuffixTitle(field0: final field0):
+        sse_encode_i_32(35, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_PrefixAlbum(field0: final field0):
+        sse_encode_i_32(36, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SuffixAlbum(field0: final field0):
+        sse_encode_i_32(37, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_PrefixArtist(field0: final field0):
+        sse_encode_i_32(38, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SuffixArtist(field0: final field0):
+        sse_encode_i_32(39, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_TitleCaseTitle():
+        sse_encode_i_32(40, serializer);
+      case TransformRule_TitleCaseArtist():
+        sse_encode_i_32(41, serializer);
+      case TransformRule_TitleCaseAlbum():
+        sse_encode_i_32(42, serializer);
+      case TransformRule_LowerCaseAll():
+        sse_encode_i_32(43, serializer);
+      case TransformRule_UpperCaseAll():
+        sse_encode_i_32(44, serializer);
+      case TransformRule_ReplaceInTitle(
+          find: final find,
+          replace: final replace
+        ):
+        sse_encode_i_32(45, serializer);
+        sse_encode_String(find, serializer);
+        sse_encode_String(replace, serializer);
+      case TransformRule_ReplaceInArtist(
+          find: final find,
+          replace: final replace
+        ):
+        sse_encode_i_32(46, serializer);
+        sse_encode_String(find, serializer);
+        sse_encode_String(replace, serializer);
+      case TransformRule_ReplaceInAlbum(
+          find: final find,
+          replace: final replace
+        ):
+        sse_encode_i_32(47, serializer);
+        sse_encode_String(find, serializer);
+        sse_encode_String(replace, serializer);
+      case TransformRule_ReplaceInAll(find: final find, replace: final replace):
+        sse_encode_i_32(48, serializer);
+        sse_encode_String(find, serializer);
+        sse_encode_String(replace, serializer);
+      case TransformRule_SetTitleIfEmpty(field0: final field0):
+        sse_encode_i_32(49, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetArtistIfEmpty(field0: final field0):
+        sse_encode_i_32(50, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetAlbumIfEmpty(field0: final field0):
+        sse_encode_i_32(51, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetGenreIfEmpty(field0: final field0):
+        sse_encode_i_32(52, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_SetAlbumArtistIfEmpty(field0: final field0):
+        sse_encode_i_32(53, serializer);
+        sse_encode_String(field0, serializer);
+      case TransformRule_RemoveEmptyFields():
+        sse_encode_i_32(54, serializer);
+      case TransformRule_RemoveNonCoverPictures():
+        sse_encode_i_32(55, serializer);
+    }
+  }
+
+  @protected
   void sse_encode_u_32(int self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     serializer.buffer.putUint32(self);
@@ -2975,6 +3916,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   void sse_encode_unit(void self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
+  }
+
+  @protected
+  void sse_encode_usize(BigInt self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    serializer.buffer.putBigUint64(self);
   }
 
   @protected

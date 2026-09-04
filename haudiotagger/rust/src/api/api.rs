@@ -1329,3 +1329,132 @@ pub fn normalize_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
 pub fn normalize_tag(tag: Tag, options: super::normalization::NormalizeOptions) -> Tag {
     super::normalization::normalize(&tag, &options)
 }
+
+/// Format a filename from a tag using a pattern string.
+///
+/// Supported placeholders:
+/// `{title}`, `{artist}`, `{album}`, `{albumArtist}`, `{track}`,
+/// `{trackTotal}`, `{disc}`, `{discTotal}`, `{year}`, `{genre}`
+///
+/// Example: `format_filename(tag, "{track}. {title}")` → `"01. My Song"`
+pub fn format_filename(tag: &Tag, pattern: &str) -> String {
+    let replacements: Vec<(&str, String)> = vec![
+        ("{title}", tag.title.clone().unwrap_or_default()),
+        ("{artist}", tag.track_artist.clone().unwrap_or_default()),
+        ("{album}", tag.album.clone().unwrap_or_default()),
+        (
+            "{albumArtist}",
+            tag.album_artist.clone().unwrap_or_default(),
+        ),
+        (
+            "{track}",
+            tag.track_number
+                .map(|n| format!("{n:02}"))
+                .unwrap_or_default(),
+        ),
+        (
+            "{trackTotal}",
+            tag.track_total.map(|n| n.to_string()).unwrap_or_default(),
+        ),
+        (
+            "{disc}",
+            tag.disc_number.map(|n| n.to_string()).unwrap_or_default(),
+        ),
+        (
+            "{discTotal}",
+            tag.disc_total.map(|n| n.to_string()).unwrap_or_default(),
+        ),
+        (
+            "{year}",
+            tag.year.map(|n| n.to_string()).unwrap_or_default(),
+        ),
+        ("{genre}", tag.genre.clone().unwrap_or_default()),
+    ];
+
+    let mut result = pattern.to_string();
+    for (placeholder, value) in &replacements {
+        result = result.replace(placeholder, value);
+    }
+
+    // Clean up multiple spaces and leading/trailing whitespace
+    while result.contains("  ") {
+        result = result.replace("  ", " ");
+    }
+    result = result.trim().to_string();
+
+    // Remove trailing dots, dashes, or spaces
+    while result.ends_with('.') || result.ends_with('-') || result.ends_with(' ') {
+        result.pop();
+    }
+
+    result
+}
+
+/// Rename a file based on its metadata using a pattern.
+///
+/// Returns the new file path on success.
+pub fn rename_file(path: String, pattern: String) -> Result<String, HaudiotaggerError> {
+    let tag = read(path.clone())?;
+    let new_name = format_filename(&tag, &pattern);
+
+    let file_path = std::path::Path::new(&path);
+    let dir = file_path
+        .parent()
+        .ok_or_else(|| HaudiotaggerError::OpenFile {
+            message: "Could not get parent directory".to_string(),
+        })?;
+
+    let extension = file_path
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("mp3");
+
+    let new_path = dir.join(format!("{new_name}.{extension}"));
+    let new_path_str = new_path.to_string_lossy().to_string();
+
+    std::fs::rename(&path, &new_path).map_err(|e| HaudiotaggerError::OpenFile {
+        message: format!("Could not rename file: {e}"),
+    })?;
+
+    Ok(new_path_str)
+}
+
+/// Apply a pipeline of transformation rules to a tag.
+pub fn apply_pipeline(tag: Tag, rules: Vec<super::pipeline::TransformRule>) -> Tag {
+    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+    pipeline.apply(&tag)
+}
+
+/// Apply a pipeline of rules to multiple files. Returns successes and failures.
+pub fn batch_transform(
+    paths: Vec<String>,
+    rules: Vec<super::pipeline::TransformRule>,
+) -> BatchResult {
+    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+
+    let processed: Vec<(String, Result<(), HaudiotaggerError>)> = paths
+        .into_par_iter()
+        .map(|path| {
+            let tag = match read(path.clone()) {
+                Ok(t) => t,
+                Err(e) => return (path, Err(e)),
+            };
+            let transformed = pipeline.apply(&tag);
+            let result = write(path.clone(), transformed);
+            (path, result)
+        })
+        .collect();
+
+    let successes = processed.iter().filter(|(_, r)| r.is_ok()).count() as u32;
+    let failures = processed.iter().filter(|(_, r)| r.is_err()).count() as u32;
+    let errors: Vec<(String, String)> = processed
+        .into_iter()
+        .filter_map(|(path, result)| result.err().map(|e| (path, e.to_string())))
+        .collect();
+
+    BatchResult {
+        successes,
+        failures,
+        errors,
+    }
+}

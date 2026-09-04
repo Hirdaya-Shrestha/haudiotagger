@@ -9,12 +9,13 @@ import 'error.dart';
 import 'normalization.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
+import 'pipeline.dart';
 import 'tag.dart';
 import 'tag_changes.dart';
 import 'tag_field.dart';
 import 'validation.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `convert_id3v2_impl`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_format_name`, `tag_from_file`, `write_mp3_bytes`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `convert_id3v2_impl`, `err_result_batch`, `err_result`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_format_name`, `tag_from_file`, `write_lofty_tag_to_mp3_bytes`, `write_mp3_bytes`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
@@ -61,6 +62,10 @@ Future<BatchResult> batchUpdateChanges(
         .crateApiApiBatchUpdateChanges(paths: paths, changes: changes);
 
 /// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
+///
+/// Optimized path: builds the lofty tag and serializes it **once**, then
+/// reuses the pre-serialized bytes for every file. This eliminates redundant
+/// tag construction and serialization across the batch.
 Future<BatchBytesResult> batchWriteFromBytes(
         {required List<Uint8List> byteArrays, required Tag data}) =>
     RustLib.instance.api
@@ -187,6 +192,32 @@ Future<Uint8List> normalizeBytes({required List<int> bytes}) =>
 Future<Tag> normalizeTag(
         {required Tag tag, required NormalizeOptions options}) =>
     RustLib.instance.api.crateApiApiNormalizeTag(tag: tag, options: options);
+
+/// Format a filename from a tag using a pattern string.
+///
+/// Supported placeholders:
+/// `{title}`, `{artist}`, `{album}`, `{albumArtist}`, `{track}`,
+/// `{trackTotal}`, `{disc}`, `{discTotal}`, `{year}`, `{genre}`
+///
+/// Example: `format_filename(tag, "{track}. {title}")` → `"01. My Song"`
+Future<String> formatFilename({required Tag tag, required String pattern}) =>
+    RustLib.instance.api.crateApiApiFormatFilename(tag: tag, pattern: pattern);
+
+/// Rename a file based on its metadata using a pattern.
+///
+/// Returns the new file path on success.
+Future<String> renameFile({required String path, required String pattern}) =>
+    RustLib.instance.api.crateApiApiRenameFile(path: path, pattern: pattern);
+
+/// Apply a pipeline of transformation rules to a tag.
+Future<Tag> applyPipeline(
+        {required Tag tag, required List<TransformRule> rules}) =>
+    RustLib.instance.api.crateApiApiApplyPipeline(tag: tag, rules: rules);
+
+/// Apply a pipeline of rules to multiple files. Returns successes and failures.
+Future<BatchResult> batchTransform(
+        {required List<String> paths, required List<TransformRule> rules}) =>
+    RustLib.instance.api.crateApiApiBatchTransform(paths: paths, rules: rules);
 
 /// Comprehensive info about an audio file, returned by `inspect`.
 class AudioFileInfo {

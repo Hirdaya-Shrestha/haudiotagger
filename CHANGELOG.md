@@ -1,3 +1,13 @@
+## 1.2.7
+
+- **TagPipeline**: metadata transformation engine with 56 rule variants
+- **formatFilename**: format filenames from tag metadata with placeholders
+- **rename**: rename files based on metadata patterns
+- Builder-pattern API for chaining rules: `TagPipeline()..trimWhitespace()..setGenre('Rock')`
+- `preview()`: see changes before writing
+- `process()`: batch-transform multiple files
+- Rules: setters, remove, normalize, copy, prefix/suffix, case, search/replace, conditional, cleanup, pictures
+
 ## 1.2.6
 
 - Performance improved in `batch_update_changes`
