@@ -1,3 +1,9 @@
+## 1.2.9
+
+- Removed native binaries from repo — downloaded from GitHub releases at build time
+- Package size reduced to ~1MB (only WASM bundled)
+- Automated version bumping in CI/CD — single tag push updates all version references
+
 ## 1.2.8
 
 - Moved `copyMetadata`, `processFile`, `processBytes`, `processBatch`, `processBatchBytes` to Rust for single FFI call (was 3+ calls)
