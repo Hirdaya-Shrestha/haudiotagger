@@ -12,7 +12,6 @@ import 'rust/api/tag_changes.dart' as tc;
 import 'rust/api/tag_field.dart';
 import 'rust/api/validation.dart' show ValidationResult;
 import 'rust/api/normalization.dart' show NormalizeOptions;
-import 'copy_with.dart';
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -523,7 +522,7 @@ class Haudiotagger {
       includeLyrics: includeLyrics,
       includeCustomTags: includeCustomTags,
     );
-    return result as Uint8List;
+    return result;
   }
 
   /// Compare two tags and return a [MetadataDiff] describing every field
