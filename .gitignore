@@ -9,8 +9,14 @@ target/
 !cli/commands/build/
 rename.sh
 
-# flutter linux build artifact
+# Native binaries (downloaded from GitHub releases at build time)
+haudiotagger/linux/libhaudiotagger.so
 haudiotagger/linux/linux.tar.gz
+haudiotagger/android/src/main/jniLibs/
+haudiotagger/windows/haudiotagger.dll
+haudiotagger/windows/windows.tar.gz
+haudiotagger/ios/haudiotagger/Frameworks/
+haudiotagger/macos/haudiotagger/Frameworks/
 
 # Local benchmark data and music samples
 haudiotagger/rust/samples/
