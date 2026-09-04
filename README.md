@@ -31,7 +31,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 ## Features
 
 | Feature | Platforms |
-|---------|-----------|
+|---------|:-----------:|
 | Read / write metadata (title, artist, album, art, lyrics...) | All |
 | Partial updates — change one field without touching others | All |
 | Batch operations with progress callbacks | All |
