@@ -92,52 +92,64 @@ jobs:
       - name: Stage frameworks for SPM
         run: |
           set -e
-          echo "=== Finding iOS xcframework ==="
-          find haudiotagger -name "*.xcframework" -type d 2>/dev/null || true
+          echo "=== All xcframeworks ==="
+          find . -name "*.xcframework" -type d 2>/dev/null || true
           
           mkdir -p haudiotagger/ios/haudiotagger/Frameworks \
                  haudiotagger/macos/haudiotagger/Frameworks
           
-          IOS_SRC=$(find haudiotagger -path "*/ios*Frameworks*xcframework" -type d ! -path "*/haudiotagger/ios/haudiotagger/*" | head -1)
-          MACOS_SRC=$(find haudiotagger -path "*/macos*Frameworks*xcframework" -type d ! -path "*/haudiotagger/macos/haudiotagger/*" | head -1)
+          echo "Checking iOS source..."
+          ls -la haudiotagger/ios/Frameworks/ 2>/dev/null || echo "iOS Frameworks dir missing"
+          echo "Checking macOS source..."
+          ls -la haudiotagger/macos/Frameworks/ 2>/dev/null || echo "macOS Frameworks dir missing"
           
-          echo "iOS source: $IOS_SRC"
-          echo "macOS source: $MACOS_SRC"
+          cp -R haudiotagger/ios/Frameworks/haudiotagger.xcframework \
+                 haudiotagger/ios/haudiotagger/Frameworks/
+          echo "iOS staged OK"
           
-          cp -R "$IOS_SRC" haudiotagger/ios/haudiotagger/Frameworks/
-          cp -R "$MACOS_SRC" haudiotagger/macos/haudiotagger/Frameworks/
+          if [ -d "haudiotagger/macos/Frameworks/haudiotagger.xcframework" ]; then
+            cp -R haudiotagger/macos/Frameworks/haudiotagger.xcframework \
+                   haudiotagger/macos/haudiotagger/Frameworks/
+            echo "macOS staged OK"
+          else
+            echo "ERROR: macOS xcframework not found at haudiotagger/macos/Frameworks/haudiotagger.xcframework"
+            echo "Contents of haudiotagger/macos/Frameworks/:"
+            ls -laR haudiotagger/macos/Frameworks/ 2>/dev/null || echo "Directory does not exist"
+            exit 1
+          fi
           
           echo "=== Staged ==="
-          ls -la haudiotagger/ios/haudiotagger/Frameworks/
-          ls -la haudiotagger/macos/haudiotagger/Frameworks/
+          ls -laR haudiotagger/ios/haudiotagger/Frameworks/
+          ls -laR haudiotagger/macos/haudiotagger/Frameworks/
 
       - name: Create zip archives and generate checksums
         run: |
           set -e
-          cd haudiotagger/ios/haudiotagger/Frameworks
+          IOS_DIR="$GITHUB_WORKSPACE/haudiotagger/ios/haudiotagger/Frameworks"
+          MACOS_DIR="$GITHUB_WORKSPACE/haudiotagger/macos/haudiotagger/Frameworks"
+
+          cd "$IOS_DIR"
           zip -r ios.zip haudiotagger.xcframework
           IOS_CHECKSUM=$(swift package compute-checksum ios.zip)
           echo "IOS_CHECKSUM=$IOS_CHECKSUM" >> $GITHUB_ENV
-          cd ../../..
 
-          cd haudiotagger/macos/haudiotagger/Frameworks
+          cd "$MACOS_DIR"
           zip -r macos.zip haudiotagger.xcframework
           MACOS_CHECKSUM=$(swift package compute-checksum macos.zip)
           echo "MACOS_CHECKSUM=$MACOS_CHECKSUM" >> $GITHUB_ENV
-          cd ../../..
 
       - name: Update Package.swift with version and checksums
         run: |
           VERSION="${{ needs.bump_version.outputs.version }}"
           
-          sed -i "s|url: \".*ios.zip\"|url: \"https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/ios.zip\"|" \
+          perl -pi -e "s|url: \".*ios.zip\"|url: \"https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/ios.zip\"|" \
             haudiotagger/ios/haudiotagger/Package.swift
-          sed -i "s|checksum: \".*\"|checksum: \"${IOS_CHECKSUM}\"|" \
+          perl -pi -e "s|checksum: \".*\"|checksum: \"${IOS_CHECKSUM}\"|" \
             haudiotagger/ios/haudiotagger/Package.swift
           
-          sed -i "s|url: \".*macos.zip\"|url: \"https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/macos.zip\"|" \
+          perl -pi -e "s|url: \".*macos.zip\"|url: \"https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/macos.zip\"|" \
             haudiotagger/macos/haudiotagger/Package.swift
-          sed -i "s|checksum: \".*\"|checksum: \"${MACOS_CHECKSUM}\"|" \
+          perl -pi -e "s|checksum: \".*\"|checksum: \"${MACOS_CHECKSUM}\"|" \
             haudiotagger/macos/haudiotagger/Package.swift
 
       - name: Commit updated Package.swift
@@ -358,7 +370,7 @@ jobs:
   # ============================================================
   publish:
     name: Publish to pub.dev
-    needs: [bump_version, build_and_upload, build_web]
+    needs: [bump_version, build_and_upload, build_web, publish_to_release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -470,7 +482,7 @@ jobs:
   # ============================================================
   publish_to_release:
     name: Publish Artifacts to GitHub Release
-    needs: [bump_version, build_frameworks, build_and_upload, build_web, publish]
+    needs: [bump_version, build_frameworks, build_and_upload, build_web]
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux
