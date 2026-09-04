@@ -495,24 +495,13 @@ class Haudiotagger {
     bool includeCustomTags = true,
   }) async {
     await _ensureInit();
-    var tag = await api.read(path: source);
-
-    if (!includeArtwork) {
-      tag = tag.copyWith(pictures: []);
-    }
-    if (!includeLyrics) {
-      tag = tag.copyWith(lyrics: null);
-    }
-
-    await api.write(path: destination, data: tag);
-
-    if (includeCustomTags) {
-      final customTags = await api.getCustomTags(path: source);
-      for (final entry in customTags.entries) {
-        await api.setCustomTag(
-            path: destination, key: entry.key, value: entry.value);
-      }
-    }
+    await api.copyMetadata(
+      source: source,
+      destination: destination,
+      includeArtwork: includeArtwork,
+      includeLyrics: includeLyrics,
+      includeCustomTags: includeCustomTags,
+    );
   }
 
   /// Copy metadata from [sourceBytes] to [destinationBytes], returning modified bytes.
@@ -527,28 +516,14 @@ class Haudiotagger {
     bool includeCustomTags = true,
   }) async {
     await _ensureInit();
-    var tag = await api.readFromBytes(bytes: sourceBytes);
-
-    if (!includeArtwork) {
-      tag = tag.copyWith(pictures: []);
-    }
-    if (!includeLyrics) {
-      tag = tag.copyWith(lyrics: null);
-    }
-
-    var result = await api.writeToBytes(bytes: destinationBytes, data: tag);
-
-    if (includeCustomTags) {
-      final customTags = await api.getCustomTagsFromBytes(bytes: sourceBytes);
-      if (customTags.isNotEmpty) {
-        for (final entry in customTags.entries) {
-          result = await api.setCustomTagFromBytes(
-              bytes: result, key: entry.key, value: entry.value);
-        }
-      }
-    }
-
-    return result;
+    final result = await api.copyMetadataFromBytes(
+      sourceBytes: sourceBytes,
+      destinationBytes: destinationBytes,
+      includeArtwork: includeArtwork,
+      includeLyrics: includeLyrics,
+      includeCustomTags: includeCustomTags,
+    );
+    return result as Uint8List;
   }
 
   /// Compare two tags and return a [MetadataDiff] describing every field
@@ -675,10 +650,7 @@ class Haudiotagger {
       result = result.replaceAll(entry.key, entry.value);
     }
 
-    // Clean up multiple spaces and trim
     result = result.replaceAll(RegExp(r' {2,}'), ' ').trim();
-
-    // Remove trailing dots, dashes, or spaces
     result = result.replaceAll(RegExp(r'[\.\-\s]+$'), '');
 
     return result;

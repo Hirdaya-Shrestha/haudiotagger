@@ -41,7 +41,7 @@ pub struct AudioProperties {
 }
 
 /// Returns the (codec, container, lossless) triple for a `FileType`.
-fn type_info(ft: FileType) -> (String, String, bool) {
+pub(crate) fn type_info(ft: FileType) -> (String, String, bool) {
     match ft {
         FileType::Aac => ("AAC".into(), "ADTS".into(), false),
         FileType::Aiff => ("AIFF".into(), "AIFF".into(), false),

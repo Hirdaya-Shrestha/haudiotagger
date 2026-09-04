@@ -429,32 +429,27 @@ pub struct BatchBytesResult {
     pub errors: Vec<(u32, String)>,
 }
 
+/// Pre-build and serialize a tag to bytes once for batch operations.
+fn prebuild_tag_bytes(data: &Tag) -> Result<Vec<u8>, HaudiotaggerError> {
+    if data.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+    apply_tag_to_lofty_tag(data, &mut lo_tag).map_err(|e| HaudiotaggerError::Write {
+        message: format!("Could not apply tag: {e:?}"),
+    })?;
+    let mut tag_bytes = Vec::with_capacity(1024);
+    lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()).map_err(|e| {
+        HaudiotaggerError::Write {
+            message: format!("Could not serialize tag: {e:?}"),
+        }
+    })?;
+    Ok(tag_bytes)
+}
+
 /// Write the same tag to multiple files. Returns the number of successes and failures.
 pub fn batch_write(paths: Vec<String>, data: Tag) -> BatchResult {
-    let len = paths.len();
-
-    // Pre-build and serialize the tag once for all files.
-    let prebuilt_tag: Result<Vec<u8>, HaudiotaggerError> = if data.is_empty() {
-        Ok(Vec::new())
-    } else {
-        let mut lo_tag = LoftyTag::new(TagType::Id3v2);
-        let mut tag_bytes = Vec::with_capacity(1024);
-        match apply_tag_to_lofty_tag(&data, &mut lo_tag) {
-            Ok(()) => {}
-            Err(e) => return err_result_batch(len, e),
-        }
-        match lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()) {
-            Ok(()) => Ok(tag_bytes),
-            Err(e) => {
-                return err_result_batch(
-                    len,
-                    HaudiotaggerError::Write {
-                        message: format!("Could not serialize tag: {e:?}"),
-                    },
-                );
-            }
-        }
-    };
+    let prebuilt_tag = prebuild_tag_bytes(&data);
 
     let processed: Vec<(String, Result<(), HaudiotaggerError>)> = match &prebuilt_tag {
         Ok(tag_bytes) => {
@@ -493,25 +488,7 @@ pub fn batch_write(paths: Vec<String>, data: Tag) -> BatchResult {
         }
     };
 
-    let mut successes = 0u32;
-    let mut failures = 0u32;
-    let mut errors = Vec::new();
-
-    for (path, result) in processed {
-        match result {
-            Ok(()) => successes += 1,
-            Err(e) => {
-                failures += 1;
-                errors.push((path, e.to_string()));
-            }
-        }
-    }
-
-    BatchResult {
-        successes,
-        failures,
-        errors,
-    }
+    collect_batch_result(processed)
 }
 
 /// Apply the same [TagChanges] to multiple files. Returns the number of successes and failures.
@@ -529,10 +506,14 @@ pub fn batch_update_changes(paths: Vec<String>, changes: TagChanges) -> BatchRes
         })
         .collect();
 
+    collect_batch_result(processed)
+}
+
+/// Helper: collect processed results into a BatchResult.
+fn collect_batch_result(processed: Vec<(String, Result<(), HaudiotaggerError>)>) -> BatchResult {
     let mut successes = 0u32;
     let mut failures = 0u32;
     let mut errors = Vec::new();
-
     for (path, result) in processed {
         match result {
             Ok(()) => successes += 1,
@@ -542,34 +523,26 @@ pub fn batch_update_changes(paths: Vec<String>, changes: TagChanges) -> BatchRes
             }
         }
     }
-
-    BatchResult {
-        successes,
-        failures,
-        errors,
-    }
+    BatchResult { successes, failures, errors }
 }
 
-/// Helper: return a BatchBytesResult with the same error for all `count` entries.
-fn err_result(count: usize, err: HaudiotaggerError) -> BatchBytesResult {
-    let msg = err.to_string();
-    BatchBytesResult {
-        results: Vec::new(),
-        failures: count as u32,
-        errors: (0..count as u32).map(|i| (i, msg.clone())).collect(),
+/// Helper: collect processed bytes results into a BatchBytesResult.
+fn collect_batch_bytes_result(
+    processed: Vec<(usize, Result<Vec<u8>, HaudiotaggerError>)>,
+) -> BatchBytesResult {
+    let mut results = Vec::new();
+    let mut failures = 0u32;
+    let mut errors = Vec::new();
+    for (i, result) in processed {
+        match result {
+            Ok(modified) => results.push(modified),
+            Err(e) => {
+                failures += 1;
+                errors.push((i as u32, e.to_string()));
+            }
+        }
     }
-}
-
-/// Helper: return a BatchResult with the same error for all `count` entries.
-fn err_result_batch(count: usize, err: HaudiotaggerError) -> BatchResult {
-    let msg = err.to_string();
-    BatchResult {
-        successes: 0,
-        failures: count as u32,
-        errors: (0..count)
-            .map(|i| (format!("file_{i}"), msg.clone()))
-            .collect(),
-    }
+    BatchBytesResult { results, failures, errors }
 }
 
 /// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
@@ -578,30 +551,7 @@ fn err_result_batch(count: usize, err: HaudiotaggerError) -> BatchResult {
 /// reuses the pre-serialized bytes for every file. This eliminates redundant
 /// tag construction and serialization across the batch.
 pub fn batch_write_from_bytes(byte_arrays: Vec<Vec<u8>>, data: Tag) -> BatchBytesResult {
-    let len = byte_arrays.len();
-
-    // Pre-build and serialize the tag once for all files.
-    let prebuilt_tag: Result<Vec<u8>, HaudiotaggerError> = if data.is_empty() {
-        Ok(Vec::new())
-    } else {
-        let mut lo_tag = LoftyTag::new(TagType::Id3v2);
-        let mut tag_bytes = Vec::with_capacity(1024);
-        match apply_tag_to_lofty_tag(&data, &mut lo_tag) {
-            Ok(()) => {}
-            Err(e) => return err_result(len, e),
-        }
-        match lo_tag.dump_to(&mut tag_bytes, WriteOptions::new()) {
-            Ok(()) => Ok(tag_bytes),
-            Err(e) => {
-                return err_result(
-                    len,
-                    HaudiotaggerError::Write {
-                        message: format!("Could not serialize tag: {e:?}"),
-                    },
-                );
-            }
-        }
-    };
+    let prebuilt_tag = prebuild_tag_bytes(&data);
 
     let processed: Vec<(usize, Result<Vec<u8>, HaudiotaggerError>)> = match &prebuilt_tag {
         Ok(tag_bytes) => {
@@ -636,25 +586,7 @@ pub fn batch_write_from_bytes(byte_arrays: Vec<Vec<u8>>, data: Tag) -> BatchByte
         }
     };
 
-    let mut results = Vec::with_capacity(len);
-    let mut errors = Vec::new();
-    let mut failures = 0u32;
-
-    for (i, result) in processed {
-        match result {
-            Ok(modified) => results.push(modified),
-            Err(e) => {
-                failures += 1;
-                errors.push((i as u32, e.to_string()));
-            }
-        }
-    }
-
-    BatchBytesResult {
-        results,
-        failures,
-        errors,
-    }
+    collect_batch_bytes_result(processed)
 }
 
 /// Apply the same [TagChanges] to multiple in-memory byte arrays. Returns modified bytes.
@@ -662,8 +594,6 @@ pub fn batch_update_changes_from_bytes(
     byte_arrays: Vec<Vec<u8>>,
     changes: TagChanges,
 ) -> BatchBytesResult {
-    let len = byte_arrays.len();
-
     let processed: Vec<(usize, Result<Vec<u8>, HaudiotaggerError>)> = byte_arrays
         .into_par_iter()
         .enumerate()
@@ -675,35 +605,17 @@ pub fn batch_update_changes_from_bytes(
         })
         .collect();
 
-    let mut results = Vec::with_capacity(len);
-    let mut errors = Vec::new();
-    let mut failures = 0u32;
-
-    for (i, result) in processed {
-        match result {
-            Ok(modified) => results.push(modified),
-            Err(e) => {
-                failures += 1;
-                errors.push((i as u32, e.to_string()));
-            }
-        }
-    }
-
-    BatchBytesResult {
-        results,
-        failures,
-        errors,
-    }
+    collect_batch_bytes_result(processed)
 }
 
 fn extract_tag_formats(file: &TaggedFile) -> Result<Vec<String>, HaudiotaggerError> {
-    let formats = file
+    let mut formats: Vec<String> = file
         .tags()
         .iter()
         .map(|t| format_tag_type(t.tag_type()).to_string())
-        .collect::<std::collections::HashSet<_>>()
-        .into_iter()
         .collect();
+    formats.sort();
+    formats.dedup();
     Ok(formats)
 }
 
@@ -1184,20 +1096,6 @@ pub struct AudioFileInfo {
     pub size: u64,
 }
 
-fn tag_format_name(file: &TaggedFile) -> String {
-    let primary = file.primary_tag().map(|t| t.tag_type());
-    match primary {
-        Some(TagType::Id3v2) => "ID3v2".into(),
-        Some(TagType::Id3v1) => "ID3v1".into(),
-        Some(TagType::VorbisComments) => "VorbisComments".into(),
-        Some(TagType::Ape) => "APE".into(),
-        Some(TagType::Mp4Ilst) => "iTunes".into(),
-        Some(TagType::RiffInfo) => "RiffInfo".into(),
-        Some(TagType::AiffText) => "AiffText".into(),
-        _ => "Unknown".into(),
-    }
-}
-
 fn file_format_name(ft: FileType) -> String {
     match ft {
         FileType::Aac => "AAC",
@@ -1220,24 +1118,15 @@ fn file_format_name(ft: FileType) -> String {
 fn build_file_info(file: &TaggedFile, file_size: u64) -> AudioFileInfo {
     use lofty::file::AudioFile;
     let format = file_format_name(file.file_type());
-    let tag_format = tag_format_name(file);
+    let tag_format = format_tag_type(
+        file.primary_tag()
+            .map(|t| t.tag_type())
+            .unwrap_or(TagType::Id3v1),
+    )
+    .to_string();
 
     let props = file.properties();
-    let (codec, container_format, lossless) = match file.file_type() {
-        FileType::Aac => ("AAC".into(), "ADTS".into(), false),
-        FileType::Aiff => ("AIFF".into(), "AIFF".into(), false),
-        FileType::Ape => ("APE".into(), "APE".into(), true),
-        FileType::Flac => ("FLAC".into(), "FLAC".into(), true),
-        FileType::Mpeg => ("MP3".into(), "MP3".into(), false),
-        FileType::Mp4 => ("AAC".into(), "MP4".into(), false),
-        FileType::Mpc => ("Musepack".into(), "Musepack".into(), false),
-        FileType::Opus => ("Opus".into(), "Ogg".into(), false),
-        FileType::Vorbis => ("Vorbis".into(), "Ogg".into(), false),
-        FileType::Speex => ("Speex".into(), "Ogg".into(), false),
-        FileType::Wav => ("PCM".into(), "WAV".into(), true),
-        FileType::WavPack => ("WavPack".into(), "WavPack".into(), true),
-        _ => ("Unknown".into(), "Unknown".into(), false),
-    };
+    let (codec, container_format, lossless) = super::audio_properties::type_info(file.file_type());
 
     let properties = AudioProperties {
         duration_micros: Some(props.duration().as_micros() as i64),
@@ -1421,7 +1310,7 @@ pub fn rename_file(path: String, pattern: String) -> Result<String, Haudiotagger
 
 /// Apply a pipeline of transformation rules to a tag.
 pub fn apply_pipeline(tag: Tag, rules: Vec<super::pipeline::TransformRule>) -> Tag {
-    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+    let pipeline = super::pipeline::TagPipeline { rules };
     pipeline.apply(&tag)
 }
 
@@ -1457,4 +1346,134 @@ pub fn batch_transform(
         failures,
         errors,
     }
+}
+
+/// Copy metadata from source to destination file in a single FFI call.
+pub fn copy_metadata(
+    source: String,
+    destination: String,
+    include_artwork: bool,
+    include_lyrics: bool,
+    include_custom_tags: bool,
+) -> Result<(), HaudiotaggerError> {
+    let mut tag = read(source.clone())?;
+
+    if !include_artwork {
+        tag.pictures = Vec::new();
+    }
+    if !include_lyrics {
+        tag.lyrics = None;
+    }
+
+    write(destination.clone(), tag)?;
+
+    if include_custom_tags {
+        let custom = get_custom_tags(source)?;
+        for (key, value) in custom {
+            set_custom_tag(destination.clone(), key, value)?;
+        }
+    }
+
+    Ok(())
+}
+
+/// Copy metadata from source bytes to destination bytes in a single FFI call.
+pub fn copy_metadata_from_bytes(
+    source_bytes: Vec<u8>,
+    destination_bytes: Vec<u8>,
+    include_artwork: bool,
+    include_lyrics: bool,
+    include_custom_tags: bool,
+) -> Result<Vec<u8>, HaudiotaggerError> {
+    let mut tag = read_from_bytes(source_bytes.clone())?;
+
+    if !include_artwork {
+        tag.pictures = Vec::new();
+    }
+    if !include_lyrics {
+        tag.lyrics = None;
+    }
+
+    let mut result = write_to_bytes(destination_bytes, tag)?;
+
+    if include_custom_tags {
+        let custom = get_custom_tags_from_bytes(source_bytes)?;
+        for (key, value) in custom {
+            result = set_custom_tag_from_bytes(result, key, value)?;
+        }
+    }
+
+    Ok(result)
+}
+
+/// Apply a pipeline to a file and write the result in a single FFI call.
+pub fn process_file(
+    path: String,
+    rules: Vec<super::pipeline::TransformRule>,
+) -> Result<(), HaudiotaggerError> {
+    let tag = read(path.clone())?;
+    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+    let transformed = pipeline.apply(&tag);
+    write(path, transformed)
+}
+
+/// Apply a pipeline to byte data and return modified bytes in a single FFI call.
+pub fn process_bytes(
+    bytes: Vec<u8>,
+    rules: Vec<super::pipeline::TransformRule>,
+) -> Result<Vec<u8>, HaudiotaggerError> {
+    let tag = match read_from_bytes(bytes.clone()) {
+        Ok(t) => t,
+        Err(_) => return Ok(bytes),
+    };
+    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+    let transformed = pipeline.apply(&tag);
+    write_to_bytes(bytes, transformed)
+}
+
+/// Apply a pipeline to multiple files. Returns successes and failures.
+pub fn process_batch(
+    paths: Vec<String>,
+    rules: Vec<super::pipeline::TransformRule>,
+) -> BatchResult {
+    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+
+    let processed: Vec<(String, Result<(), HaudiotaggerError>)> = paths
+        .into_par_iter()
+        .map(|path| {
+            let tag = match read(path.clone()) {
+                Ok(t) => t,
+                Err(e) => return (path, Err(e)),
+            };
+            let transformed = pipeline.apply(&tag);
+            let result = write(path.clone(), transformed);
+            (path, result)
+        })
+        .collect();
+
+    collect_batch_result(processed)
+}
+
+/// Apply a pipeline to multiple byte arrays. Returns modified bytes.
+pub fn process_batch_bytes(
+    byte_arrays: Vec<Vec<u8>>,
+    rules: Vec<super::pipeline::TransformRule>,
+) -> BatchBytesResult {
+    let pipeline = super::pipeline::TagPipeline::from_rules(rules);
+
+    let processed: Vec<(usize, Result<Vec<u8>, HaudiotaggerError>)> = byte_arrays
+        .into_par_iter()
+        .enumerate()
+        .map(|(i, bytes)| {
+            let tag = match read_from_bytes(bytes.clone()) {
+                Ok(t) => t,
+                Err(e) => return (i, Err(e)),
+            };
+            let transformed = pipeline.apply(&tag);
+            let result = write_to_bytes(bytes, transformed);
+            (i, result)
+        })
+        .collect();
+
+    collect_batch_bytes_result(processed)
 }

@@ -15,7 +15,7 @@ import 'tag_changes.dart';
 import 'tag_field.dart';
 import 'validation.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `convert_id3v2_impl`, `err_result_batch`, `err_result`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_format_name`, `tag_from_file`, `write_lofty_tag_to_mp3_bytes`, `write_mp3_bytes`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `collect_batch_bytes_result`, `collect_batch_result`, `convert_id3v2_impl`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `prebuild_tag_bytes`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_lofty_tag_to_mp3_bytes`, `write_mp3_bytes`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
@@ -218,6 +218,56 @@ Future<Tag> applyPipeline(
 Future<BatchResult> batchTransform(
         {required List<String> paths, required List<TransformRule> rules}) =>
     RustLib.instance.api.crateApiApiBatchTransform(paths: paths, rules: rules);
+
+/// Copy metadata from source to destination file in a single FFI call.
+Future<void> copyMetadata(
+        {required String source,
+        required String destination,
+        required bool includeArtwork,
+        required bool includeLyrics,
+        required bool includeCustomTags}) =>
+    RustLib.instance.api.crateApiApiCopyMetadata(
+        source: source,
+        destination: destination,
+        includeArtwork: includeArtwork,
+        includeLyrics: includeLyrics,
+        includeCustomTags: includeCustomTags);
+
+/// Copy metadata from source bytes to destination bytes in a single FFI call.
+Future<Uint8List> copyMetadataFromBytes(
+        {required List<int> sourceBytes,
+        required List<int> destinationBytes,
+        required bool includeArtwork,
+        required bool includeLyrics,
+        required bool includeCustomTags}) =>
+    RustLib.instance.api.crateApiApiCopyMetadataFromBytes(
+        sourceBytes: sourceBytes,
+        destinationBytes: destinationBytes,
+        includeArtwork: includeArtwork,
+        includeLyrics: includeLyrics,
+        includeCustomTags: includeCustomTags);
+
+/// Apply a pipeline to a file and write the result in a single FFI call.
+Future<void> processFile(
+        {required String path, required List<TransformRule> rules}) =>
+    RustLib.instance.api.crateApiApiProcessFile(path: path, rules: rules);
+
+/// Apply a pipeline to byte data and return modified bytes in a single FFI call.
+Future<Uint8List> processBytes(
+        {required List<int> bytes, required List<TransformRule> rules}) =>
+    RustLib.instance.api.crateApiApiProcessBytes(bytes: bytes, rules: rules);
+
+/// Apply a pipeline to multiple files. Returns successes and failures.
+Future<BatchResult> processBatch(
+        {required List<String> paths, required List<TransformRule> rules}) =>
+    RustLib.instance.api.crateApiApiProcessBatch(paths: paths, rules: rules);
+
+/// Apply a pipeline to multiple byte arrays. Returns modified bytes.
+Future<BatchBytesResult> processBatchBytes(
+        {required List<Uint8List> byteArrays,
+        required List<TransformRule> rules}) =>
+    RustLib.instance.api
+        .crateApiApiProcessBatchBytes(byteArrays: byteArrays, rules: rules);
 
 /// Comprehensive info about an audio file, returned by `inspect`.
 class AudioFileInfo {

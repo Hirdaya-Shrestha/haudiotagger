@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'haudiotagger.dart';
+import 'rust/api/api.dart' as api;
 import 'rust/api/pipeline.dart' as rpc;
+import 'rust/api/pipeline.dart' show TransformRule;
 
 /// Result of previewing a pipeline transformation.
 class PreviewResult {
@@ -472,32 +474,21 @@ class TagPipeline {
 
   /// Apply the pipeline to a single file and write the result.
   Future<void> processFile(String path) async {
-    final tag = await Haudiotagger.read(path);
-    if (tag == null) return;
-    final transformed = await apply(tag);
-    await Haudiotagger.write(path, transformed);
+    await api.processFile(path: path, rules: _rules);
   }
 
   /// Apply the pipeline to a byte array and return the modified bytes.
   Future<Uint8List> processFromBytes(Uint8List bytes) async {
-    final tag = await Haudiotagger.readFromBytes(bytes);
-    if (tag == null) return bytes;
-    final transformed = await apply(tag);
-    return Haudiotagger.writeToBytes(bytes, transformed);
+    final result = await api.processBytes(bytes: bytes, rules: _rules);
+    return result as Uint8List;
   }
 
   /// Apply the pipeline to multiple files.
   ///
   /// Returns the number of files successfully processed.
   Future<int> process(List<String> files) async {
-    var count = 0;
-    for (final path in files) {
-      try {
-        await processFile(path);
-        count++;
-      } catch (_) {}
-    }
-    return count;
+    final result = await api.processBatch(paths: files, rules: _rules);
+    return result.successes;
   }
 
   /// Apply the pipeline to multiple byte arrays.
@@ -506,15 +497,11 @@ class TagPipeline {
   Future<List<Uint8List>> processBatchFromBytes(
     List<Uint8List> byteArrays,
   ) async {
-    final results = <Uint8List>[];
-    for (final bytes in byteArrays) {
-      try {
-        results.add(await processFromBytes(bytes));
-      } catch (_) {
-        results.add(bytes);
-      }
-    }
-    return results;
+    final result = await api.processBatchBytes(
+      byteArrays: byteArrays,
+      rules: _rules,
+    );
+    return result.results.map((e) => e as Uint8List).toList();
   }
 
   /// Get the list of rules in this pipeline.
