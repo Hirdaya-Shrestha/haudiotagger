@@ -7,6 +7,8 @@ screenshots:
   - description: 'hAudiotagger logo'
     path: logo.png
 
+topics:
+  - metadata
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
