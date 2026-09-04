@@ -91,15 +91,29 @@ jobs:
 
       - name: Stage frameworks for SPM
         run: |
+          set -e
+          echo "=== Finding iOS xcframework ==="
+          find haudiotagger -name "*.xcframework" -type d 2>/dev/null || true
+          
           mkdir -p haudiotagger/ios/haudiotagger/Frameworks \
                  haudiotagger/macos/haudiotagger/Frameworks
-          cp -R haudiotagger/ios/Frameworks/haudiotagger.xcframework \
-                 haudiotagger/ios/haudiotagger/Frameworks/
-          cp -R haudiotagger/macos/Frameworks/haudiotagger.xcframework \
-                 haudiotagger/macos/haudiotagger/Frameworks/
+          
+          IOS_SRC=$(find haudiotagger -path "*/ios*Frameworks*xcframework" -type d ! -path "*/haudiotagger/ios/haudiotagger/*" | head -1)
+          MACOS_SRC=$(find haudiotagger -path "*/macos*Frameworks*xcframework" -type d ! -path "*/haudiotagger/macos/haudiotagger/*" | head -1)
+          
+          echo "iOS source: $IOS_SRC"
+          echo "macOS source: $MACOS_SRC"
+          
+          cp -R "$IOS_SRC" haudiotagger/ios/haudiotagger/Frameworks/
+          cp -R "$MACOS_SRC" haudiotagger/macos/haudiotagger/Frameworks/
+          
+          echo "=== Staged ==="
+          ls -la haudiotagger/ios/haudiotagger/Frameworks/
+          ls -la haudiotagger/macos/haudiotagger/Frameworks/
 
       - name: Create zip archives and generate checksums
         run: |
+          set -e
           cd haudiotagger/ios/haudiotagger/Frameworks
           zip -r ios.zip haudiotagger.xcframework
           IOS_CHECKSUM=$(swift package compute-checksum ios.zip)
