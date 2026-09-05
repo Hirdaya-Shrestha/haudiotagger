@@ -1,3 +1,8 @@
+## 1.3.0
+
+- Native binary optimizations: LTO, strip, codegen-units=1, panic=abort
+- Binary size reduced to ~2.1MB (stripped, optimized)
+
 ## 1.2.9
 
 - Removed native binaries from repo — downloaded from GitHub releases at build time

@@ -3,4 +3,8 @@ members = ["haudiotagger/rust"]
 resolver = "2"
 
 [profile.release]
-lto = true
+lto = "fat"
+opt-level = 3
+strip = true
+codegen-units = 1
+panic = "abort"
