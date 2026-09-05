@@ -18,7 +18,7 @@
 
 ---
 
-Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/aspect-build/aspect).
+Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge).
 
 ![hAudiotagger](/haudiotagger/cover.png)
 
@@ -26,7 +26,7 @@ Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Window
 
 Try hAudiotagger working demo directly in your browser - no install required:
 
-**[hAudiotagger](https://haudiotagger.hirdaya-shrestha.com.np/)**
+**[hAudiotagger Live Web Demo](https://haudiotagger.hirdaya-shrestha.com.np/)**
 
 ## Features
 
@@ -480,16 +480,16 @@ Benchmarks were performed using **hAudiotagger 1.2.9** on a Linux system with 50
 
 | Operation | 1 File | 10 Files | 50 Files | 100 Files |
 |:---|---:|---:|---:|---:|
-| **Read** | 59 f/s | 63 f/s | 78 f/s | 76 f/s |
+| **Read** | 59 f/s | 63 f/s | 78 f/s | 77 f/s |
 | **Update** | 28 f/s | 22 f/s | 20 f/s | 20 f/s |
 | **Batch Write** | 19 f/s | 26 f/s | 30 f/s | 30 f/s |
-| **Custom Tag** | 24 f/s | 18 f/s | 22 f/s | 22 f/s |
+| **Custom Tag** | 24 f/s | 18 f/s | 22 f/s | 23 f/s |
 
 ### File-Path API (Native, Rayon Parallel)
 
 | Operation | 1 File | 10 Files | 50 Files | 100 Files |
 |:---|---:|---:|---:|---:|
-| **Read** | 500 f/s | 1,000 f/s | 1,064 f/s | 1,282 f/s |
+| **Read** | 500 f/s | 1,003 f/s | 1,064 f/s | 1,282 f/s |
 | **Update** | 26 f/s | 30 f/s | 63 f/s | 71 f/s |
 | **Batch Write** | 29 f/s | 36 f/s | 198 f/s | 197 f/s |
 | **Batch Update** | 25 f/s | 36 f/s | 202 f/s | 197 f/s |
