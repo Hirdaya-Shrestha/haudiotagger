@@ -56,7 +56,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.2.9
+  haudiotagger: ^1.3.0
 ```
 
 ## Quick Start
@@ -460,13 +460,13 @@ final modifiedList = await pipeline.processBatchFromBytes([bytes1, bytes2]);
 
 ## ⚡ Performance Benchmarks
 
-Benchmarks were performed using **hAudiotagger 1.2.9** on a Linux system with 500 MP3 files (~8 MB each).
+Benchmarks were performed using **hAudiotagger 1.3.0** on a Linux system with 500 MP3 files (~8 MB each).
 
 ### Benchmark Environment
 
 | Property | Value |
 |---|---|
-| **hAudiotagger** | `1.2.9` |
+| **hAudiotagger** | `1.3.0` |
 | **OS** | Linux (Arch) |
 | **CPU** | AMD Ryzen 5 4500U |
 | **RAM** | 16 GB DDR4 |
