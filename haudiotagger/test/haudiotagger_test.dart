@@ -1169,4 +1169,125 @@ void main() {
       expect(result3.year, 1995);
     });
   });
+
+  // ============================================================
+  // CHAPTERS
+  // ============================================================
+
+  group('chapters', () {
+    test('getChaptersFromBytes returns empty for no chapters', () async {
+      final chapters = await Haudiotagger.getChaptersFromBytes(mp3Bytes);
+      expect(chapters, isEmpty);
+    });
+
+    test('setChaptersFromBytes writes chapters that read back', () async {
+      final chapters = [
+        Chapter(
+          title: 'Introduction',
+          startMs: BigInt.from(0),
+          endMs: BigInt.from(42000),
+        ),
+        Chapter(
+          title: 'Main Content',
+          startMs: BigInt.from(42000),
+          endMs: BigInt.from(180000),
+        ),
+        Chapter(
+          title: 'Conclusion',
+          startMs: BigInt.from(180000),
+          endMs: BigInt.from(240000),
+        ),
+      ];
+
+      final written = await Haudiotagger.setChaptersFromBytes(mp3Bytes, chapters);
+      final readBack = await Haudiotagger.getChaptersFromBytes(written);
+
+      expect(readBack.length, 3);
+      expect(readBack[0].title, 'Introduction');
+      expect(readBack[0].startMs, BigInt.from(0));
+      expect(readBack[0].endMs, BigInt.from(42000));
+      expect(readBack[1].title, 'Main Content');
+      expect(readBack[1].startMs, BigInt.from(42000));
+      expect(readBack[1].endMs, BigInt.from(180000));
+      expect(readBack[2].title, 'Conclusion');
+      expect(readBack[2].startMs, BigInt.from(180000));
+      expect(readBack[2].endMs, BigInt.from(240000));
+    });
+
+    test('setChaptersFromBytes replaces existing chapters', () async {
+      final chapters1 = [
+        Chapter(
+          title: 'Chapter 1',
+          startMs: BigInt.from(0),
+          endMs: BigInt.from(60000),
+        ),
+      ];
+
+      final written1 = await Haudiotagger.setChaptersFromBytes(mp3Bytes, chapters1);
+      final read1 = await Haudiotagger.getChaptersFromBytes(written1);
+      expect(read1.length, 1);
+      expect(read1[0].title, 'Chapter 1');
+
+      final chapters2 = [
+        Chapter(
+          title: 'New Chapter A',
+          startMs: BigInt.from(0),
+          endMs: BigInt.from(30000),
+        ),
+        Chapter(
+          title: 'New Chapter B',
+          startMs: BigInt.from(30000),
+          endMs: BigInt.from(90000),
+        ),
+      ];
+
+      final written2 = await Haudiotagger.setChaptersFromBytes(written1, chapters2);
+      final read2 = await Haudiotagger.getChaptersFromBytes(written2);
+      expect(read2.length, 2);
+      expect(read2[0].title, 'New Chapter A');
+      expect(read2[1].title, 'New Chapter B');
+    });
+
+    test('setChaptersFromBytes with empty chapters removes all', () async {
+      final chapters = [
+        Chapter(
+          title: 'To Remove',
+          startMs: BigInt.from(0),
+          endMs: BigInt.from(60000),
+        ),
+      ];
+
+      final written = await Haudiotagger.setChaptersFromBytes(mp3Bytes, chapters);
+      final cleared = await Haudiotagger.setChaptersFromBytes(written, []);
+      final readBack = await Haudiotagger.getChaptersFromBytes(cleared);
+      expect(readBack, isEmpty);
+    });
+
+    test('chapters round-trip preserves metadata', () async {
+      final tag = Tag(
+        title: 'Chapter Test',
+        trackArtist: 'Test Artist',
+        album: 'Test Album',
+        pictures: [],
+      );
+
+      var bytes = await Haudiotagger.writeToBytes(mp3Bytes, tag);
+      final chapters = [
+        Chapter(
+          title: 'Intro',
+          startMs: BigInt.from(0),
+          endMs: BigInt.from(10000),
+        ),
+      ];
+
+      bytes = await Haudiotagger.setChaptersFromBytes(bytes, chapters);
+      final readTag = await Haudiotagger.readFromBytes(bytes);
+      final readChapters = await Haudiotagger.getChaptersFromBytes(bytes);
+
+      expect(readTag!.title, 'Chapter Test');
+      expect(readTag.trackArtist, 'Test Artist');
+      expect(readChapters.length, 1);
+      expect(readChapters[0].title, 'Intro');
+    });
+  });
 }

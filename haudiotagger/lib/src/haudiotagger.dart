@@ -12,6 +12,8 @@ import 'rust/api/tag_changes.dart' as tc;
 import 'rust/api/tag_field.dart';
 import 'rust/api/validation.dart' show ValidationResult;
 import 'rust/api/normalization.dart' show NormalizeOptions;
+import 'rust/api/chapters.dart' as ch;
+import 'rust/api/chapters.dart' show Chapter;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -24,6 +26,7 @@ export 'rust/api/api.dart'
 export 'rust/api/validation.dart'
     show ValidationResult, ValidationIssue, ValidationSeverity;
 export 'rust/api/normalization.dart' show NormalizeOptions;
+export 'rust/api/chapters.dart' show Chapter;
 export 'copy_with.dart';
 export 'pipeline.dart' show TagPipeline, PreviewResult, FieldChange;
 
@@ -670,6 +673,38 @@ class Haudiotagger {
   static Future<String> rename(String path, {required String pattern}) async {
     await _ensureInit();
     return api.renameFile(path: path, pattern: pattern);
+  }
+
+  /// Read chapters from the file at [path].
+  /// Currently supports MP3 (ID3v2 CHAP frames).
+  /// Returns an empty list for unsupported formats.
+  static Future<List<Chapter>> getChapters(String path) async {
+    await _ensureInit();
+    return await ch.getChapters(path: path);
+  }
+
+  /// Read chapters from in-memory [bytes].
+  /// Currently supports MP3 (ID3v2 CHAP frames).
+  /// Works on web and native.
+  static Future<List<Chapter>> getChaptersFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await ch.readChaptersFromBytes(bytes: bytes);
+  }
+
+  /// Write [chapters] to the file at [path].
+  /// Currently supports MP3 (ID3v2 CHAP frames).
+  static Future<void> setChapters(String path, List<Chapter> chapters) async {
+    await _ensureInit();
+    return await ch.setChapters(path: path, chapters: chapters);
+  }
+
+  /// Write [chapters] to in-memory [bytes], returning the modified bytes.
+  /// Currently supports MP3 (ID3v2 CHAP frames).
+  /// Works on web and native.
+  static Future<Uint8List> setChaptersFromBytes(
+      Uint8List bytes, List<Chapter> chapters) async {
+    await _ensureInit();
+    return await ch.writeChaptersToBytes(bytes: bytes, chapters: chapters);
   }
 }
 
