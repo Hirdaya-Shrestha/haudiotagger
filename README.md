@@ -45,6 +45,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 | Copy metadata between files | All |
 | Merge tags with configurable strategy | All |
 | ReplayGain support (track/album gain/peak) | All |
+| **Chapters** (ID3v2 CHAP frames for MP3) | All |
 | TagPipeline — 56-rule metadata transformation engine | All |
 | Format filenames from tag metadata | All |
 | Rename files based on metadata patterns | All |
@@ -56,7 +57,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.3.0
+  haudiotagger: ^1.3.1
 ```
 
 ## Quick Start
@@ -390,6 +391,29 @@ await Haudiotagger.update('song.mp3', TagChanges(
 ));
 ```
 
+### Chapters
+
+Read and write chapter markers (ID3v2 CHAP frames) for MP3 files. Chapters mark track positions for podcasts, audiobooks, and multi-part songs.
+
+```dart
+// Read chapters
+final chapters = await Haudiotagger.getChapters('/path/to/song.mp3');
+for (final ch in chapters) {
+  print('${ch.title}: ${ch.startMs}-${ch.endMs}ms');
+}
+
+// Write chapters
+await Haudiotagger.setChapters('/path/to/song.mp3', [
+  Chapter(title: 'Introduction', startMs: 0, endMs: 42000),
+  Chapter(title: 'Main Content', startMs: 42000, endMs: 180000),
+  Chapter(title: 'Outro', startMs: 180000, endMs: 240000),
+]);
+
+// Bytes variants (web + native)
+final chapters = await Haudiotagger.getChaptersFromBytes(fileBytes);
+final modified = await Haudiotagger.setChaptersFromBytes(fileBytes, chapters);
+```
+
 ### Format Filename
 
 Format a filename from tag metadata using placeholders.
@@ -553,6 +577,10 @@ flutter run -d chrome \
 | `convertId3v2FromBytes(bytes, version)` | `Uint8List` | all |
 | `removeId3v1(path)` | `void` | all |
 | `removeId3v1FromBytes(bytes)` | `Uint8List` | all |
+| `getChapters(path)` | `List<Chapter>` | native |
+| `getChaptersFromBytes(bytes)` | `List<Chapter>` | all |
+| `setChapters(path, chapters)` | `void` | native |
+| `setChaptersFromBytes(bytes, chapters)` | `Uint8List` | all |
 | `validate(path)` | `ValidationResult` | native |
 | `validateFromBytes(bytes)` | `ValidationResult` | all |
 | `validateTag(tag)` | `ValidationResult` | all |
@@ -722,6 +750,14 @@ Same fields as `Tag`, all optional. Only set fields are applied.
 | `preferSecond` | tagB wins for all fields |
 | `preferFirstNonEmpty` | tagA wins unless empty, then tagB |
 | `preferSecondNonEmpty` | tagB wins unless empty, then tagA |
+
+### `Chapter`
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `title` | `String` | Chapter name |
+| `startMs` | `int` | Start time in milliseconds |
+| `endMs` | `int` | End time in milliseconds |
 
 </details>
 
