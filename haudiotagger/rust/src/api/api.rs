@@ -65,7 +65,7 @@ fn tag_from_file(file: &TaggedFile) -> Result<Tag, HaudiotaggerError> {
     Ok(tag)
 }
 
-fn apply_tag_to_lofty_tag(
+pub(crate) fn apply_tag_to_lofty_tag(
     tag: &Tag,
     lo_tag: &mut lofty::tag::Tag,
 ) -> Result<(), HaudiotaggerError> {
@@ -166,7 +166,7 @@ pub fn read_from_bytes(bytes: Vec<u8>) -> Result<Tag, HaudiotaggerError> {
 /// them through lofty's writer and abort with `FileEncodingError { format: None }`.
 /// So we additionally key off the `.mp3` extension and a leading "ID3" marker.
 #[inline]
-fn is_mp3(path: &str, bytes: &[u8]) -> bool {
+pub(crate) fn is_mp3(path: &str, bytes: &[u8]) -> bool {
     if path.to_lowercase().ends_with(".mp3") {
         return true;
     }

@@ -70,6 +70,10 @@ mod tests {
             duration: None,
             pictures: Vec::new(),
             bpm: None,
+            replay_gain_track_gain: None,
+            replay_gain_track_peak: None,
+            replay_gain_album_gain: None,
+            replay_gain_album_peak: None,
         }
     }
 
@@ -230,7 +234,7 @@ mod tests {
         let mut changes = tag_changes::TagChanges::default();
         changes.title = Some("UPDATED_TITLE".to_string());
         changes.comment = Some("UPDATED_COMMENT".to_string());
-        tag_changes::update(path.clone(), &changes).expect("Failed to update tag.");
+        tag_changes::update(path.clone(), changes).expect("Failed to update tag.");
 
         let read = api::read(path.clone()).expect("Failed to read tag.");
         // Changed fields
@@ -304,7 +308,7 @@ mod tests {
         let mut changes = tag_changes::TagChanges::default();
         changes.title = Some("FRESH_TITLE".to_string());
         changes.track_artist = Some("FRESH_ARTIST".to_string());
-        tag_changes::update(path.clone(), &changes).expect("Failed to update tag.");
+        tag_changes::update(path.clone(), changes).expect("Failed to update tag.");
 
         let read = api::read(path.clone()).expect("Failed to read tag.");
         assert_eq!(read.title.as_deref(), Some("FRESH_TITLE"));
