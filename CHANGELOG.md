@@ -1,3 +1,10 @@
+## 1.3.1
+
+- **Chapter support**: read and write ID3v2 CHAP frames for MP3 files
+- New Dart API: `getChapters`, `setChapters`, `getChaptersFromBytes`, `setChaptersFromBytes`
+- Handles both ID3v2.3 (big-endian) and ID3v2.4 (syncsafe) frame sizes
+- Overwrites existing chapters cleanly (strips old CHAP/CTOC before writing)
+
 ## 1.3.0
 
 - Native binary optimizations: LTO, strip, codegen-units=1, panic=abort
