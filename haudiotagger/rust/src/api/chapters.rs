@@ -318,8 +318,16 @@ mod tests {
     fn chapter_roundtrip() {
         let mp3 = make_test_mp3();
         let chapters = vec![
-            Chapter { title: "Intro".into(), start_ms: 0, end_ms: 60000 },
-            Chapter { title: "Verse".into(), start_ms: 60000, end_ms: 120000 },
+            Chapter {
+                title: "Intro".into(),
+                start_ms: 0,
+                end_ms: 60000,
+            },
+            Chapter {
+                title: "Verse".into(),
+                start_ms: 60000,
+                end_ms: 120000,
+            },
         ];
         let written = write_chapters_to_mp3_bytes(&mp3, &chapters).unwrap();
         let read_back = read_chapters_from_mp3_bytes(&written).unwrap();
@@ -333,12 +341,28 @@ mod tests {
     #[test]
     fn write_overwrites_chapters() {
         let mp3 = make_test_mp3();
-        let ch1 = vec![Chapter { title: "A".into(), start_ms: 0, end_ms: 100 }];
+        let ch1 = vec![Chapter {
+            title: "A".into(),
+            start_ms: 0,
+            end_ms: 100,
+        }];
         let written = write_chapters_to_mp3_bytes(&mp3, &ch1).unwrap();
         let ch2 = vec![
-            Chapter { title: "X".into(), start_ms: 0, end_ms: 50 },
-            Chapter { title: "Y".into(), start_ms: 50, end_ms: 100 },
-            Chapter { title: "Z".into(), start_ms: 100, end_ms: 200 },
+            Chapter {
+                title: "X".into(),
+                start_ms: 0,
+                end_ms: 50,
+            },
+            Chapter {
+                title: "Y".into(),
+                start_ms: 50,
+                end_ms: 100,
+            },
+            Chapter {
+                title: "Z".into(),
+                start_ms: 100,
+                end_ms: 200,
+            },
         ];
         let written2 = write_chapters_to_mp3_bytes(&written, &ch2).unwrap();
         let read_back = read_chapters_from_mp3_bytes(&written2).unwrap();
