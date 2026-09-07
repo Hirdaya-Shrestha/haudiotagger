@@ -35,7 +35,7 @@ jobs:
           LD_LIBRARY_PATH: ${{ github.workspace }}/haudiotagger/linux
         run: |
           flutter test --coverage
-          lcov --remove coverage/lcov.info '**/*.g.dart' '**/frb_generated*' '**/src/rust/*' -o coverage/lcov_filtered.info
+          lcov --ignore-errors unused --remove coverage/lcov.info '**/frb_generated*' '**/src/rust/*' -o coverage/lcov_filtered.info
           mv coverage/lcov_filtered.info coverage/lcov.info
 
       - name: Update coverage badge
