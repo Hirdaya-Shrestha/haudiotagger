@@ -40,4 +40,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
           GIST_ID: ${{ secrets.COVERAGE_GIST_ID }}
+          LCOV_FILE: haudiotagger/coverage/lcov.info
         run: bash .github/scripts/report_coverage.sh

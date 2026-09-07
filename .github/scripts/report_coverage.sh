@@ -5,7 +5,7 @@
 set -euo pipefail
 
 GIST_ID="${GIST_ID:?Set GIST_ID env var}"
-LCOV_FILE="coverage/lcov.info"
+LCOV_FILE="${LCOV_FILE:-coverage/lcov.info}"
 
 if [ ! -f "$LCOV_FILE" ]; then
   echo "No lcov.info found at $LCOV_FILE"
