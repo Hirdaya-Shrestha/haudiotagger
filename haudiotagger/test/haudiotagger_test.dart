@@ -1467,4 +1467,387 @@ void main() {
       }
     });
   });
+
+  // ============================================================
+  // FILE-BASED API (requires native lib)
+  // ============================================================
+
+  group('file-based read / write', () {
+    late Directory tempDir;
+
+    setUp(() {
+      tempDir = Directory.systemTemp.createTempSync('haudiotagger_test_');
+    });
+
+    tearDown(() {
+      if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
+    });
+
+    test('read returns tag from file', () async {
+      final filePath = '${tempDir.path}/test.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final tag = await Haudiotagger.read(filePath);
+      expect(tag, isNotNull);
+      expect(tag!.title, 'Original Title');
+    });
+
+    test('write creates tag on file', () async {
+      final filePath = '${tempDir.path}/write.mp3';
+      final mp3Header = mp3Bytes.sublist(0, 1024);
+      await File(filePath).writeAsBytes(mp3Header);
+      final tag = Tag(
+        title: 'Written Title',
+        trackArtist: 'Written Artist',
+        album: 'Written Album',
+        year: 2025,
+        pictures: [],
+      );
+      await Haudiotagger.write(filePath, tag);
+      final readBack = await Haudiotagger.read(filePath);
+      expect(readBack, isNotNull);
+      expect(readBack!.title, 'Written Title');
+    });
+
+    test('readProperties returns audio properties from file', () async {
+      final filePath = '${tempDir.path}/props.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final props = await Haudiotagger.readProperties(filePath);
+      expect(props.durationMicros, isNotNull);
+    });
+
+    test('update applies changes to file', () async {
+      final filePath = '${tempDir.path}/update.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final changes = TagChanges(title: 'Updated Title');
+      await Haudiotagger.update(filePath, changes);
+      final tag = await Haudiotagger.read(filePath);
+      expect(tag!.title, 'Updated Title');
+      expect(tag.trackArtist, 'Original Artist');
+    });
+
+    test('remove clears specific fields from file', () async {
+      final filePath = '${tempDir.path}/remove.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.remove(filePath, [TagField.title]);
+      final tag = await Haudiotagger.read(filePath);
+      expect(tag!.title, isNull);
+      expect(tag.trackArtist, 'Original Artist');
+    });
+
+    test('clear removes all metadata from file', () async {
+      final filePath = '${tempDir.path}/clear.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.clear(filePath);
+      final tag = await Haudiotagger.read(filePath);
+      expect(tag, isNull);
+    });
+
+    test('getTagFormats returns formats from file', () async {
+      final filePath = '${tempDir.path}/formats.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final formats = await Haudiotagger.getTagFormats(filePath);
+      expect(formats, isNotEmpty);
+    });
+
+    test('getCustomTags and setCustomTag work on file', () async {
+      final filePath = '${tempDir.path}/custom.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.setCustomTag(filePath, 'MY_FIELD', 'my_value');
+      final tags = await Haudiotagger.getCustomTags(filePath);
+      expect(tags['MY_FIELD'], 'my_value');
+    });
+
+    test('removeCustomTag removes from file', () async {
+      final filePath = '${tempDir.path}/rmcustom.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.setCustomTag(filePath, 'MY_FIELD', 'my_value');
+      await Haudiotagger.removeCustomTag(filePath, 'MY_FIELD');
+      final tags = await Haudiotagger.getCustomTags(filePath);
+      expect(tags.containsKey('MY_FIELD'), false);
+    });
+
+    test('getId3v2Version returns version from file', () async {
+      final filePath = '${tempDir.path}/version.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final version = await Haudiotagger.getId3v2Version(filePath);
+      expect(version, isNotNull);
+    });
+
+    test('removeId3v1 removes ID3v1 from file', () async {
+      final filePath = '${tempDir.path}/rmv1.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.removeId3v1(filePath);
+      final formats = await Haudiotagger.getTagFormats(filePath);
+      expect(formats.any((f) => f.toLowerCase().contains('id3v1')), false);
+    });
+
+    test('inspect returns file info', () async {
+      final filePath = '${tempDir.path}/inspect.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final info = await Haudiotagger.inspect(filePath);
+      expect(info, isNotNull);
+    });
+
+    test('validate returns validation result for file', () async {
+      final filePath = '${tempDir.path}/validate.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final result = await Haudiotagger.validate(filePath);
+      expect(result, isNotNull);
+    });
+
+    test('normalize returns normalized tag from file', () async {
+      final filePath = '${tempDir.path}/normalize.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final tag = await Haudiotagger.normalize(filePath);
+      expect(tag, isNotNull);
+    });
+
+    test('normalizeBytes returns normalized bytes', () async {
+      final normalized = await Haudiotagger.normalizeBytes(mp3Bytes);
+      expect(normalized, isNotEmpty);
+    });
+
+    test('copyMetadata copies between files', () async {
+      final src = '${tempDir.path}/src.mp3';
+      final dst = '${tempDir.path}/dst.mp3';
+      await File(src).writeAsBytes(mp3Bytes);
+      final mp3Header = mp3Bytes.sublist(0, 1024);
+      await File(dst).writeAsBytes(mp3Header);
+      await Haudiotagger.copyMetadata(src, dst);
+      final tag = await Haudiotagger.read(dst);
+      expect(tag, isNotNull);
+      expect(tag!.title, 'Original Title');
+    });
+
+    test('rename renames file based on pattern', () async {
+      final filePath = '${tempDir.path}/rename_me.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final newPath = await Haudiotagger.rename(
+        filePath,
+        pattern: '{title}',
+      );
+      expect(File(newPath).existsSync(), true);
+    });
+
+    test('getChapters reads chapters from file', () async {
+      final filePath = '${tempDir.path}/chapters.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final chapters = await Haudiotagger.getChapters(filePath);
+      expect(chapters, isA<List<Chapter>>());
+    });
+
+    test('setChapters writes chapters to file', () async {
+      final filePath = '${tempDir.path}/setchapters.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final chapters = [
+        Chapter(title: 'Intro', startMs: BigInt.from(0), endMs: BigInt.from(30000)),
+        Chapter(title: 'Main', startMs: BigInt.from(30000), endMs: BigInt.from(120000)),
+      ];
+      await Haudiotagger.setChapters(filePath, chapters);
+      final readBack = await Haudiotagger.getChapters(filePath);
+      expect(readBack.length, 2);
+      expect(readBack[0].title, 'Intro');
+    });
+
+    test('getExtended reads extended metadata from file', () async {
+      final filePath = '${tempDir.path}/extread.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final ext = await Haudiotagger.getExtended(filePath);
+      expect(ext, isA<ExtendedTag>());
+    });
+
+    test('setExtended writes extended metadata to file', () async {
+      final filePath = '${tempDir.path}/extset.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.setExtended(filePath, ExtendedTag(mood: 'happy'));
+      final ext = await Haudiotagger.getExtended(filePath);
+      expect(ext.mood, 'happy');
+    });
+
+    test('updateExtended updates extended metadata on file', () async {
+      final filePath = '${tempDir.path}/extupd.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.setExtended(filePath, ExtendedTag(
+        mood: 'happy',
+        isrc: 'US-TEST',
+      ));
+      await Haudiotagger.updateExtended(filePath, ExtendedChanges(mood: 'sad'));
+      final ext = await Haudiotagger.getExtended(filePath);
+      expect(ext.mood, 'sad');
+      expect(ext.isrc, 'US-TEST');
+    });
+
+    test('removeExtended clears extended metadata from file', () async {
+      final filePath = '${tempDir.path}/extrm.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.setExtended(filePath, ExtendedTag(mood: 'happy'));
+      await Haudiotagger.removeExtended(filePath);
+      final ext = await Haudiotagger.getExtended(filePath);
+      expect(ext.mood, isNull);
+    });
+
+    test('batchWrite writes to multiple files', () async {
+      final paths = <String>[];
+      for (var i = 0; i < 3; i++) {
+        final p = '${tempDir.path}/batch_$i.mp3';
+        await File(p).writeAsBytes(mp3Bytes);
+        paths.add(p);
+      }
+      final tag = Tag(title: 'Batch', trackArtist: 'Test', pictures: []);
+      final result = await Haudiotagger.batchWrite(paths, tag);
+      expect(result.successes, 3);
+      expect(result.failures, 0);
+    });
+
+    test('batchUpdateChanges applies changes to multiple files', () async {
+      final paths = <String>[];
+      for (var i = 0; i < 3; i++) {
+        final p = '${tempDir.path}/batchupd_$i.mp3';
+        await File(p).writeAsBytes(mp3Bytes);
+        paths.add(p);
+      }
+      final changes = TagChanges(title: 'Batch Updated');
+      final result = await Haudiotagger.batchUpdateChanges(paths, changes);
+      expect(result.successes, 3);
+    });
+
+    test('batchUpdate uses callback for multiple files', () async {
+      final paths = <String>[];
+      for (var i = 0; i < 3; i++) {
+        final p = '${tempDir.path}/batchcb_$i.mp3';
+        await File(p).writeAsBytes(mp3Bytes);
+        paths.add(p);
+      }
+      final result = await Haudiotagger.batchUpdate(
+        paths,
+        (path, current) => current.copyWith(title: 'Updated'),
+      );
+      expect(result.successes, 3);
+    });
+
+    test('getId3v2VersionFromBytes returns version', () async {
+      final version = await Haudiotagger.getId3v2VersionFromBytes(mp3Bytes);
+      expect(version, isNotNull);
+    });
+
+    test('removeId3v1FromBytes removes ID3v1', () async {
+      final result = await Haudiotagger.removeId3v1FromBytes(mp3Bytes);
+      expect(result, isNotEmpty);
+    });
+
+    test('convertId3v2FromBytes converts version', () async {
+      final result = await Haudiotagger.convertId3v2FromBytes(
+        mp3Bytes,
+        Id3v2Version.v3,
+      );
+      expect(result, isNotEmpty);
+    });
+
+    test('readPropertiesFromBytes returns properties', () async {
+      final props = await Haudiotagger.readPropertiesFromBytes(mp3Bytes);
+      expect(props.durationMicros, isNotNull);
+    });
+
+    test('convertId3v2 converts file', () async {
+      final filePath = '${tempDir.path}/convert.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      await Haudiotagger.convertId3v2(filePath, Id3v2Version.v4);
+      final version = await Haudiotagger.getId3v2Version(filePath);
+      expect(version, isNotNull);
+    });
+
+    test('validate file returns validation result', () async {
+      final filePath = '${tempDir.path}/validate_file.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final result = await Haudiotagger.validate(filePath);
+      expect(result, isNotNull);
+    });
+
+    test('validateFromBytes returns validation result', () async {
+      final result = await Haudiotagger.validateFromBytes(mp3Bytes);
+      expect(result, isNotNull);
+    });
+
+    test('batchUpdate error handling', () async {
+      final result = await Haudiotagger.batchUpdate(
+        ['/nonexistent/path.mp3'],
+        (path, current) => current.copyWith(title: 'X'),
+      );
+      expect(result.failures, 1);
+      expect(result.errors, isNotEmpty);
+    });
+
+    test('batchUpdateFromBytes error handling', () async {
+      final badBytes = [Uint8List(0)];
+      final result = await Haudiotagger.batchUpdateFromBytes(
+        badBytes,
+        (index, current) => current.copyWith(title: 'X'),
+      );
+      expect(result.failures, 1);
+    });
+  });
+
+  // ============================================================
+  // AUDIO PROPERTIES / HELPERS
+  // ============================================================
+
+  group('helpers', () {
+    test('AudioPropertiesX duration returns Duration', () async {
+      final props = await Haudiotagger.readPropertiesFromBytes(mp3Bytes);
+      final duration = props.duration;
+      if (duration != null) {
+        expect(duration, isA<Duration>());
+        expect(duration.inMilliseconds, greaterThanOrEqualTo(0));
+      }
+    });
+
+    test('BatchProgress percent works', () {
+      final progress = BatchProgress(completed: 50, total: 100);
+      expect(progress.percent, 0.5);
+    });
+
+    test('BatchProgress percent handles zero total', () {
+      final progress = BatchProgress(completed: 0, total: 0);
+      expect(progress.percent, 0.0);
+    });
+
+    test('MetadataDiff toString works', () {
+      final tag = Tag(title: 'A', pictures: []);
+      final diff = Haudiotagger.diff(tag, Tag(title: 'B', pictures: []));
+      expect(diff.toString(), contains('change'));
+    });
+
+    test('MetadataDiff length works', () {
+      final tag = Tag(title: 'A', pictures: []);
+      final diff = Haudiotagger.diff(tag, Tag(title: 'B', pictures: []));
+      expect(diff.length, diff.changes.length);
+    });
+
+    test('MetadataChange toString works', () {
+      final change = MetadataChange(
+        field: TagField.title,
+        oldValue: 'Old',
+        newValue: 'New',
+        type: ChangeType.updated,
+      );
+      expect(change.toString(), contains('title'));
+    });
+
+    test('TagChanges copyWith preserves unspecified fields', () {
+      final original = TagChanges(title: 'Title', year: 2025);
+      final copy = original.copyWith(trackArtist: 'Artist');
+      expect(copy.title, 'Title');
+      expect(copy.year, 2025);
+    });
+
+    test('Picture copyWith preserves unspecified fields', () {
+      final original = Picture(
+        pictureType: PictureType.coverFront,
+        bytes: Uint8List.fromList([1, 2, 3]),
+      );
+      final copy = original.copyWith(bytes: Uint8List.fromList([4, 5, 6]));
+      expect(copy.pictureType, PictureType.coverFront);
+      expect(copy.bytes, [4, 5, 6]);
+    });
+  });
 }
