@@ -10,15 +10,24 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          channel: "stable"
+          cache: true
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install MUSL dependencies
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
 
       - name: Install dependencies
         run: flutter pub get
         working-directory: haudiotagger
+      - run: cd cli && flutter pub get
+
+      - name: Build native library
+        run: dart run cli build linux -v
 
       - name: Run tests with coverage
         working-directory: haudiotagger
