@@ -2,6 +2,7 @@ pub mod api;
 pub mod audio_properties;
 pub mod chapters;
 pub mod error;
+pub mod extended;
 pub mod normalization;
 pub mod picture;
 pub mod pipeline;

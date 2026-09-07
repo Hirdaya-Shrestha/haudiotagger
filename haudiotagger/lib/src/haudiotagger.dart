@@ -14,6 +14,8 @@ import 'rust/api/validation.dart' show ValidationResult;
 import 'rust/api/normalization.dart' show NormalizeOptions;
 import 'rust/api/chapters.dart' as ch;
 import 'rust/api/chapters.dart' show Chapter;
+import 'rust/api/extended.dart' as ext;
+import 'rust/api/extended.dart' show ExtendedTag, ExtendedChanges;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -27,6 +29,7 @@ export 'rust/api/validation.dart'
     show ValidationResult, ValidationIssue, ValidationSeverity;
 export 'rust/api/normalization.dart' show NormalizeOptions;
 export 'rust/api/chapters.dart' show Chapter;
+export 'rust/api/extended.dart' show ExtendedTag, ExtendedChanges;
 export 'copy_with.dart';
 export 'pipeline.dart' show TagPipeline, PreviewResult, FieldChange;
 
@@ -705,6 +708,59 @@ class Haudiotagger {
       Uint8List bytes, List<Chapter> chapters) async {
     await _ensureInit();
     return await ch.writeChaptersToBytes(bytes: bytes, chapters: chapters);
+  }
+
+  // ── Extended metadata ──
+
+  /// Read extended metadata (MusicBrainz, AcoustID, ISRC, etc.) from [path].
+  static Future<ExtendedTag> getExtended(String path) async {
+    await _ensureInit();
+    return await ext.readExtended(path: path);
+  }
+
+  /// Read extended metadata from in-memory [bytes].
+  static Future<ExtendedTag> getExtendedFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await ext.readExtendedFromBytes(bytes: bytes);
+  }
+
+  /// Write [data] to the extended tag at [path], replacing existing extended fields.
+  static Future<void> setExtended(String path, ExtendedTag data) async {
+    await _ensureInit();
+    return await ext.writeExtended(path: path, data: data);
+  }
+
+  /// Write [data] to the extended tag bytes, returning modified bytes.
+  static Future<Uint8List> setExtendedFromBytes(
+      Uint8List bytes, ExtendedTag data) async {
+    await _ensureInit();
+    return await ext.writeExtendedToBytes(bytes: bytes, data: data);
+  }
+
+  /// Apply partial [changes] to the extended tag at [path].
+  static Future<void> updateExtended(
+      String path, ExtendedChanges changes) async {
+    await _ensureInit();
+    return await ext.updateExtended(path: path, changes: changes);
+  }
+
+  /// Apply partial [changes] to extended tag bytes, returning modified bytes.
+  static Future<Uint8List> updateExtendedFromBytes(
+      Uint8List bytes, ExtendedChanges changes) async {
+    await _ensureInit();
+    return await ext.updateExtendedFromBytes(bytes: bytes, changes: changes);
+  }
+
+  /// Remove all extended fields from [path], preserving standard fields.
+  static Future<void> removeExtended(String path) async {
+    await _ensureInit();
+    return await ext.removeExtended(path: path);
+  }
+
+  /// Remove all extended fields from bytes, returning modified bytes.
+  static Future<Uint8List> removeExtendedFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await ext.removeExtendedFromBytes(bytes: bytes);
   }
 }
 

@@ -1,3 +1,9 @@
+## 1.3.2
+
+- **Extended metadata**: read and write 60+ extended fields (MusicBrainz, AcoustID, ISRC, mood, etc.)
+- New Dart API: `getExtended`, `setExtended`, `updateExtended`, `removeExtended` (+ `FromBytes` variants)
+- New data types: `ExtendedTag`, `ExtendedChanges`
+
 ## 1.3.1
 
 - **Chapter support**: read and write ID3v2 CHAP frames for MP3 files

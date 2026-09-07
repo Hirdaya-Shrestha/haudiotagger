@@ -46,6 +46,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 | Merge tags with configurable strategy | All |
 | ReplayGain support (track/album gain/peak) | All |
 | **Chapters** (ID3v2 CHAP frames for MP3) | All |
+| **Extended metadata** (MusicBrainz, AcoustID, ISRC, etc.) | All |
 | TagPipeline — 56-rule metadata transformation engine | All |
 | Format filenames from tag metadata | All |
 | Rename files based on metadata patterns | All |
@@ -57,7 +58,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.3.1
+  haudiotagger: ^1.3.2
 ```
 
 ## Quick Start
@@ -414,6 +415,56 @@ final chapters = await Haudiotagger.getChaptersFromBytes(fileBytes);
 final modified = await Haudiotagger.setChaptersFromBytes(fileBytes, chapters);
 ```
 
+### Extended Metadata
+
+Read and write extended metadata fields commonly used by music libraries, tagging services, and professional audio tools. These fields are kept separate from the core `Tag` to maintain a clean separation between basic metadata and metadata provider data.
+
+```dart
+// Read extended metadata
+final ext = await Haudiotagger.getExtended('/path/to/song.mp3');
+print(ext.isrc);                        // "US-S1Z-99-00001"
+print(ext.musicBrainzRecordingId);      // "abc-123-def-456"
+print(ext.acoustId);                    // "acoust-789"
+print(ext.mood);                        // "upbeat"
+
+// Write extended metadata (replaces all extended fields)
+await Haudiotagger.setExtended('/path/to/song.mp3', ExtendedTag(
+  isrc: 'US-S1Z-99-00001',
+  mood: 'upbeat',
+  catalogNumber: 'CAT-12345',
+  producer: 'Dr. Dre',
+));
+
+// Partial update (preserves untouched fields)
+await Haudiotagger.updateExtended('/path/to/song.mp3', ExtendedChanges(
+  mood: 'chill',  // only mood changes, isrc stays
+));
+
+// Remove all extended fields
+await Haudiotagger.removeExtended('/path/to/song.mp3');
+
+// Bytes variants (web + native)
+final ext = await Haudiotagger.getExtendedFromBytes(fileBytes);
+final modified = await Haudiotagger.setExtendedFromBytes(fileBytes, ext);
+final updated = await Haudiotagger.updateExtendedFromBytes(fileBytes, changes);
+final cleaned = await Haudiotagger.removeExtendedFromBytes(fileBytes);
+```
+
+#### Available Extended Fields
+
+| Category | Fields |
+|----------|--------|
+| **MusicBrainz** | `musicBrainzRecordingId`, `musicBrainzTrackId`, `musicBrainzReleaseId`, `musicBrainzReleaseGroupId`, `musicBrainzArtistId`, `musicBrainzReleaseArtistId`, `musicBrainzWorkId`, `musicBrainzReleaseType` |
+| **AcoustID** | `acoustId`, `acoustIdFingerprint` |
+| **Identifiers** | `isrc`, `barcode`, `catalogNumber` |
+| **People & Roles** | `arranger`, `conductor`, `director`, `engineer`, `lyricist`, `mixDj`, `mixEngineer`, `performer`, `producer`, `publisher`, `label`, `remixer`, `writer`, `composer`, `originalLyricist` |
+| **Dates** | `recordingDate`, `releaseDate`, `originalReleaseDate` |
+| **Style** | `initialKey`, `color`, `mood` |
+| **URLs** | `audioFileUrl`, `audioSourceUrl`, `commercialInformationUrl`, `copyrightUrl`, `trackArtistUrl`, `radioStationUrl`, `paymentUrl`, `publisherUrl` |
+| **Legal** | `copyrightMessage`, `license` |
+| **Podcast** | `podcastDescription`, `podcastSeriesCategory`, `podcastUrl`, `podcastGlobalUniqueId`, `podcastKeywords` |
+| **Other** | `setSubtitle`, `showName`, `contentGroup`, `trackSubtitle`, `language`, `script`, `parentalAdvisory`, `fileOwner`, `originalFileName`, `originalMediaType`, `encodedBy`, `encoderSoftware`, `encoderSettings` |
+
 ### Format Filename
 
 Format a filename from tag metadata using placeholders.
@@ -581,6 +632,14 @@ flutter run -d chrome \
 | `getChaptersFromBytes(bytes)` | `List<Chapter>` | all |
 | `setChapters(path, chapters)` | `void` | native |
 | `setChaptersFromBytes(bytes, chapters)` | `Uint8List` | all |
+| `getExtended(path)` | `ExtendedTag` | native |
+| `getExtendedFromBytes(bytes)` | `ExtendedTag` | all |
+| `setExtended(path, data)` | `void` | native |
+| `setExtendedFromBytes(bytes, data)` | `Uint8List` | all |
+| `updateExtended(path, changes)` | `void` | native |
+| `updateExtendedFromBytes(bytes, changes)` | `Uint8List` | all |
+| `removeExtended(path)` | `void` | native |
+| `removeExtendedFromBytes(bytes)` | `Uint8List` | all |
 | `validate(path)` | `ValidationResult` | native |
 | `validateFromBytes(bytes)` | `ValidationResult` | all |
 | `validateTag(tag)` | `ValidationResult` | all |
@@ -758,6 +817,27 @@ Same fields as `Tag`, all optional. Only set fields are applied.
 | `title` | `String` | Chapter name |
 | `startMs` | `int` | Start time in milliseconds |
 | `endMs` | `int` | End time in milliseconds |
+
+### `ExtendedTag`
+
+All fields are `String?`. See [Available Extended Fields](#available-extended-fields) for the full list. Common fields:
+
+| Field | Type | Example |
+|-------|------|---------|
+| `isrc` | `String?` | `"US-S1Z-99-00001"` |
+| `musicBrainzRecordingId` | `String?` | `"abc-123-def-456"` |
+| `acoustId` | `String?` | `"acoust-789"` |
+| `mood` | `String?` | `"upbeat"` |
+| `catalogNumber` | `String?` | `"CAT-12345"` |
+| `barcode` | `String?` | `"1234567890"` |
+| `label` | `String?` | `"Atlantic Records"` |
+| `producer` | `String?` | `"Dr. Dre"` |
+| `composer` | `String?` | `"John Doe"` |
+| `lyricist` | `String?` | `"Jane Doe"` |
+
+### `ExtendedChanges`
+
+Same fields as `ExtendedTag`, all optional. Only set fields are applied; `null` fields are untouched.
 
 </details>
 

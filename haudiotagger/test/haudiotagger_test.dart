@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -1313,6 +1314,159 @@ void main() {
       expect(readTag.trackArtist, 'Test Artist');
       expect(readChapters.length, 1);
       expect(readChapters[0].title, 'Intro');
+    });
+  });
+
+  // ============================================================
+  // EXTENDED METADATA
+  // ============================================================
+
+  group('extended metadata', () {
+    test('getExtendedFromBytes returns empty default tag for no extended fields',
+        () async {
+      final ext = await Haudiotagger.getExtendedFromBytes(mp3Bytes);
+      expect(ext.isrc, isNull);
+      expect(ext.mood, isNull);
+      expect(ext.catalogNumber, isNull);
+      expect(ext.barcode, isNull);
+    });
+
+    test('setExtendedFromBytes writes fields that read back', () async {
+      final data = ExtendedTag(
+        isrc: 'US-S1Z-99-00001',
+        mood: 'upbeat',
+        catalogNumber: 'CAT-12345',
+        barcode: '1234567890',
+      );
+
+      final written = await Haudiotagger.setExtendedFromBytes(mp3Bytes, data);
+      final readBack = await Haudiotagger.getExtendedFromBytes(written);
+
+      expect(readBack.isrc, 'US-S1Z-99-00001');
+      expect(readBack.mood, 'upbeat');
+      expect(readBack.catalogNumber, 'CAT-12345');
+      expect(readBack.barcode, '1234567890');
+    });
+
+    test('setExtendedFromBytes replaces existing extended fields', () async {
+      // Write initial extended tag
+      final initial = ExtendedTag(
+        isrc: 'ORIGINAL-ISRC',
+        catalogNumber: 'CAT-000',
+      );
+      var bytes =
+          await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
+
+      // Replace with new extended tag (only isrc, catalogNumber should be gone)
+      final replacement = ExtendedTag(
+        isrc: 'NEW-ISRC',
+      );
+      bytes = await Haudiotagger.setExtendedFromBytes(bytes, replacement);
+      final readBack = await Haudiotagger.getExtendedFromBytes(bytes);
+
+      expect(readBack.isrc, 'NEW-ISRC');
+      expect(readBack.catalogNumber, isNull);
+    });
+
+    test('updateExtendedFromBytes merges correctly', () async {
+      // Write initial extended tag with catalogNumber
+      final initial = ExtendedTag(
+        isrc: 'ORIGINAL-ISRC',
+        catalogNumber: 'CAT-000',
+      );
+      var bytes =
+          await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
+
+      // Update only isrc, catalogNumber should be preserved
+      final changes = ExtendedChanges(
+        isrc: 'UPDATED-ISRC',
+      );
+      bytes = await Haudiotagger.updateExtendedFromBytes(bytes, changes);
+      final readBack = await Haudiotagger.getExtendedFromBytes(bytes);
+
+      expect(readBack.isrc, 'UPDATED-ISRC');
+      expect(readBack.catalogNumber, 'CAT-000');
+    });
+
+    test('removeExtendedFromBytes clears all extended fields', () async {
+      // Write extended fields
+      final data = ExtendedTag(
+        isrc: 'something',
+        mood: 'happy',
+        catalogNumber: 'CAT-999',
+      );
+      var bytes =
+          await Haudiotagger.setExtendedFromBytes(mp3Bytes, data);
+
+      // Remove all extended fields
+      bytes = await Haudiotagger.removeExtendedFromBytes(bytes);
+      final readBack = await Haudiotagger.getExtendedFromBytes(bytes);
+
+      expect(readBack.isrc, isNull);
+      expect(readBack.mood, isNull);
+      expect(readBack.catalogNumber, isNull);
+    });
+
+    test('extended tag roundtrip preserves standard tag', () async {
+      // Write standard tag first
+      final tag = Tag(
+        title: 'Extended Test',
+        trackArtist: 'Test Artist',
+        pictures: [],
+      );
+      var bytes = await Haudiotagger.writeToBytes(mp3Bytes, tag);
+
+      // Write extended fields
+      final ext = ExtendedTag(
+        isrc: 'US-XX-00-00001',
+        mood: 'chill',
+      );
+      bytes = await Haudiotagger.setExtendedFromBytes(bytes, ext);
+
+      // Both standard and extended tags should be readable
+      final readTag = await Haudiotagger.readFromBytes(bytes);
+      final readExt = await Haudiotagger.getExtendedFromBytes(bytes);
+
+      expect(readTag!.title, 'Extended Test');
+      expect(readTag.trackArtist, 'Test Artist');
+      expect(readExt.isrc, 'US-XX-00-00001');
+      expect(readExt.mood, 'chill');
+    });
+
+    test('file-based extended read/write roundtrip', () async {
+      final tempDir = Directory.systemTemp.createTempSync('ext_test');
+      final filePath = '${tempDir.path}/test.mp3';
+      File(filePath).writeAsBytesSync(mp3Bytes);
+
+      try {
+        // Write extended fields
+        final data = ExtendedTag(
+          isrc: 'US-FILE-TEST',
+          mood: 'energetic',
+        );
+        await Haudiotagger.setExtended(filePath, data);
+
+        // Read back
+        final readBack = await Haudiotagger.getExtended(filePath);
+        expect(readBack.isrc, 'US-FILE-TEST');
+        expect(readBack.mood, 'energetic');
+
+        // Update only mood, isrc should persist
+        final changes = ExtendedChanges(mood: 'calm');
+        await Haudiotagger.updateExtended(filePath, changes);
+
+        final afterUpdate = await Haudiotagger.getExtended(filePath);
+        expect(afterUpdate.isrc, 'US-FILE-TEST');
+        expect(afterUpdate.mood, 'calm');
+
+        // Remove all extended
+        await Haudiotagger.removeExtended(filePath);
+        final afterRemove = await Haudiotagger.getExtended(filePath);
+        expect(afterRemove.isrc, isNull);
+        expect(afterRemove.mood, isNull);
+      } finally {
+        tempDir.deleteSync(recursive: true);
+      }
     });
   });
 }

@@ -222,7 +222,7 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
 /// Strip a leading ID3v2 tag (starts with "ID3", syncsafe size at bytes 6..10).
 /// Strip a leading ID3v2 tag. Returns the audio portion after the tag.
 #[inline]
-fn strip_id3v2(bytes: &[u8]) -> &[u8] {
+pub(crate) fn strip_id3v2(bytes: &[u8]) -> &[u8] {
     if bytes.len() >= 10 && &bytes[0..3] == b"ID3" {
         let size = ((bytes[6] as usize & 0x7F) << 21)
             | ((bytes[7] as usize & 0x7F) << 14)
@@ -238,7 +238,7 @@ fn strip_id3v2(bytes: &[u8]) -> &[u8] {
 
 /// Strip a trailing ID3v1 tag (last 128 bytes start with "TAG").
 #[inline]
-fn strip_id3v1(bytes: &[u8]) -> &[u8] {
+pub(crate) fn strip_id3v1(bytes: &[u8]) -> &[u8] {
     if bytes.len() >= 128 && &bytes[bytes.len() - 128..bytes.len() - 125] == b"TAG" {
         return &bytes[..bytes.len() - 128];
     }
@@ -248,7 +248,7 @@ fn strip_id3v1(bytes: &[u8]) -> &[u8] {
 /// Strip a trailing APEv2 tag (footer "APETAGEX" at the end; its size field
 /// covers the whole tag including the footer).
 #[inline]
-fn strip_ape(bytes: &[u8]) -> &[u8] {
+pub(crate) fn strip_ape(bytes: &[u8]) -> &[u8] {
     if bytes.len() >= 32 && &bytes[bytes.len() - 32..bytes.len() - 24] == b"APETAGEX" {
         let size = u32::from_le_bytes([
             bytes[bytes.len() - 20],

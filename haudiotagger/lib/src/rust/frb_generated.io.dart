@@ -7,6 +7,7 @@ import 'api/api.dart';
 import 'api/audio_properties.dart';
 import 'api/chapters.dart';
 import 'api/error.dart';
+import 'api/extended.dart';
 import 'api/normalization.dart';
 import 'api/picture.dart';
 import 'api/pipeline.dart';
@@ -53,6 +54,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  ExtendedChanges dco_decode_box_autoadd_extended_changes(dynamic raw);
+
+  @protected
+  ExtendedTag dco_decode_box_autoadd_extended_tag(dynamic raw);
+
+  @protected
   double dco_decode_box_autoadd_f_32(dynamic raw);
 
   @protected
@@ -90,6 +97,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Chapter dco_decode_chapter(dynamic raw);
+
+  @protected
+  ExtendedChanges dco_decode_extended_changes(dynamic raw);
+
+  @protected
+  ExtendedTag dco_decode_extended_tag(dynamic raw);
 
   @protected
   double dco_decode_f_32(dynamic raw);
@@ -249,6 +262,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  ExtendedChanges sse_decode_box_autoadd_extended_changes(
+      SseDeserializer deserializer);
+
+  @protected
+  ExtendedTag sse_decode_box_autoadd_extended_tag(SseDeserializer deserializer);
+
+  @protected
   double sse_decode_box_autoadd_f_32(SseDeserializer deserializer);
 
   @protected
@@ -290,6 +310,12 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Chapter sse_decode_chapter(SseDeserializer deserializer);
+
+  @protected
+  ExtendedChanges sse_decode_extended_changes(SseDeserializer deserializer);
+
+  @protected
+  ExtendedTag sse_decode_extended_tag(SseDeserializer deserializer);
 
   @protected
   double sse_decode_f_32(SseDeserializer deserializer);
@@ -459,6 +485,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_extended_changes(
+      ExtendedChanges self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_box_autoadd_extended_tag(
+      ExtendedTag self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_f_32(double self, SseSerializer serializer);
 
   @protected
@@ -504,6 +538,13 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_chapter(Chapter self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_extended_changes(
+      ExtendedChanges self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_extended_tag(ExtendedTag self, SseSerializer serializer);
 
   @protected
   void sse_encode_f_32(double self, SseSerializer serializer);
