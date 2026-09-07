@@ -7,26 +7,15 @@ import '../frb_generated.dart';
 import 'error.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `create_id3v2_header`, `parse_chap_frame`, `serialize_chap_frames`
+// These functions are ignored because they are not marked as `pub`: `create_id3v2_header`, `decode_syncsafe`, `encode_syncsafe`, `parse_chap_frame`, `serialize_chap_frames`, `strip_chapter_frames`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `eq`, `fmt`
 
-/// Read ID3v2 CHAP/CTOC frames from MP3 bytes.
-/// CHAP frame format (ID3v2.4):
-///   Frame ID: "CHAP"
-///   Size: 4 bytes (syncsafe)
-///   Flags: 2 bytes
-///   Body: null-terminated element ID + start time (4 bytes BE) + end time (4 bytes BE)
-///
-/// CTOC frame format:
-///   Frame ID: "CTOC"
-///   Size: 4 bytes (syncsafe)
-///   Flags: 2 bytes
-///   Body: null-terminated element ID + flags byte + null-terminated child element IDs
+/// Read ID3v2 CHAP frames from MP3 bytes.
 Future<List<Chapter>> readChaptersFromMp3Bytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiChaptersReadChaptersFromMp3Bytes(bytes: bytes);
 
 /// Write chapters as ID3v2 CHAP frames to MP3 bytes.
-/// Replaces existing CHAP/CTOC frames and appends new ones.
+/// Strips existing CHAP/CTOC frames, then appends new ones.
 Future<Uint8List> writeChaptersToMp3Bytes(
         {required List<int> bytes, required List<Chapter> chapters}) =>
     RustLib.instance.api.crateApiChaptersWriteChaptersToMp3Bytes(

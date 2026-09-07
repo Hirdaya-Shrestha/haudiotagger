@@ -7,6 +7,7 @@ import 'api/api.dart';
 import 'api/audio_properties.dart';
 import 'api/chapters.dart';
 import 'api/error.dart';
+import 'api/extended.dart';
 import 'api/normalization.dart';
 import 'api/picture.dart';
 import 'api/pipeline.dart';
@@ -78,7 +79,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 1964240507;
+  int get rustContentHash => 293674126;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -137,6 +138,15 @@ abstract class RustLibApi extends BaseApi {
       required bool includeArtwork,
       required bool includeLyrics,
       required bool includeCustomTags});
+
+  Future<ExtendedChanges> crateApiExtendedExtendedChangesDefault();
+
+  Future<bool> crateApiExtendedExtendedChangesIsEmpty(
+      {required ExtendedChanges that});
+
+  Future<ExtendedTag> crateApiExtendedExtendedTagDefault();
+
+  Future<bool> crateApiExtendedExtendedTagIsEmpty({required ExtendedTag that});
 
   Future<String> crateApiApiFormatFilename(
       {required Tag tag, required String pattern});
@@ -200,6 +210,11 @@ abstract class RustLibApi extends BaseApi {
   Future<List<Chapter>> crateApiChaptersReadChaptersFromMp3Bytes(
       {required List<int> bytes});
 
+  Future<ExtendedTag> crateApiExtendedReadExtended({required String path});
+
+  Future<ExtendedTag> crateApiExtendedReadExtendedFromBytes(
+      {required List<int> bytes});
+
   Future<Tag> crateApiApiReadFromBytes({required List<int> bytes});
 
   Future<AudioProperties> crateApiAudioPropertiesReadProperties(
@@ -216,6 +231,11 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiApiRemoveCustomTagFromBytes(
       {required List<int> bytes, required String key});
+
+  Future<void> crateApiExtendedRemoveExtended({required String path});
+
+  Future<Uint8List> crateApiExtendedRemoveExtendedFromBytes(
+      {required List<int> bytes});
 
   Future<Uint8List> crateApiApiRemoveFromBytes(
       {required List<int> bytes, required List<TagField> fields});
@@ -261,6 +281,12 @@ abstract class RustLibApi extends BaseApi {
   Future<void> crateApiTagChangesUpdate(
       {required String path, required TagChanges changes});
 
+  Future<void> crateApiExtendedUpdateExtended(
+      {required String path, required ExtendedChanges changes});
+
+  Future<Uint8List> crateApiExtendedUpdateExtendedFromBytes(
+      {required List<int> bytes, required ExtendedChanges changes});
+
   Future<Uint8List> crateApiTagChangesUpdateFromBytes(
       {required List<int> bytes, required TagChanges changes});
 
@@ -283,6 +309,12 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Uint8List> crateApiChaptersWriteChaptersToMp3Bytes(
       {required List<int> bytes, required List<Chapter> chapters});
+
+  Future<void> crateApiExtendedWriteExtended(
+      {required String path, required ExtendedTag data});
+
+  Future<Uint8List> crateApiExtendedWriteExtendedToBytes(
+      {required List<int> bytes, required ExtendedTag data});
 
   Future<Uint8List> crateApiApiWriteToBytes(
       {required List<int> bytes, required Tag data});
@@ -701,6 +733,105 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<ExtendedChanges> crateApiExtendedExtendedChangesDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 15, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_extended_changes,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiExtendedExtendedChangesDefaultConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedExtendedChangesDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "extended_changes_default",
+        argNames: [],
+      );
+
+  @override
+  Future<bool> crateApiExtendedExtendedChangesIsEmpty(
+      {required ExtendedChanges that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_extended_changes(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 16, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_bool,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiExtendedExtendedChangesIsEmptyConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedExtendedChangesIsEmptyConstMeta =>
+      const TaskConstMeta(
+        debugName: "extended_changes_is_empty",
+        argNames: ["that"],
+      );
+
+  @override
+  Future<ExtendedTag> crateApiExtendedExtendedTagDefault() {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 17, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_extended_tag,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiExtendedExtendedTagDefaultConstMeta,
+      argValues: [],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedExtendedTagDefaultConstMeta =>
+      const TaskConstMeta(
+        debugName: "extended_tag_default",
+        argNames: [],
+      );
+
+  @override
+  Future<bool> crateApiExtendedExtendedTagIsEmpty({required ExtendedTag that}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_box_autoadd_extended_tag(that, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 18, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_bool,
+        decodeErrorData: null,
+      ),
+      constMeta: kCrateApiExtendedExtendedTagIsEmptyConstMeta,
+      argValues: [that],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedExtendedTagIsEmptyConstMeta =>
+      const TaskConstMeta(
+        debugName: "extended_tag_is_empty",
+        argNames: ["that"],
+      );
+
+  @override
   Future<String> crateApiApiFormatFilename(
       {required Tag tag, required String pattern}) {
     return handler.executeNormal(NormalTask(
@@ -709,7 +840,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_tag(tag, serializer);
         sse_encode_String(pattern, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 15, port: port_);
+            funcId: 19, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
@@ -733,7 +864,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 16, port: port_);
+            funcId: 20, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_chapter,
@@ -758,7 +889,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 17, port: port_);
+            funcId: 21, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_Map_String_String_None,
@@ -783,7 +914,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 18, port: port_);
+            funcId: 22, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_Map_String_String_None,
@@ -808,7 +939,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 19, port: port_);
+            funcId: 23, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
@@ -833,7 +964,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 20, port: port_);
+            funcId: 24, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
@@ -858,7 +989,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 21, port: port_);
+            funcId: 25, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -883,7 +1014,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 22, port: port_);
+            funcId: 26, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_String,
@@ -908,7 +1039,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 23, port: port_);
+            funcId: 27, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_file_info,
@@ -933,7 +1064,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 24, port: port_);
+            funcId: 28, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_file_info,
@@ -958,7 +1089,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 25, port: port_);
+            funcId: 29, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -984,7 +1115,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_tag(tag, serializer);
         sse_encode_box_autoadd_normalize_options(opts, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 26, port: port_);
+            funcId: 30, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1009,7 +1140,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 27, port: port_);
+            funcId: 31, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1032,7 +1163,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 28, port: port_);
+            funcId: 32, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_normalize_options,
@@ -1059,7 +1190,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_tag(tag, serializer);
         sse_encode_box_autoadd_normalize_options(options, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 29, port: port_);
+            funcId: 33, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1088,7 +1219,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_opt_box_autoadd_mime_type(mimeType, serializer);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 30, port: port_);
+            funcId: 34, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_picture,
@@ -1114,7 +1245,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_String(paths, serializer);
         sse_encode_list_transform_rule(rules, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 31, port: port_);
+            funcId: 35, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_batch_result,
@@ -1141,7 +1272,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
         sse_encode_list_transform_rule(rules, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 32, port: port_);
+            funcId: 36, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_batch_bytes_result,
@@ -1168,7 +1299,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_transform_rule(rules, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 33, port: port_);
+            funcId: 37, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1194,7 +1325,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_list_transform_rule(rules, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 34, port: port_);
+            funcId: 38, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1218,7 +1349,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 35, port: port_);
+            funcId: 39, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1243,7 +1374,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 36, port: port_);
+            funcId: 40, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_chapter,
@@ -1269,7 +1400,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 37, port: port_);
+            funcId: 41, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_chapter,
@@ -1288,13 +1419,64 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<ExtendedTag> crateApiExtendedReadExtended({required String path}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 42, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_extended_tag,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedReadExtendedConstMeta,
+      argValues: [path],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedReadExtendedConstMeta =>
+      const TaskConstMeta(
+        debugName: "read_extended",
+        argNames: ["path"],
+      );
+
+  @override
+  Future<ExtendedTag> crateApiExtendedReadExtendedFromBytes(
+      {required List<int> bytes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_prim_u_8_loose(bytes, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 43, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_extended_tag,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedReadExtendedFromBytesConstMeta,
+      argValues: [bytes],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedReadExtendedFromBytesConstMeta =>
+      const TaskConstMeta(
+        debugName: "read_extended_from_bytes",
+        argNames: ["bytes"],
+      );
+
+  @override
   Future<Tag> crateApiApiReadFromBytes({required List<int> bytes}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 38, port: port_);
+            funcId: 44, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1319,7 +1501,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 39, port: port_);
+            funcId: 45, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -1345,7 +1527,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 40, port: port_);
+            funcId: 46, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_audio_properties,
@@ -1372,7 +1554,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_list_tag_field(fields, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 41, port: port_);
+            funcId: 47, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1398,7 +1580,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_String(key, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 42, port: port_);
+            funcId: 48, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1424,7 +1606,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_String(key, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 43, port: port_);
+            funcId: 49, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1443,6 +1625,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiExtendedRemoveExtended({required String path}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 50, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedRemoveExtendedConstMeta,
+      argValues: [path],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedRemoveExtendedConstMeta =>
+      const TaskConstMeta(
+        debugName: "remove_extended",
+        argNames: ["path"],
+      );
+
+  @override
+  Future<Uint8List> crateApiExtendedRemoveExtendedFromBytes(
+      {required List<int> bytes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_prim_u_8_loose(bytes, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 51, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedRemoveExtendedFromBytesConstMeta,
+      argValues: [bytes],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedRemoveExtendedFromBytesConstMeta =>
+      const TaskConstMeta(
+        debugName: "remove_extended_from_bytes",
+        argNames: ["bytes"],
+      );
+
+  @override
   Future<Uint8List> crateApiApiRemoveFromBytes(
       {required List<int> bytes, required List<TagField> fields}) {
     return handler.executeNormal(NormalTask(
@@ -1451,7 +1684,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_tag_field(fields, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 44, port: port_);
+            funcId: 52, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1475,7 +1708,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 45, port: port_);
+            funcId: 53, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1500,7 +1733,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 46, port: port_);
+            funcId: 54, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1527,7 +1760,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_String(pattern, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 47, port: port_);
+            funcId: 55, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,
@@ -1553,7 +1786,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_list_chapter(chapters, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 48, port: port_);
+            funcId: 56, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1581,7 +1814,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(key, serializer);
         sse_encode_String(value, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 49, port: port_);
+            funcId: 57, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1608,7 +1841,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(key, serializer);
         sse_encode_String(value, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 50, port: port_);
+            funcId: 58, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1632,7 +1865,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 51, port: port_);
+            funcId: 59, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_changes,
@@ -1657,7 +1890,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag_changes(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 52, port: port_);
+            funcId: 60, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1681,7 +1914,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 53, port: port_);
+            funcId: 61, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1705,7 +1938,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 54, port: port_);
+            funcId: 62, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1731,7 +1964,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_box_autoadd_tag_pipeline(that, serializer);
         sse_encode_box_autoadd_tag(tag, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 55, port: port_);
+            funcId: 63, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag,
@@ -1755,7 +1988,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 56, port: port_);
+            funcId: 64, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_pipeline,
@@ -1781,7 +2014,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_transform_rule(rules, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 57, port: port_);
+            funcId: 65, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_pipeline,
@@ -1806,7 +2039,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag_pipeline(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 58, port: port_);
+            funcId: 66, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -1831,7 +2064,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag_pipeline(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 59, port: port_);
+            funcId: 67, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_usize,
@@ -1855,7 +2088,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 60, port: port_);
+            funcId: 68, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_tag_pipeline,
@@ -1882,7 +2115,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 61, port: port_);
+            funcId: 69, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -1900,6 +2133,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiExtendedUpdateExtended(
+      {required String path, required ExtendedChanges changes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        sse_encode_box_autoadd_extended_changes(changes, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 70, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedUpdateExtendedConstMeta,
+      argValues: [path, changes],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedUpdateExtendedConstMeta =>
+      const TaskConstMeta(
+        debugName: "update_extended",
+        argNames: ["path", "changes"],
+      );
+
+  @override
+  Future<Uint8List> crateApiExtendedUpdateExtendedFromBytes(
+      {required List<int> bytes, required ExtendedChanges changes}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_prim_u_8_loose(bytes, serializer);
+        sse_encode_box_autoadd_extended_changes(changes, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 71, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedUpdateExtendedFromBytesConstMeta,
+      argValues: [bytes, changes],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedUpdateExtendedFromBytesConstMeta =>
+      const TaskConstMeta(
+        debugName: "update_extended_from_bytes",
+        argNames: ["bytes", "changes"],
+      );
+
+  @override
   Future<Uint8List> crateApiTagChangesUpdateFromBytes(
       {required List<int> bytes, required TagChanges changes}) {
     return handler.executeNormal(NormalTask(
@@ -1908,7 +2195,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag_changes(changes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 62, port: port_);
+            funcId: 72, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -1933,7 +2220,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(path, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 63, port: port_);
+            funcId: 73, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -1957,7 +2244,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(tag, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 64, port: port_);
+            funcId: 74, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -1982,7 +2269,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 65, port: port_);
+            funcId: 75, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -2007,7 +2294,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_tag(tag, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 66, port: port_);
+            funcId: 76, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_validation_result,
@@ -2032,7 +2319,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_box_autoadd_validation_result(that, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 67, port: port_);
+            funcId: 77, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_bool,
@@ -2058,7 +2345,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(path, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 68, port: port_);
+            funcId: 78, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -2084,7 +2371,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_chapter(chapters, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 69, port: port_);
+            funcId: 79, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -2111,7 +2398,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_list_chapter(chapters, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 70, port: port_);
+            funcId: 80, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -2130,6 +2417,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<void> crateApiExtendedWriteExtended(
+      {required String path, required ExtendedTag data}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_String(path, serializer);
+        sse_encode_box_autoadd_extended_tag(data, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 81, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedWriteExtendedConstMeta,
+      argValues: [path, data],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedWriteExtendedConstMeta =>
+      const TaskConstMeta(
+        debugName: "write_extended",
+        argNames: ["path", "data"],
+      );
+
+  @override
+  Future<Uint8List> crateApiExtendedWriteExtendedToBytes(
+      {required List<int> bytes, required ExtendedTag data}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_list_prim_u_8_loose(bytes, serializer);
+        sse_encode_box_autoadd_extended_tag(data, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 82, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_list_prim_u_8_strict,
+        decodeErrorData: sse_decode_haudiotagger_error,
+      ),
+      constMeta: kCrateApiExtendedWriteExtendedToBytesConstMeta,
+      argValues: [bytes, data],
+      apiImpl: this,
+    ));
+  }
+
+  TaskConstMeta get kCrateApiExtendedWriteExtendedToBytesConstMeta =>
+      const TaskConstMeta(
+        debugName: "write_extended_to_bytes",
+        argNames: ["bytes", "data"],
+      );
+
+  @override
   Future<Uint8List> crateApiApiWriteToBytes(
       {required List<int> bytes, required Tag data}) {
     return handler.executeNormal(NormalTask(
@@ -2138,7 +2479,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_list_prim_u_8_loose(bytes, serializer);
         sse_encode_box_autoadd_tag(data, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 71, port: port_);
+            funcId: 83, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_list_prim_u_8_strict,
@@ -2243,6 +2584,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ExtendedChanges dco_decode_box_autoadd_extended_changes(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_extended_changes(raw);
+  }
+
+  @protected
+  ExtendedTag dco_decode_box_autoadd_extended_tag(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return dco_decode_extended_tag(raw);
+  }
+
+  @protected
   double dco_decode_box_autoadd_f_32(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as double;
@@ -2324,6 +2677,150 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       title: dco_decode_String(arr[0]),
       startMs: dco_decode_u_64(arr[1]),
       endMs: dco_decode_u_64(arr[2]),
+    );
+  }
+
+  @protected
+  ExtendedChanges dco_decode_extended_changes(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 62)
+      throw Exception('unexpected arr length: expect 62 but see ${arr.length}');
+    return ExtendedChanges(
+      musicBrainzRecordingId: dco_decode_opt_String(arr[0]),
+      musicBrainzTrackId: dco_decode_opt_String(arr[1]),
+      musicBrainzReleaseId: dco_decode_opt_String(arr[2]),
+      musicBrainzReleaseGroupId: dco_decode_opt_String(arr[3]),
+      musicBrainzArtistId: dco_decode_opt_String(arr[4]),
+      musicBrainzReleaseArtistId: dco_decode_opt_String(arr[5]),
+      musicBrainzWorkId: dco_decode_opt_String(arr[6]),
+      musicBrainzReleaseType: dco_decode_opt_String(arr[7]),
+      acoustId: dco_decode_opt_String(arr[8]),
+      acoustIdFingerprint: dco_decode_opt_String(arr[9]),
+      isrc: dco_decode_opt_String(arr[10]),
+      barcode: dco_decode_opt_String(arr[11]),
+      catalogNumber: dco_decode_opt_String(arr[12]),
+      arranger: dco_decode_opt_String(arr[13]),
+      conductor: dco_decode_opt_String(arr[14]),
+      director: dco_decode_opt_String(arr[15]),
+      engineer: dco_decode_opt_String(arr[16]),
+      lyricist: dco_decode_opt_String(arr[17]),
+      mixDj: dco_decode_opt_String(arr[18]),
+      mixEngineer: dco_decode_opt_String(arr[19]),
+      performer: dco_decode_opt_String(arr[20]),
+      producer: dco_decode_opt_String(arr[21]),
+      publisher: dco_decode_opt_String(arr[22]),
+      label: dco_decode_opt_String(arr[23]),
+      remixer: dco_decode_opt_String(arr[24]),
+      writer: dco_decode_opt_String(arr[25]),
+      composer: dco_decode_opt_String(arr[26]),
+      originalLyricist: dco_decode_opt_String(arr[27]),
+      recordingDate: dco_decode_opt_String(arr[28]),
+      releaseDate: dco_decode_opt_String(arr[29]),
+      originalReleaseDate: dco_decode_opt_String(arr[30]),
+      initialKey: dco_decode_opt_String(arr[31]),
+      color: dco_decode_opt_String(arr[32]),
+      mood: dco_decode_opt_String(arr[33]),
+      audioFileUrl: dco_decode_opt_String(arr[34]),
+      audioSourceUrl: dco_decode_opt_String(arr[35]),
+      commercialInformationUrl: dco_decode_opt_String(arr[36]),
+      copyrightUrl: dco_decode_opt_String(arr[37]),
+      trackArtistUrl: dco_decode_opt_String(arr[38]),
+      radioStationUrl: dco_decode_opt_String(arr[39]),
+      paymentUrl: dco_decode_opt_String(arr[40]),
+      publisherUrl: dco_decode_opt_String(arr[41]),
+      copyrightMessage: dco_decode_opt_String(arr[42]),
+      license: dco_decode_opt_String(arr[43]),
+      podcastDescription: dco_decode_opt_String(arr[44]),
+      podcastSeriesCategory: dco_decode_opt_String(arr[45]),
+      podcastUrl: dco_decode_opt_String(arr[46]),
+      podcastGlobalUniqueId: dco_decode_opt_String(arr[47]),
+      podcastKeywords: dco_decode_opt_String(arr[48]),
+      setSubtitle: dco_decode_opt_String(arr[49]),
+      showName: dco_decode_opt_String(arr[50]),
+      contentGroup: dco_decode_opt_String(arr[51]),
+      trackSubtitle: dco_decode_opt_String(arr[52]),
+      language: dco_decode_opt_String(arr[53]),
+      script: dco_decode_opt_String(arr[54]),
+      parentalAdvisory: dco_decode_opt_String(arr[55]),
+      fileOwner: dco_decode_opt_String(arr[56]),
+      originalFileName: dco_decode_opt_String(arr[57]),
+      originalMediaType: dco_decode_opt_String(arr[58]),
+      encodedBy: dco_decode_opt_String(arr[59]),
+      encoderSoftware: dco_decode_opt_String(arr[60]),
+      encoderSettings: dco_decode_opt_String(arr[61]),
+    );
+  }
+
+  @protected
+  ExtendedTag dco_decode_extended_tag(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    final arr = raw as List<dynamic>;
+    if (arr.length != 62)
+      throw Exception('unexpected arr length: expect 62 but see ${arr.length}');
+    return ExtendedTag(
+      musicBrainzRecordingId: dco_decode_opt_String(arr[0]),
+      musicBrainzTrackId: dco_decode_opt_String(arr[1]),
+      musicBrainzReleaseId: dco_decode_opt_String(arr[2]),
+      musicBrainzReleaseGroupId: dco_decode_opt_String(arr[3]),
+      musicBrainzArtistId: dco_decode_opt_String(arr[4]),
+      musicBrainzReleaseArtistId: dco_decode_opt_String(arr[5]),
+      musicBrainzWorkId: dco_decode_opt_String(arr[6]),
+      musicBrainzReleaseType: dco_decode_opt_String(arr[7]),
+      acoustId: dco_decode_opt_String(arr[8]),
+      acoustIdFingerprint: dco_decode_opt_String(arr[9]),
+      isrc: dco_decode_opt_String(arr[10]),
+      barcode: dco_decode_opt_String(arr[11]),
+      catalogNumber: dco_decode_opt_String(arr[12]),
+      arranger: dco_decode_opt_String(arr[13]),
+      conductor: dco_decode_opt_String(arr[14]),
+      director: dco_decode_opt_String(arr[15]),
+      engineer: dco_decode_opt_String(arr[16]),
+      lyricist: dco_decode_opt_String(arr[17]),
+      mixDj: dco_decode_opt_String(arr[18]),
+      mixEngineer: dco_decode_opt_String(arr[19]),
+      performer: dco_decode_opt_String(arr[20]),
+      producer: dco_decode_opt_String(arr[21]),
+      publisher: dco_decode_opt_String(arr[22]),
+      label: dco_decode_opt_String(arr[23]),
+      remixer: dco_decode_opt_String(arr[24]),
+      writer: dco_decode_opt_String(arr[25]),
+      composer: dco_decode_opt_String(arr[26]),
+      originalLyricist: dco_decode_opt_String(arr[27]),
+      recordingDate: dco_decode_opt_String(arr[28]),
+      releaseDate: dco_decode_opt_String(arr[29]),
+      originalReleaseDate: dco_decode_opt_String(arr[30]),
+      initialKey: dco_decode_opt_String(arr[31]),
+      color: dco_decode_opt_String(arr[32]),
+      mood: dco_decode_opt_String(arr[33]),
+      audioFileUrl: dco_decode_opt_String(arr[34]),
+      audioSourceUrl: dco_decode_opt_String(arr[35]),
+      commercialInformationUrl: dco_decode_opt_String(arr[36]),
+      copyrightUrl: dco_decode_opt_String(arr[37]),
+      trackArtistUrl: dco_decode_opt_String(arr[38]),
+      radioStationUrl: dco_decode_opt_String(arr[39]),
+      paymentUrl: dco_decode_opt_String(arr[40]),
+      publisherUrl: dco_decode_opt_String(arr[41]),
+      copyrightMessage: dco_decode_opt_String(arr[42]),
+      license: dco_decode_opt_String(arr[43]),
+      podcastDescription: dco_decode_opt_String(arr[44]),
+      podcastSeriesCategory: dco_decode_opt_String(arr[45]),
+      podcastUrl: dco_decode_opt_String(arr[46]),
+      podcastGlobalUniqueId: dco_decode_opt_String(arr[47]),
+      podcastKeywords: dco_decode_opt_String(arr[48]),
+      setSubtitle: dco_decode_opt_String(arr[49]),
+      showName: dco_decode_opt_String(arr[50]),
+      contentGroup: dco_decode_opt_String(arr[51]),
+      trackSubtitle: dco_decode_opt_String(arr[52]),
+      language: dco_decode_opt_String(arr[53]),
+      script: dco_decode_opt_String(arr[54]),
+      parentalAdvisory: dco_decode_opt_String(arr[55]),
+      fileOwner: dco_decode_opt_String(arr[56]),
+      originalFileName: dco_decode_opt_String(arr[57]),
+      originalMediaType: dco_decode_opt_String(arr[58]),
+      encodedBy: dco_decode_opt_String(arr[59]),
+      encoderSoftware: dco_decode_opt_String(arr[60]),
+      encoderSettings: dco_decode_opt_String(arr[61]),
     );
   }
 
@@ -2963,6 +3460,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  ExtendedChanges sse_decode_box_autoadd_extended_changes(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_extended_changes(deserializer));
+  }
+
+  @protected
+  ExtendedTag sse_decode_box_autoadd_extended_tag(
+      SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_extended_tag(deserializer));
+  }
+
+  @protected
   double sse_decode_box_autoadd_f_32(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_f_32(deserializer));
@@ -3046,6 +3557,266 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_startMs = sse_decode_u_64(deserializer);
     var var_endMs = sse_decode_u_64(deserializer);
     return Chapter(title: var_title, startMs: var_startMs, endMs: var_endMs);
+  }
+
+  @protected
+  ExtendedChanges sse_decode_extended_changes(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_musicBrainzRecordingId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzTrackId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseGroupId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzArtistId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseArtistId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzWorkId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseType = sse_decode_opt_String(deserializer);
+    var var_acoustId = sse_decode_opt_String(deserializer);
+    var var_acoustIdFingerprint = sse_decode_opt_String(deserializer);
+    var var_isrc = sse_decode_opt_String(deserializer);
+    var var_barcode = sse_decode_opt_String(deserializer);
+    var var_catalogNumber = sse_decode_opt_String(deserializer);
+    var var_arranger = sse_decode_opt_String(deserializer);
+    var var_conductor = sse_decode_opt_String(deserializer);
+    var var_director = sse_decode_opt_String(deserializer);
+    var var_engineer = sse_decode_opt_String(deserializer);
+    var var_lyricist = sse_decode_opt_String(deserializer);
+    var var_mixDj = sse_decode_opt_String(deserializer);
+    var var_mixEngineer = sse_decode_opt_String(deserializer);
+    var var_performer = sse_decode_opt_String(deserializer);
+    var var_producer = sse_decode_opt_String(deserializer);
+    var var_publisher = sse_decode_opt_String(deserializer);
+    var var_label = sse_decode_opt_String(deserializer);
+    var var_remixer = sse_decode_opt_String(deserializer);
+    var var_writer = sse_decode_opt_String(deserializer);
+    var var_composer = sse_decode_opt_String(deserializer);
+    var var_originalLyricist = sse_decode_opt_String(deserializer);
+    var var_recordingDate = sse_decode_opt_String(deserializer);
+    var var_releaseDate = sse_decode_opt_String(deserializer);
+    var var_originalReleaseDate = sse_decode_opt_String(deserializer);
+    var var_initialKey = sse_decode_opt_String(deserializer);
+    var var_color = sse_decode_opt_String(deserializer);
+    var var_mood = sse_decode_opt_String(deserializer);
+    var var_audioFileUrl = sse_decode_opt_String(deserializer);
+    var var_audioSourceUrl = sse_decode_opt_String(deserializer);
+    var var_commercialInformationUrl = sse_decode_opt_String(deserializer);
+    var var_copyrightUrl = sse_decode_opt_String(deserializer);
+    var var_trackArtistUrl = sse_decode_opt_String(deserializer);
+    var var_radioStationUrl = sse_decode_opt_String(deserializer);
+    var var_paymentUrl = sse_decode_opt_String(deserializer);
+    var var_publisherUrl = sse_decode_opt_String(deserializer);
+    var var_copyrightMessage = sse_decode_opt_String(deserializer);
+    var var_license = sse_decode_opt_String(deserializer);
+    var var_podcastDescription = sse_decode_opt_String(deserializer);
+    var var_podcastSeriesCategory = sse_decode_opt_String(deserializer);
+    var var_podcastUrl = sse_decode_opt_String(deserializer);
+    var var_podcastGlobalUniqueId = sse_decode_opt_String(deserializer);
+    var var_podcastKeywords = sse_decode_opt_String(deserializer);
+    var var_setSubtitle = sse_decode_opt_String(deserializer);
+    var var_showName = sse_decode_opt_String(deserializer);
+    var var_contentGroup = sse_decode_opt_String(deserializer);
+    var var_trackSubtitle = sse_decode_opt_String(deserializer);
+    var var_language = sse_decode_opt_String(deserializer);
+    var var_script = sse_decode_opt_String(deserializer);
+    var var_parentalAdvisory = sse_decode_opt_String(deserializer);
+    var var_fileOwner = sse_decode_opt_String(deserializer);
+    var var_originalFileName = sse_decode_opt_String(deserializer);
+    var var_originalMediaType = sse_decode_opt_String(deserializer);
+    var var_encodedBy = sse_decode_opt_String(deserializer);
+    var var_encoderSoftware = sse_decode_opt_String(deserializer);
+    var var_encoderSettings = sse_decode_opt_String(deserializer);
+    return ExtendedChanges(
+        musicBrainzRecordingId: var_musicBrainzRecordingId,
+        musicBrainzTrackId: var_musicBrainzTrackId,
+        musicBrainzReleaseId: var_musicBrainzReleaseId,
+        musicBrainzReleaseGroupId: var_musicBrainzReleaseGroupId,
+        musicBrainzArtistId: var_musicBrainzArtistId,
+        musicBrainzReleaseArtistId: var_musicBrainzReleaseArtistId,
+        musicBrainzWorkId: var_musicBrainzWorkId,
+        musicBrainzReleaseType: var_musicBrainzReleaseType,
+        acoustId: var_acoustId,
+        acoustIdFingerprint: var_acoustIdFingerprint,
+        isrc: var_isrc,
+        barcode: var_barcode,
+        catalogNumber: var_catalogNumber,
+        arranger: var_arranger,
+        conductor: var_conductor,
+        director: var_director,
+        engineer: var_engineer,
+        lyricist: var_lyricist,
+        mixDj: var_mixDj,
+        mixEngineer: var_mixEngineer,
+        performer: var_performer,
+        producer: var_producer,
+        publisher: var_publisher,
+        label: var_label,
+        remixer: var_remixer,
+        writer: var_writer,
+        composer: var_composer,
+        originalLyricist: var_originalLyricist,
+        recordingDate: var_recordingDate,
+        releaseDate: var_releaseDate,
+        originalReleaseDate: var_originalReleaseDate,
+        initialKey: var_initialKey,
+        color: var_color,
+        mood: var_mood,
+        audioFileUrl: var_audioFileUrl,
+        audioSourceUrl: var_audioSourceUrl,
+        commercialInformationUrl: var_commercialInformationUrl,
+        copyrightUrl: var_copyrightUrl,
+        trackArtistUrl: var_trackArtistUrl,
+        radioStationUrl: var_radioStationUrl,
+        paymentUrl: var_paymentUrl,
+        publisherUrl: var_publisherUrl,
+        copyrightMessage: var_copyrightMessage,
+        license: var_license,
+        podcastDescription: var_podcastDescription,
+        podcastSeriesCategory: var_podcastSeriesCategory,
+        podcastUrl: var_podcastUrl,
+        podcastGlobalUniqueId: var_podcastGlobalUniqueId,
+        podcastKeywords: var_podcastKeywords,
+        setSubtitle: var_setSubtitle,
+        showName: var_showName,
+        contentGroup: var_contentGroup,
+        trackSubtitle: var_trackSubtitle,
+        language: var_language,
+        script: var_script,
+        parentalAdvisory: var_parentalAdvisory,
+        fileOwner: var_fileOwner,
+        originalFileName: var_originalFileName,
+        originalMediaType: var_originalMediaType,
+        encodedBy: var_encodedBy,
+        encoderSoftware: var_encoderSoftware,
+        encoderSettings: var_encoderSettings);
+  }
+
+  @protected
+  ExtendedTag sse_decode_extended_tag(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    var var_musicBrainzRecordingId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzTrackId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseGroupId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzArtistId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseArtistId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzWorkId = sse_decode_opt_String(deserializer);
+    var var_musicBrainzReleaseType = sse_decode_opt_String(deserializer);
+    var var_acoustId = sse_decode_opt_String(deserializer);
+    var var_acoustIdFingerprint = sse_decode_opt_String(deserializer);
+    var var_isrc = sse_decode_opt_String(deserializer);
+    var var_barcode = sse_decode_opt_String(deserializer);
+    var var_catalogNumber = sse_decode_opt_String(deserializer);
+    var var_arranger = sse_decode_opt_String(deserializer);
+    var var_conductor = sse_decode_opt_String(deserializer);
+    var var_director = sse_decode_opt_String(deserializer);
+    var var_engineer = sse_decode_opt_String(deserializer);
+    var var_lyricist = sse_decode_opt_String(deserializer);
+    var var_mixDj = sse_decode_opt_String(deserializer);
+    var var_mixEngineer = sse_decode_opt_String(deserializer);
+    var var_performer = sse_decode_opt_String(deserializer);
+    var var_producer = sse_decode_opt_String(deserializer);
+    var var_publisher = sse_decode_opt_String(deserializer);
+    var var_label = sse_decode_opt_String(deserializer);
+    var var_remixer = sse_decode_opt_String(deserializer);
+    var var_writer = sse_decode_opt_String(deserializer);
+    var var_composer = sse_decode_opt_String(deserializer);
+    var var_originalLyricist = sse_decode_opt_String(deserializer);
+    var var_recordingDate = sse_decode_opt_String(deserializer);
+    var var_releaseDate = sse_decode_opt_String(deserializer);
+    var var_originalReleaseDate = sse_decode_opt_String(deserializer);
+    var var_initialKey = sse_decode_opt_String(deserializer);
+    var var_color = sse_decode_opt_String(deserializer);
+    var var_mood = sse_decode_opt_String(deserializer);
+    var var_audioFileUrl = sse_decode_opt_String(deserializer);
+    var var_audioSourceUrl = sse_decode_opt_String(deserializer);
+    var var_commercialInformationUrl = sse_decode_opt_String(deserializer);
+    var var_copyrightUrl = sse_decode_opt_String(deserializer);
+    var var_trackArtistUrl = sse_decode_opt_String(deserializer);
+    var var_radioStationUrl = sse_decode_opt_String(deserializer);
+    var var_paymentUrl = sse_decode_opt_String(deserializer);
+    var var_publisherUrl = sse_decode_opt_String(deserializer);
+    var var_copyrightMessage = sse_decode_opt_String(deserializer);
+    var var_license = sse_decode_opt_String(deserializer);
+    var var_podcastDescription = sse_decode_opt_String(deserializer);
+    var var_podcastSeriesCategory = sse_decode_opt_String(deserializer);
+    var var_podcastUrl = sse_decode_opt_String(deserializer);
+    var var_podcastGlobalUniqueId = sse_decode_opt_String(deserializer);
+    var var_podcastKeywords = sse_decode_opt_String(deserializer);
+    var var_setSubtitle = sse_decode_opt_String(deserializer);
+    var var_showName = sse_decode_opt_String(deserializer);
+    var var_contentGroup = sse_decode_opt_String(deserializer);
+    var var_trackSubtitle = sse_decode_opt_String(deserializer);
+    var var_language = sse_decode_opt_String(deserializer);
+    var var_script = sse_decode_opt_String(deserializer);
+    var var_parentalAdvisory = sse_decode_opt_String(deserializer);
+    var var_fileOwner = sse_decode_opt_String(deserializer);
+    var var_originalFileName = sse_decode_opt_String(deserializer);
+    var var_originalMediaType = sse_decode_opt_String(deserializer);
+    var var_encodedBy = sse_decode_opt_String(deserializer);
+    var var_encoderSoftware = sse_decode_opt_String(deserializer);
+    var var_encoderSettings = sse_decode_opt_String(deserializer);
+    return ExtendedTag(
+        musicBrainzRecordingId: var_musicBrainzRecordingId,
+        musicBrainzTrackId: var_musicBrainzTrackId,
+        musicBrainzReleaseId: var_musicBrainzReleaseId,
+        musicBrainzReleaseGroupId: var_musicBrainzReleaseGroupId,
+        musicBrainzArtistId: var_musicBrainzArtistId,
+        musicBrainzReleaseArtistId: var_musicBrainzReleaseArtistId,
+        musicBrainzWorkId: var_musicBrainzWorkId,
+        musicBrainzReleaseType: var_musicBrainzReleaseType,
+        acoustId: var_acoustId,
+        acoustIdFingerprint: var_acoustIdFingerprint,
+        isrc: var_isrc,
+        barcode: var_barcode,
+        catalogNumber: var_catalogNumber,
+        arranger: var_arranger,
+        conductor: var_conductor,
+        director: var_director,
+        engineer: var_engineer,
+        lyricist: var_lyricist,
+        mixDj: var_mixDj,
+        mixEngineer: var_mixEngineer,
+        performer: var_performer,
+        producer: var_producer,
+        publisher: var_publisher,
+        label: var_label,
+        remixer: var_remixer,
+        writer: var_writer,
+        composer: var_composer,
+        originalLyricist: var_originalLyricist,
+        recordingDate: var_recordingDate,
+        releaseDate: var_releaseDate,
+        originalReleaseDate: var_originalReleaseDate,
+        initialKey: var_initialKey,
+        color: var_color,
+        mood: var_mood,
+        audioFileUrl: var_audioFileUrl,
+        audioSourceUrl: var_audioSourceUrl,
+        commercialInformationUrl: var_commercialInformationUrl,
+        copyrightUrl: var_copyrightUrl,
+        trackArtistUrl: var_trackArtistUrl,
+        radioStationUrl: var_radioStationUrl,
+        paymentUrl: var_paymentUrl,
+        publisherUrl: var_publisherUrl,
+        copyrightMessage: var_copyrightMessage,
+        license: var_license,
+        podcastDescription: var_podcastDescription,
+        podcastSeriesCategory: var_podcastSeriesCategory,
+        podcastUrl: var_podcastUrl,
+        podcastGlobalUniqueId: var_podcastGlobalUniqueId,
+        podcastKeywords: var_podcastKeywords,
+        setSubtitle: var_setSubtitle,
+        showName: var_showName,
+        contentGroup: var_contentGroup,
+        trackSubtitle: var_trackSubtitle,
+        language: var_language,
+        script: var_script,
+        parentalAdvisory: var_parentalAdvisory,
+        fileOwner: var_fileOwner,
+        originalFileName: var_originalFileName,
+        originalMediaType: var_originalMediaType,
+        encodedBy: var_encodedBy,
+        encoderSoftware: var_encoderSoftware,
+        encoderSettings: var_encoderSettings);
   }
 
   @protected
@@ -3760,6 +4531,20 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  void sse_encode_box_autoadd_extended_changes(
+      ExtendedChanges self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_extended_changes(self, serializer);
+  }
+
+  @protected
+  void sse_encode_box_autoadd_extended_tag(
+      ExtendedTag self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_extended_tag(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_f_32(double self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_f_32(self, serializer);
@@ -3845,6 +4630,141 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_String(self.title, serializer);
     sse_encode_u_64(self.startMs, serializer);
     sse_encode_u_64(self.endMs, serializer);
+  }
+
+  @protected
+  void sse_encode_extended_changes(
+      ExtendedChanges self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_String(self.musicBrainzRecordingId, serializer);
+    sse_encode_opt_String(self.musicBrainzTrackId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseGroupId, serializer);
+    sse_encode_opt_String(self.musicBrainzArtistId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseArtistId, serializer);
+    sse_encode_opt_String(self.musicBrainzWorkId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseType, serializer);
+    sse_encode_opt_String(self.acoustId, serializer);
+    sse_encode_opt_String(self.acoustIdFingerprint, serializer);
+    sse_encode_opt_String(self.isrc, serializer);
+    sse_encode_opt_String(self.barcode, serializer);
+    sse_encode_opt_String(self.catalogNumber, serializer);
+    sse_encode_opt_String(self.arranger, serializer);
+    sse_encode_opt_String(self.conductor, serializer);
+    sse_encode_opt_String(self.director, serializer);
+    sse_encode_opt_String(self.engineer, serializer);
+    sse_encode_opt_String(self.lyricist, serializer);
+    sse_encode_opt_String(self.mixDj, serializer);
+    sse_encode_opt_String(self.mixEngineer, serializer);
+    sse_encode_opt_String(self.performer, serializer);
+    sse_encode_opt_String(self.producer, serializer);
+    sse_encode_opt_String(self.publisher, serializer);
+    sse_encode_opt_String(self.label, serializer);
+    sse_encode_opt_String(self.remixer, serializer);
+    sse_encode_opt_String(self.writer, serializer);
+    sse_encode_opt_String(self.composer, serializer);
+    sse_encode_opt_String(self.originalLyricist, serializer);
+    sse_encode_opt_String(self.recordingDate, serializer);
+    sse_encode_opt_String(self.releaseDate, serializer);
+    sse_encode_opt_String(self.originalReleaseDate, serializer);
+    sse_encode_opt_String(self.initialKey, serializer);
+    sse_encode_opt_String(self.color, serializer);
+    sse_encode_opt_String(self.mood, serializer);
+    sse_encode_opt_String(self.audioFileUrl, serializer);
+    sse_encode_opt_String(self.audioSourceUrl, serializer);
+    sse_encode_opt_String(self.commercialInformationUrl, serializer);
+    sse_encode_opt_String(self.copyrightUrl, serializer);
+    sse_encode_opt_String(self.trackArtistUrl, serializer);
+    sse_encode_opt_String(self.radioStationUrl, serializer);
+    sse_encode_opt_String(self.paymentUrl, serializer);
+    sse_encode_opt_String(self.publisherUrl, serializer);
+    sse_encode_opt_String(self.copyrightMessage, serializer);
+    sse_encode_opt_String(self.license, serializer);
+    sse_encode_opt_String(self.podcastDescription, serializer);
+    sse_encode_opt_String(self.podcastSeriesCategory, serializer);
+    sse_encode_opt_String(self.podcastUrl, serializer);
+    sse_encode_opt_String(self.podcastGlobalUniqueId, serializer);
+    sse_encode_opt_String(self.podcastKeywords, serializer);
+    sse_encode_opt_String(self.setSubtitle, serializer);
+    sse_encode_opt_String(self.showName, serializer);
+    sse_encode_opt_String(self.contentGroup, serializer);
+    sse_encode_opt_String(self.trackSubtitle, serializer);
+    sse_encode_opt_String(self.language, serializer);
+    sse_encode_opt_String(self.script, serializer);
+    sse_encode_opt_String(self.parentalAdvisory, serializer);
+    sse_encode_opt_String(self.fileOwner, serializer);
+    sse_encode_opt_String(self.originalFileName, serializer);
+    sse_encode_opt_String(self.originalMediaType, serializer);
+    sse_encode_opt_String(self.encodedBy, serializer);
+    sse_encode_opt_String(self.encoderSoftware, serializer);
+    sse_encode_opt_String(self.encoderSettings, serializer);
+  }
+
+  @protected
+  void sse_encode_extended_tag(ExtendedTag self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_opt_String(self.musicBrainzRecordingId, serializer);
+    sse_encode_opt_String(self.musicBrainzTrackId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseGroupId, serializer);
+    sse_encode_opt_String(self.musicBrainzArtistId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseArtistId, serializer);
+    sse_encode_opt_String(self.musicBrainzWorkId, serializer);
+    sse_encode_opt_String(self.musicBrainzReleaseType, serializer);
+    sse_encode_opt_String(self.acoustId, serializer);
+    sse_encode_opt_String(self.acoustIdFingerprint, serializer);
+    sse_encode_opt_String(self.isrc, serializer);
+    sse_encode_opt_String(self.barcode, serializer);
+    sse_encode_opt_String(self.catalogNumber, serializer);
+    sse_encode_opt_String(self.arranger, serializer);
+    sse_encode_opt_String(self.conductor, serializer);
+    sse_encode_opt_String(self.director, serializer);
+    sse_encode_opt_String(self.engineer, serializer);
+    sse_encode_opt_String(self.lyricist, serializer);
+    sse_encode_opt_String(self.mixDj, serializer);
+    sse_encode_opt_String(self.mixEngineer, serializer);
+    sse_encode_opt_String(self.performer, serializer);
+    sse_encode_opt_String(self.producer, serializer);
+    sse_encode_opt_String(self.publisher, serializer);
+    sse_encode_opt_String(self.label, serializer);
+    sse_encode_opt_String(self.remixer, serializer);
+    sse_encode_opt_String(self.writer, serializer);
+    sse_encode_opt_String(self.composer, serializer);
+    sse_encode_opt_String(self.originalLyricist, serializer);
+    sse_encode_opt_String(self.recordingDate, serializer);
+    sse_encode_opt_String(self.releaseDate, serializer);
+    sse_encode_opt_String(self.originalReleaseDate, serializer);
+    sse_encode_opt_String(self.initialKey, serializer);
+    sse_encode_opt_String(self.color, serializer);
+    sse_encode_opt_String(self.mood, serializer);
+    sse_encode_opt_String(self.audioFileUrl, serializer);
+    sse_encode_opt_String(self.audioSourceUrl, serializer);
+    sse_encode_opt_String(self.commercialInformationUrl, serializer);
+    sse_encode_opt_String(self.copyrightUrl, serializer);
+    sse_encode_opt_String(self.trackArtistUrl, serializer);
+    sse_encode_opt_String(self.radioStationUrl, serializer);
+    sse_encode_opt_String(self.paymentUrl, serializer);
+    sse_encode_opt_String(self.publisherUrl, serializer);
+    sse_encode_opt_String(self.copyrightMessage, serializer);
+    sse_encode_opt_String(self.license, serializer);
+    sse_encode_opt_String(self.podcastDescription, serializer);
+    sse_encode_opt_String(self.podcastSeriesCategory, serializer);
+    sse_encode_opt_String(self.podcastUrl, serializer);
+    sse_encode_opt_String(self.podcastGlobalUniqueId, serializer);
+    sse_encode_opt_String(self.podcastKeywords, serializer);
+    sse_encode_opt_String(self.setSubtitle, serializer);
+    sse_encode_opt_String(self.showName, serializer);
+    sse_encode_opt_String(self.contentGroup, serializer);
+    sse_encode_opt_String(self.trackSubtitle, serializer);
+    sse_encode_opt_String(self.language, serializer);
+    sse_encode_opt_String(self.script, serializer);
+    sse_encode_opt_String(self.parentalAdvisory, serializer);
+    sse_encode_opt_String(self.fileOwner, serializer);
+    sse_encode_opt_String(self.originalFileName, serializer);
+    sse_encode_opt_String(self.originalMediaType, serializer);
+    sse_encode_opt_String(self.encodedBy, serializer);
+    sse_encode_opt_String(self.encoderSoftware, serializer);
+    sse_encode_opt_String(self.encoderSettings, serializer);
   }
 
   @protected
