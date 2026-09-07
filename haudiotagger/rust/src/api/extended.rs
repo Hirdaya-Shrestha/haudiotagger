@@ -1,5 +1,5 @@
-use lofty::tag::{Accessor, ItemKey, TagExt};
 use lofty::file::{AudioFile, TaggedFileExt};
+use lofty::tag::{Accessor, ItemKey, TagExt};
 
 use crate::api::error::HaudiotaggerError;
 use lofty::config::WriteOptions;
@@ -181,16 +181,40 @@ impl ExtendedChanges {
             };
         }
         ExtendedTag {
-            music_brainz_recording_id: or_clone!(self.music_brainz_recording_id, base.music_brainz_recording_id),
-            music_brainz_track_id: or_clone!(self.music_brainz_track_id, base.music_brainz_track_id),
-            music_brainz_release_id: or_clone!(self.music_brainz_release_id, base.music_brainz_release_id),
-            music_brainz_release_group_id: or_clone!(self.music_brainz_release_group_id, base.music_brainz_release_group_id),
-            music_brainz_artist_id: or_clone!(self.music_brainz_artist_id, base.music_brainz_artist_id),
-            music_brainz_release_artist_id: or_clone!(self.music_brainz_release_artist_id, base.music_brainz_release_artist_id),
+            music_brainz_recording_id: or_clone!(
+                self.music_brainz_recording_id,
+                base.music_brainz_recording_id
+            ),
+            music_brainz_track_id: or_clone!(
+                self.music_brainz_track_id,
+                base.music_brainz_track_id
+            ),
+            music_brainz_release_id: or_clone!(
+                self.music_brainz_release_id,
+                base.music_brainz_release_id
+            ),
+            music_brainz_release_group_id: or_clone!(
+                self.music_brainz_release_group_id,
+                base.music_brainz_release_group_id
+            ),
+            music_brainz_artist_id: or_clone!(
+                self.music_brainz_artist_id,
+                base.music_brainz_artist_id
+            ),
+            music_brainz_release_artist_id: or_clone!(
+                self.music_brainz_release_artist_id,
+                base.music_brainz_release_artist_id
+            ),
             music_brainz_work_id: or_clone!(self.music_brainz_work_id, base.music_brainz_work_id),
-            music_brainz_release_type: or_clone!(self.music_brainz_release_type, base.music_brainz_release_type),
+            music_brainz_release_type: or_clone!(
+                self.music_brainz_release_type,
+                base.music_brainz_release_type
+            ),
             acoust_id: or_clone!(self.acoust_id, base.acoust_id),
-            acoust_id_fingerprint: or_clone!(self.acoust_id_fingerprint, base.acoust_id_fingerprint),
+            acoust_id_fingerprint: or_clone!(
+                self.acoust_id_fingerprint,
+                base.acoust_id_fingerprint
+            ),
             isrc: or_clone!(self.isrc, base.isrc),
             barcode: or_clone!(self.barcode, base.barcode),
             catalog_number: or_clone!(self.catalog_number, base.catalog_number),
@@ -211,13 +235,19 @@ impl ExtendedChanges {
             original_lyricist: or_clone!(self.original_lyricist, base.original_lyricist),
             recording_date: or_clone!(self.recording_date, base.recording_date),
             release_date: or_clone!(self.release_date, base.release_date),
-            original_release_date: or_clone!(self.original_release_date, base.original_release_date),
+            original_release_date: or_clone!(
+                self.original_release_date,
+                base.original_release_date
+            ),
             initial_key: or_clone!(self.initial_key, base.initial_key),
             color: or_clone!(self.color, base.color),
             mood: or_clone!(self.mood, base.mood),
             audio_file_url: or_clone!(self.audio_file_url, base.audio_file_url),
             audio_source_url: or_clone!(self.audio_source_url, base.audio_source_url),
-            commercial_information_url: or_clone!(self.commercial_information_url, base.commercial_information_url),
+            commercial_information_url: or_clone!(
+                self.commercial_information_url,
+                base.commercial_information_url
+            ),
             copyright_url: or_clone!(self.copyright_url, base.copyright_url),
             track_artist_url: or_clone!(self.track_artist_url, base.track_artist_url),
             radio_station_url: or_clone!(self.radio_station_url, base.radio_station_url),
@@ -226,9 +256,15 @@ impl ExtendedChanges {
             copyright_message: or_clone!(self.copyright_message, base.copyright_message),
             license: or_clone!(self.license, base.license),
             podcast_description: or_clone!(self.podcast_description, base.podcast_description),
-            podcast_series_category: or_clone!(self.podcast_series_category, base.podcast_series_category),
+            podcast_series_category: or_clone!(
+                self.podcast_series_category,
+                base.podcast_series_category
+            ),
             podcast_url: or_clone!(self.podcast_url, base.podcast_url),
-            podcast_global_unique_id: or_clone!(self.podcast_global_unique_id, base.podcast_global_unique_id),
+            podcast_global_unique_id: or_clone!(
+                self.podcast_global_unique_id,
+                base.podcast_global_unique_id
+            ),
             podcast_keywords: or_clone!(self.podcast_keywords, base.podcast_keywords),
             set_subtitle: or_clone!(self.set_subtitle, base.set_subtitle),
             show_name: or_clone!(self.show_name, base.show_name),
@@ -255,8 +291,12 @@ fn get_str(tag: &LoftyTag, key: ItemKey) -> Option<String> {
 
 fn set_str(tag: &mut LoftyTag, key: ItemKey, val: &Option<String>) {
     match val {
-        Some(v) => { tag.insert_text(key, v.clone()); },
-        None => { tag.remove_key(key); },
+        Some(v) => {
+            tag.insert_text(key, v.clone());
+        }
+        None => {
+            tag.remove_key(key);
+        }
     }
 }
 
@@ -328,16 +368,52 @@ fn from_lofty_tag(tag: &LoftyTag) -> ExtendedTag {
 }
 
 fn apply_to_lofty_tag(tag: &ExtendedTag, lo_tag: &mut LoftyTag) {
-    set_str(lo_tag, ItemKey::MusicBrainzRecordingId, &tag.music_brainz_recording_id);
-    set_str(lo_tag, ItemKey::MusicBrainzTrackId, &tag.music_brainz_track_id);
-    set_str(lo_tag, ItemKey::MusicBrainzReleaseId, &tag.music_brainz_release_id);
-    set_str(lo_tag, ItemKey::MusicBrainzReleaseGroupId, &tag.music_brainz_release_group_id);
-    set_str(lo_tag, ItemKey::MusicBrainzArtistId, &tag.music_brainz_artist_id);
-    set_str(lo_tag, ItemKey::MusicBrainzReleaseArtistId, &tag.music_brainz_release_artist_id);
-    set_str(lo_tag, ItemKey::MusicBrainzWorkId, &tag.music_brainz_work_id);
-    set_str(lo_tag, ItemKey::MusicBrainzReleaseType, &tag.music_brainz_release_type);
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzRecordingId,
+        &tag.music_brainz_recording_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzTrackId,
+        &tag.music_brainz_track_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzReleaseId,
+        &tag.music_brainz_release_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzReleaseGroupId,
+        &tag.music_brainz_release_group_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzArtistId,
+        &tag.music_brainz_artist_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzReleaseArtistId,
+        &tag.music_brainz_release_artist_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzWorkId,
+        &tag.music_brainz_work_id,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::MusicBrainzReleaseType,
+        &tag.music_brainz_release_type,
+    );
     set_str(lo_tag, ItemKey::AcoustId, &tag.acoust_id);
-    set_str(lo_tag, ItemKey::AcoustIdFingerprint, &tag.acoust_id_fingerprint);
+    set_str(
+        lo_tag,
+        ItemKey::AcoustIdFingerprint,
+        &tag.acoust_id_fingerprint,
+    );
     set_str(lo_tag, ItemKey::Isrc, &tag.isrc);
     set_str(lo_tag, ItemKey::Barcode, &tag.barcode);
     set_str(lo_tag, ItemKey::CatalogNumber, &tag.catalog_number);
@@ -358,13 +434,21 @@ fn apply_to_lofty_tag(tag: &ExtendedTag, lo_tag: &mut LoftyTag) {
     set_str(lo_tag, ItemKey::OriginalLyricist, &tag.original_lyricist);
     set_str(lo_tag, ItemKey::RecordingDate, &tag.recording_date);
     set_str(lo_tag, ItemKey::ReleaseDate, &tag.release_date);
-    set_str(lo_tag, ItemKey::OriginalReleaseDate, &tag.original_release_date);
+    set_str(
+        lo_tag,
+        ItemKey::OriginalReleaseDate,
+        &tag.original_release_date,
+    );
     set_str(lo_tag, ItemKey::InitialKey, &tag.initial_key);
     set_str(lo_tag, ItemKey::Color, &tag.color);
     set_str(lo_tag, ItemKey::Mood, &tag.mood);
     set_str(lo_tag, ItemKey::AudioFileUrl, &tag.audio_file_url);
     set_str(lo_tag, ItemKey::AudioSourceUrl, &tag.audio_source_url);
-    set_str(lo_tag, ItemKey::CommercialInformationUrl, &tag.commercial_information_url);
+    set_str(
+        lo_tag,
+        ItemKey::CommercialInformationUrl,
+        &tag.commercial_information_url,
+    );
     set_str(lo_tag, ItemKey::CopyrightUrl, &tag.copyright_url);
     set_str(lo_tag, ItemKey::TrackArtistUrl, &tag.track_artist_url);
     set_str(lo_tag, ItemKey::RadioStationUrl, &tag.radio_station_url);
@@ -372,10 +456,22 @@ fn apply_to_lofty_tag(tag: &ExtendedTag, lo_tag: &mut LoftyTag) {
     set_str(lo_tag, ItemKey::PublisherUrl, &tag.publisher_url);
     set_str(lo_tag, ItemKey::CopyrightMessage, &tag.copyright_message);
     set_str(lo_tag, ItemKey::License, &tag.license);
-    set_str(lo_tag, ItemKey::PodcastDescription, &tag.podcast_description);
-    set_str(lo_tag, ItemKey::PodcastSeriesCategory, &tag.podcast_series_category);
+    set_str(
+        lo_tag,
+        ItemKey::PodcastDescription,
+        &tag.podcast_description,
+    );
+    set_str(
+        lo_tag,
+        ItemKey::PodcastSeriesCategory,
+        &tag.podcast_series_category,
+    );
     set_str(lo_tag, ItemKey::PodcastUrl, &tag.podcast_url);
-    set_str(lo_tag, ItemKey::PodcastGlobalUniqueId, &tag.podcast_global_unique_id);
+    set_str(
+        lo_tag,
+        ItemKey::PodcastGlobalUniqueId,
+        &tag.podcast_global_unique_id,
+    );
     set_str(lo_tag, ItemKey::PodcastKeywords, &tag.podcast_keywords);
     set_str(lo_tag, ItemKey::SetSubtitle, &tag.set_subtitle);
     set_str(lo_tag, ItemKey::ShowName, &tag.show_name);
@@ -448,11 +544,9 @@ fn write_extended_to_bytes_inner(
 
     // For MP3: strip tags, read existing tag, merge extended, dump, concatenate
     if crate::api::api::is_mp3("", bytes) {
-        let audio = crate::api::api::strip_ape(
-            crate::api::api::strip_id3v1(
-                crate::api::api::strip_id3v2(bytes)
-            )
-        );
+        let audio = crate::api::api::strip_ape(crate::api::api::strip_id3v1(
+            crate::api::api::strip_id3v2(bytes),
+        ));
 
         // Read the existing tag via lofty to preserve all fields
         let mut cursor = Cursor::new(bytes);
@@ -544,11 +638,8 @@ mod tests {
     /// Scratch-copy a real MP3 so concurrent tests don't clobber each other.
     fn scratch_test_mp3() -> String {
         let n = TEST_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-        let dst = std::env::temp_dir().join(format!(
-            "haudiotagger_ext_{}_{}.mp3",
-            std::process::id(),
-            n
-        ));
+        let dst =
+            std::env::temp_dir().join(format!("haudiotagger_ext_{}_{}.mp3", std::process::id(), n));
         std::fs::copy("samples/test.mp3", &dst).expect("Could not copy test.mp3");
         dst.to_string_lossy().into_owned()
     }

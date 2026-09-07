@@ -1322,7 +1322,8 @@ void main() {
   // ============================================================
 
   group('extended metadata', () {
-    test('getExtendedFromBytes returns empty default tag for no extended fields',
+    test(
+        'getExtendedFromBytes returns empty default tag for no extended fields',
         () async {
       final ext = await Haudiotagger.getExtendedFromBytes(mp3Bytes);
       expect(ext.isrc, isNull);
@@ -1354,8 +1355,7 @@ void main() {
         isrc: 'ORIGINAL-ISRC',
         catalogNumber: 'CAT-000',
       );
-      var bytes =
-          await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
+      var bytes = await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
 
       // Replace with new extended tag (only isrc, catalogNumber should be gone)
       final replacement = ExtendedTag(
@@ -1374,8 +1374,7 @@ void main() {
         isrc: 'ORIGINAL-ISRC',
         catalogNumber: 'CAT-000',
       );
-      var bytes =
-          await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
+      var bytes = await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
 
       // Update only isrc, catalogNumber should be preserved
       final changes = ExtendedChanges(
@@ -1395,8 +1394,7 @@ void main() {
         mood: 'happy',
         catalogNumber: 'CAT-999',
       );
-      var bytes =
-          await Haudiotagger.setExtendedFromBytes(mp3Bytes, data);
+      var bytes = await Haudiotagger.setExtendedFromBytes(mp3Bytes, data);
 
       // Remove all extended fields
       bytes = await Haudiotagger.removeExtendedFromBytes(bytes);
