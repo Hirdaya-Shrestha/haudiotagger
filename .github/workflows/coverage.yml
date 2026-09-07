@@ -19,7 +19,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - name: Install MUSL dependencies
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
+        run: sudo apt-get update && sudo apt-get install -y musl-tools lcov
 
       - name: Install dependencies
         run: flutter pub get
@@ -33,7 +33,10 @@ jobs:
         working-directory: haudiotagger
         env:
           LD_LIBRARY_PATH: ${{ github.workspace }}/haudiotagger/linux
-        run: flutter test --coverage
+        run: |
+          flutter test --coverage
+          lcov --remove coverage/lcov.info '**/*.g.dart' '**/frb_generated*' '**/src/rust/*' -o coverage/lcov_filtered.info
+          mv coverage/lcov_filtered.info coverage/lcov.info
 
       - name: Update coverage badge
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
