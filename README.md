@@ -14,6 +14,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-4285F4.svg" alt="MIT License"></a>
   <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/dm/haudiotagger?label=Downloads&logo=dart" alt="pub.dev downloads"></a>
   <a href="https://haudiotagger.hirdaya-shrestha.com.np/"><img src="https://img.shields.io/badge/Web_Live-Demo-448cf3" alt="Live Demo"></a>
+  <a href="https://gist.github.com/Hirdaya-Shrestha/66dd5d4e1fcfebe3f6ac0e744027b96b"><img src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Hirdaya-Shrestha/66dd5d4e1fcfebe3f6ac0e744027b96b/raw/coverage.json" alt="Coverage"></a>
 </p>
 
 ---

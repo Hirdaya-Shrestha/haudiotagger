@@ -1,0 +1,34 @@
+name: Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: haudiotagger
+
+      - name: Run tests with coverage
+        working-directory: haudiotagger
+        env:
+          LD_LIBRARY_PATH: ${{ github.workspace }}/haudiotagger/linux
+        run: flutter test --coverage
+
+      - name: Update coverage badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: ${{ secrets.COVERAGE_GIST_ID }}
+        run: bash .github/scripts/report_coverage.sh
