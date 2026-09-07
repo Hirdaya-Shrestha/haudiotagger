@@ -1777,6 +1777,29 @@ void main() {
       expect(result.errors, isNotEmpty);
     });
 
+    test('batchUpdate generic exception handling', () async {
+      final filePath = '${tempDir.path}/batcherr.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final result = await Haudiotagger.batchUpdate(
+        [filePath],
+        (path, current) => throw Exception('generic error'),
+      );
+      expect(result.failures, 1);
+    });
+
+    test('batchUpdate with onProgress callback', () async {
+      final filePath = '${tempDir.path}/batchprog.mp3';
+      await File(filePath).writeAsBytes(mp3Bytes);
+      final progresses = <BatchProgress>[];
+      await Haudiotagger.batchUpdate(
+        [filePath],
+        (path, current) => current.copyWith(title: 'Progress'),
+        onProgress: (p) => progresses.add(p),
+      );
+      expect(progresses.length, 1);
+      expect(progresses.first.completed, 1);
+    });
+
     test('batchUpdateFromBytes error handling', () async {
       final badBytes = [Uint8List(0)];
       final result = await Haudiotagger.batchUpdateFromBytes(
@@ -1784,6 +1807,24 @@ void main() {
         (index, current) => current.copyWith(title: 'X'),
       );
       expect(result.failures, 1);
+    });
+
+    test('batchUpdateFromBytes generic exception handling', () async {
+      final result = await Haudiotagger.batchUpdateFromBytes(
+        [mp3Bytes],
+        (index, current) => throw Exception('generic error'),
+      );
+      expect(result.failures, 1);
+    });
+
+    test('batchUpdateFromBytes with onProgress callback', () async {
+      final progresses = <BatchProgress>[];
+      await Haudiotagger.batchUpdateFromBytes(
+        [mp3Bytes],
+        (index, current) => current.copyWith(title: 'Progress'),
+        onProgress: (p) => progresses.add(p),
+      );
+      expect(progresses.length, 1);
     });
   });
 
@@ -1833,21 +1874,30 @@ void main() {
       expect(change.toString(), contains('title'));
     });
 
-    test('TagChanges copyWith preserves unspecified fields', () {
-      final original = TagChanges(title: 'Title', year: 2025);
-      final copy = original.copyWith(trackArtist: 'Artist');
+    test('TagChanges copyWith with no args preserves all', () {
+      final original = TagChanges(
+        title: 'Title',
+        trackArtist: 'Artist',
+        year: 2025,
+        bpm: 120.0,
+      );
+      final copy = original.copyWith();
       expect(copy.title, 'Title');
+      expect(copy.trackArtist, 'Artist');
       expect(copy.year, 2025);
+      expect(copy.bpm, 120.0);
     });
 
-    test('Picture copyWith preserves unspecified fields', () {
+    test('Picture copyWith with no args preserves all', () {
       final original = Picture(
         pictureType: PictureType.coverFront,
+        mimeType: MimeType.jpeg,
         bytes: Uint8List.fromList([1, 2, 3]),
       );
-      final copy = original.copyWith(bytes: Uint8List.fromList([4, 5, 6]));
+      final copy = original.copyWith();
       expect(copy.pictureType, PictureType.coverFront);
-      expect(copy.bytes, [4, 5, 6]);
+      expect(copy.mimeType, MimeType.jpeg);
+      expect(copy.bytes, [1, 2, 3]);
     });
   });
 }
