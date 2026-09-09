@@ -1640,8 +1640,12 @@ void main() {
       final filePath = '${tempDir.path}/setchapters.mp3';
       await File(filePath).writeAsBytes(mp3Bytes);
       final chapters = [
-        Chapter(title: 'Intro', startMs: BigInt.from(0), endMs: BigInt.from(30000)),
-        Chapter(title: 'Main', startMs: BigInt.from(30000), endMs: BigInt.from(120000)),
+        Chapter(
+            title: 'Intro', startMs: BigInt.from(0), endMs: BigInt.from(30000)),
+        Chapter(
+            title: 'Main',
+            startMs: BigInt.from(30000),
+            endMs: BigInt.from(120000)),
       ];
       await Haudiotagger.setChapters(filePath, chapters);
       final readBack = await Haudiotagger.getChapters(filePath);
@@ -1667,10 +1671,12 @@ void main() {
     test('updateExtended updates extended metadata on file', () async {
       final filePath = '${tempDir.path}/extupd.mp3';
       await File(filePath).writeAsBytes(mp3Bytes);
-      await Haudiotagger.setExtended(filePath, ExtendedTag(
-        mood: 'happy',
-        isrc: 'US-TEST',
-      ));
+      await Haudiotagger.setExtended(
+          filePath,
+          ExtendedTag(
+            mood: 'happy',
+            isrc: 'US-TEST',
+          ));
       await Haudiotagger.updateExtended(filePath, ExtendedChanges(mood: 'sad'));
       final ext = await Haudiotagger.getExtended(filePath);
       expect(ext.mood, 'sad');

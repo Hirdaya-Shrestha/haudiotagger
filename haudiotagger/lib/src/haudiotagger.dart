@@ -103,7 +103,8 @@ class Haudiotagger {
   ///
   /// Throws [HaudiotaggerError] if the bytes cannot be read or have no tags.
   /// Throws [HaudiotaggerError] if [field] is [TagField.pictures] (use [readFromBytes] instead).
-  static Future<String?> readFieldFromBytes(Uint8List bytes, TagField field) async {
+  static Future<String?> readFieldFromBytes(
+      Uint8List bytes, TagField field) async {
     await _ensureInit();
     return await api.readFieldFromBytes(bytes: bytes, field: field);
   }
@@ -122,16 +123,19 @@ class Haudiotagger {
 
   /// Read a single picture by type from the file at [path].
   /// Returns `null` if no picture of the given type exists.
-  static Future<Picture?> readPictureByType(String path, PictureType pictureType) async {
+  static Future<Picture?> readPictureByType(
+      String path, PictureType pictureType) async {
     await _ensureInit();
     return await api.readPictureByType(path: path, pictureType: pictureType);
   }
 
   /// Read a single picture by type from in-memory [bytes].
   /// Returns `null` if no picture of the given type exists.
-  static Future<Picture?> readPictureByTypeFromBytes(Uint8List bytes, PictureType pictureType) async {
+  static Future<Picture?> readPictureByTypeFromBytes(
+      Uint8List bytes, PictureType pictureType) async {
     await _ensureInit();
-    return await api.readPictureByTypeFromBytes(bytes: bytes, pictureType: pictureType);
+    return await api.readPictureByTypeFromBytes(
+        bytes: bytes, pictureType: pictureType);
   }
 
   /// Write the metadata at the given path. Previous metadata will
