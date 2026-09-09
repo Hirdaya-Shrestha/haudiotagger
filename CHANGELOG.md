@@ -1,3 +1,8 @@
+## 1.3.3
+
+- **Read single field**: `readField` / `readFieldFromBytes` — read one tag property without loading full metadata
+- **Read pictures**: `readPictures`, `readPictureByType` (+ `FromBytes` variants) — read all embedded artwork or a specific picture by `PictureType`
+
 ## 1.3.2
 
 - **Extended metadata**: read and write 60+ extended fields (MusicBrainz, AcoustID, ISRC, mood, etc.)

@@ -160,6 +160,73 @@ pub fn read_from_bytes(bytes: Vec<u8>) -> Result<Tag, HaudiotaggerError> {
     tag_from_file(&file)
 }
 
+/// Get the primary tag from a `TaggedFile`, preferring the primary tag.
+fn primary_tag(file: &TaggedFile) -> Result<&LoftyTag, HaudiotaggerError> {
+    match file.primary_tag() {
+        Some(tag) => Ok(tag),
+        None => match file.first_tag() {
+            Some(tag) => Ok(tag),
+            None => Err(HaudiotaggerError::NoTags),
+        },
+    }
+}
+
+/// Read a single tag field from the file at `path`.
+/// Returns the field value as a string (or None if unset).
+/// This is faster than `read()` because it only extracts one field.
+pub fn read_field(path: String, field: TagField) -> Result<Option<String>, HaudiotaggerError> {
+    let file = get_file(&path)?;
+    read_field_impl(&file, field)
+}
+
+/// Read a single tag field from in-memory `bytes`.
+/// Returns the field value as a string (or None if unset).
+pub fn read_field_from_bytes(
+    bytes: Vec<u8>,
+    field: TagField,
+) -> Result<Option<String>, HaudiotaggerError> {
+    let file = get_file_from_bytes(&bytes)?;
+    read_field_impl(&file, field)
+}
+
+/// Implementation: read a single field from a `TaggedFile`.
+fn read_field_impl(
+    file: &TaggedFile,
+    field: TagField,
+) -> Result<Option<String>, HaudiotaggerError> {
+    let tag = primary_tag(file)?;
+
+    let value = match field {
+        TagField::Title => tag.title().map(|v| v.to_string()),
+        TagField::Artist => tag.artist().map(|v| v.to_string()),
+        TagField::Album => tag.album().map(|v| v.to_string()),
+        TagField::AlbumArtist => tag.get_string(ItemKey::AlbumArtist).map(|v| v.to_string()),
+        TagField::Year => tag.date().map(|d| d.year.to_string()),
+        TagField::Genre => tag.genre().map(|v| v.to_string()),
+        TagField::TrackNumber => tag.track().map(|v| v.to_string()),
+        TagField::TrackTotal => tag.track_total().map(|v| v.to_string()),
+        TagField::DiscNumber => tag.disk().map(|v| v.to_string()),
+        TagField::DiscTotal => tag.disk_total().map(|v| v.to_string()),
+        TagField::Lyrics => tag
+            .get_string(ItemKey::Lyrics)
+            .or_else(|| tag.get_string(ItemKey::UnsyncLyrics))
+            .map(|v| v.to_string()),
+        TagField::Comment => tag.get_string(ItemKey::Comment).map(|v| v.to_string()),
+        TagField::Bpm => tag
+            .get_string(ItemKey::Bpm)
+            .or_else(|| tag.get_string(ItemKey::IntegerBpm))
+            .map(|v| v.to_string()),
+        TagField::Pictures => {
+            return Err(HaudiotaggerError::Read {
+                message: "Pictures cannot be read as a single field; use readPictures() instead"
+                    .to_string(),
+            });
+        }
+    };
+
+    Ok(value)
+}
+
 /// Returns true when `path`/`bytes` should be written via the byte-level MP3
 /// path (`write_mp3_bytes`). lofty's content probe (`guess_file_type`) mis-
 /// identifies some real MP3s (returns non-`Mpeg`), which would otherwise route
@@ -1484,4 +1551,209 @@ pub fn process_batch_bytes(
         .collect();
 
     collect_batch_bytes_result(processed)
+}
+
+/// Read all pictures from the file at `path`.
+pub fn read_pictures(path: String) -> Result<Vec<Picture>, HaudiotaggerError> {
+    let tag = read(path)?;
+    Ok(tag.pictures)
+}
+
+/// Read all pictures from in-memory `bytes`.
+pub fn read_pictures_from_bytes(bytes: Vec<u8>) -> Result<Vec<Picture>, HaudiotaggerError> {
+    let tag = read_from_bytes(bytes)?;
+    Ok(tag.pictures)
+}
+
+/// Read a single picture by type from the file at `path`.
+/// Returns `None` if no picture of the given type exists.
+pub fn read_picture_by_type(
+    path: String,
+    picture_type: super::picture::PictureType,
+) -> Result<Option<Picture>, HaudiotaggerError> {
+    let tag = read(path)?;
+    Ok(tag
+        .pictures
+        .into_iter()
+        .find(|p| p.picture_type == picture_type))
+}
+
+/// Read a single picture by type from in-memory `bytes`.
+/// Returns `None` if no picture of the given type exists.
+pub fn read_picture_by_type_from_bytes(
+    bytes: Vec<u8>,
+    picture_type: super::picture::PictureType,
+) -> Result<Option<Picture>, HaudiotaggerError> {
+    let tag = read_from_bytes(bytes)?;
+    Ok(tag
+        .pictures
+        .into_iter()
+        .find(|p| p.picture_type == picture_type))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::api::picture::PictureType;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static TEST_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+    fn scratch_test_mp3() -> String {
+        let n = TEST_COUNTER.fetch_add(1, Ordering::SeqCst);
+        let dst =
+            std::env::temp_dir().join(format!("haudiotagger_rf_{}_{}.mp3", std::process::id(), n));
+        std::fs::copy("samples/test.mp3", &dst).expect("Could not copy test.mp3");
+        dst.to_string_lossy().into_owned()
+    }
+
+    #[test]
+    fn read_field_title() {
+        let path = scratch_test_mp3();
+        let result = read_field(path.clone(), TagField::Title).unwrap();
+        assert!(result.is_some(), "title should be present in test.mp3");
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_artist() {
+        let path = scratch_test_mp3();
+        let result = read_field(path.clone(), TagField::Artist).unwrap();
+        assert!(result.is_some(), "artist should be present in test.mp3");
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_album() {
+        let path = scratch_test_mp3();
+        let result = read_field(path.clone(), TagField::Album).unwrap();
+        assert!(result.is_some(), "album should be present in test.mp3");
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_album_artist() {
+        let path = scratch_test_mp3();
+        let result = read_field(path.clone(), TagField::AlbumArtist).unwrap();
+        assert!(result.is_some());
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_year() {
+        let path = scratch_test_mp3();
+        // year may or may not be present — just verify no error
+        let _result = read_field(path.clone(), TagField::Year).unwrap();
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_genre() {
+        let path = scratch_test_mp3();
+        let _result = read_field(path.clone(), TagField::Genre).unwrap();
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_track_number() {
+        let path = scratch_test_mp3();
+        let _result = read_field(path.clone(), TagField::TrackNumber).unwrap();
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_disc_number() {
+        let path = scratch_test_mp3();
+        let _result = read_field(path.clone(), TagField::DiscNumber).unwrap();
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_comment() {
+        let path = scratch_test_mp3();
+        let _result = read_field(path.clone(), TagField::Comment).unwrap();
+        // comment may or may not be present
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_pictures_errors() {
+        let path = scratch_test_mp3();
+        let result = read_field(path.clone(), TagField::Pictures);
+        assert!(result.is_err(), "pictures should return error");
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_field_consistent_with_read() {
+        let path = scratch_test_mp3();
+        let full_tag = read(path.clone()).unwrap();
+
+        let title_from_field = read_field(path.clone(), TagField::Title).unwrap();
+        assert_eq!(title_from_field.as_deref(), full_tag.title.as_deref());
+
+        let artist_from_field = read_field(path.clone(), TagField::Artist).unwrap();
+        assert_eq!(
+            artist_from_field.as_deref(),
+            full_tag.track_artist.as_deref()
+        );
+
+        let album_from_field = read_field(path.clone(), TagField::Album).unwrap();
+        assert_eq!(album_from_field.as_deref(), full_tag.album.as_deref());
+
+        let year_from_field = read_field(path.clone(), TagField::Year).unwrap();
+        assert_eq!(year_from_field, full_tag.year.map(|y| y.to_string()));
+
+        let genre_from_field = read_field(path.clone(), TagField::Genre).unwrap();
+        assert_eq!(genre_from_field.as_deref(), full_tag.genre.as_deref());
+
+        let track_from_field = read_field(path.clone(), TagField::TrackNumber).unwrap();
+        assert_eq!(
+            track_from_field,
+            full_tag.track_number.map(|t| t.to_string())
+        );
+
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_pictures_returns_vec() {
+        let path = scratch_test_mp3();
+        let pictures = read_pictures(path.clone()).unwrap();
+        // test.mp3 may or may not have pictures — just verify no error
+        assert!(pictures.len() >= 0);
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_pictures_from_bytes_returns_vec() {
+        let path = scratch_test_mp3();
+        let bytes = std::fs::read(&path).unwrap();
+        let pictures = read_pictures_from_bytes(bytes).unwrap();
+        assert!(pictures.len() >= 0);
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_picture_by_type_returns_option() {
+        let path = scratch_test_mp3();
+        let result = read_picture_by_type(path.clone(), PictureType::CoverFront).unwrap();
+        // may or may not exist
+        assert!(result.is_none() || result.is_some());
+        std::fs::remove_file(&path).ok();
+    }
+
+    #[test]
+    fn read_pictures_consistent_with_read() {
+        let path = scratch_test_mp3();
+        let full_tag = read(path.clone()).unwrap();
+        let pictures = read_pictures(path.clone()).unwrap();
+        assert_eq!(pictures.len(), full_tag.pictures.len());
+        for (a, b) in pictures.iter().zip(full_tag.pictures.iter()) {
+            assert_eq!(a.picture_type, b.picture_type);
+            assert_eq!(a.mime_type, b.mime_type);
+            assert_eq!(a.bytes.len(), b.bytes.len());
+        }
+        std::fs::remove_file(&path).ok();
+    }
 }

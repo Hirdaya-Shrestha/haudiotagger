@@ -15,7 +15,7 @@ import 'tag_changes.dart';
 import 'tag_field.dart';
 import 'validation.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `collect_batch_bytes_result`, `collect_batch_result`, `convert_id3v2_impl`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `prebuild_tag_bytes`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_lofty_tag_to_mp3_bytes`, `write_mp3_bytes`
+// These functions are ignored because they are not marked as `pub`: `apply_tag_to_lofty_tag`, `build_file_info`, `clear_field`, `collect_batch_bytes_result`, `collect_batch_result`, `convert_id3v2_impl`, `extract_custom_tags_from_file`, `extract_custom_tags_from_lofty_tag`, `extract_id3v2_version`, `extract_tag_formats`, `file_format_name`, `format_tag_type`, `get_file_from_bytes`, `get_file`, `is_mp3`, `is_standard_vorbis_key`, `prebuild_tag_bytes`, `primary_tag`, `read_field_impl`, `remove_custom_tag_impl`, `remove_id3v1_impl`, `set_custom_tag_impl`, `strip_ape`, `strip_id3v1`, `strip_id3v2`, `tag_from_file`, `write_lofty_tag_to_mp3_bytes`, `write_mp3_bytes`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `clone`, `clone`, `clone`, `eq`, `fmt`, `fmt`, `fmt`, `fmt`
 
 Future<Tag> read({required String path}) =>
@@ -24,6 +24,19 @@ Future<Tag> read({required String path}) =>
 /// Read metadata from in-memory bytes (for web/WASM).
 Future<Tag> readFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiReadFromBytes(bytes: bytes);
+
+/// Read a single tag field from the file at `path`.
+/// Returns the field value as a string (or None if unset).
+/// This is faster than `read()` because it only extracts one field.
+Future<String?> readField({required String path, required TagField field}) =>
+    RustLib.instance.api.crateApiApiReadField(path: path, field: field);
+
+/// Read a single tag field from in-memory `bytes`.
+/// Returns the field value as a string (or None if unset).
+Future<String?> readFieldFromBytes(
+        {required List<int> bytes, required TagField field}) =>
+    RustLib.instance.api
+        .crateApiApiReadFieldFromBytes(bytes: bytes, field: field);
 
 Future<void> write({required String path, required Tag data}) =>
     RustLib.instance.api.crateApiApiWrite(path: path, data: data);
@@ -268,6 +281,28 @@ Future<BatchBytesResult> processBatchBytes(
         required List<TransformRule> rules}) =>
     RustLib.instance.api
         .crateApiApiProcessBatchBytes(byteArrays: byteArrays, rules: rules);
+
+/// Read all pictures from the file at `path`.
+Future<List<Picture>> readPictures({required String path}) =>
+    RustLib.instance.api.crateApiApiReadPictures(path: path);
+
+/// Read all pictures from in-memory `bytes`.
+Future<List<Picture>> readPicturesFromBytes({required List<int> bytes}) =>
+    RustLib.instance.api.crateApiApiReadPicturesFromBytes(bytes: bytes);
+
+/// Read a single picture by type from the file at `path`.
+/// Returns `None` if no picture of the given type exists.
+Future<Picture?> readPictureByType(
+        {required String path, required PictureType pictureType}) =>
+    RustLib.instance.api
+        .crateApiApiReadPictureByType(path: path, pictureType: pictureType);
+
+/// Read a single picture by type from in-memory `bytes`.
+/// Returns `None` if no picture of the given type exists.
+Future<Picture?> readPictureByTypeFromBytes(
+        {required List<int> bytes, required PictureType pictureType}) =>
+    RustLib.instance.api.crateApiApiReadPictureByTypeFromBytes(
+        bytes: bytes, pictureType: pictureType);
 
 /// Comprehensive info about an audio file, returned by `inspect`.
 class AudioFileInfo {

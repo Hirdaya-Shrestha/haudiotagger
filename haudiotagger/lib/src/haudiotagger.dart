@@ -16,6 +16,7 @@ import 'rust/api/chapters.dart' as ch;
 import 'rust/api/chapters.dart' show Chapter;
 import 'rust/api/extended.dart' as ext;
 import 'rust/api/extended.dart' show ExtendedTag, ExtendedChanges;
+import 'rust/api/picture.dart' show Picture, PictureType;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -83,6 +84,54 @@ class Haudiotagger {
           rethrow;
       }
     }
+  }
+
+  /// Read a single tag field from the file at [path].
+  /// Returns the field value as a string, or null if the field is not set.
+  /// This is faster than [read] when you only need one field.
+  ///
+  /// Throws [HaudiotaggerError] if the file cannot be read or has no tags.
+  /// Throws [HaudiotaggerError] if [field] is [TagField.pictures] (use [read] instead).
+  static Future<String?> readField(String path, TagField field) async {
+    await _ensureInit();
+    return await api.readField(path: path, field: field);
+  }
+
+  /// Read a single tag field from in-memory [bytes].
+  /// Returns the field value as a string, or null if the field is not set.
+  /// Works on web and native.
+  ///
+  /// Throws [HaudiotaggerError] if the bytes cannot be read or have no tags.
+  /// Throws [HaudiotaggerError] if [field] is [TagField.pictures] (use [readFromBytes] instead).
+  static Future<String?> readFieldFromBytes(Uint8List bytes, TagField field) async {
+    await _ensureInit();
+    return await api.readFieldFromBytes(bytes: bytes, field: field);
+  }
+
+  /// Read all embedded pictures from the file at [path].
+  static Future<List<Picture>> readPictures(String path) async {
+    await _ensureInit();
+    return await api.readPictures(path: path);
+  }
+
+  /// Read all embedded pictures from in-memory [bytes].
+  static Future<List<Picture>> readPicturesFromBytes(Uint8List bytes) async {
+    await _ensureInit();
+    return await api.readPicturesFromBytes(bytes: bytes);
+  }
+
+  /// Read a single picture by type from the file at [path].
+  /// Returns `null` if no picture of the given type exists.
+  static Future<Picture?> readPictureByType(String path, PictureType pictureType) async {
+    await _ensureInit();
+    return await api.readPictureByType(path: path, pictureType: pictureType);
+  }
+
+  /// Read a single picture by type from in-memory [bytes].
+  /// Returns `null` if no picture of the given type exists.
+  static Future<Picture?> readPictureByTypeFromBytes(Uint8List bytes, PictureType pictureType) async {
+    await _ensureInit();
+    return await api.readPictureByTypeFromBytes(bytes: bytes, pictureType: pictureType);
   }
 
   /// Write the metadata at the given path. Previous metadata will

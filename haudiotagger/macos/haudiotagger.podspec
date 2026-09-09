@@ -1,5 +1,5 @@
 # Download the binary from GitHub.
-version = "1.3.2"
+version = "1.3.3"
 lib_url = "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v#{version}/macos.zip"
 
 `

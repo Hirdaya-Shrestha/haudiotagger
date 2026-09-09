@@ -21,6 +21,9 @@ sealed class HaudiotaggerError
   const factory HaudiotaggerError.openFile({
     required String message,
   }) = HaudiotaggerError_OpenFile;
+  const factory HaudiotaggerError.read({
+    required String message,
+  }) = HaudiotaggerError_Read;
   const factory HaudiotaggerError.write({
     required String message,
   }) = HaudiotaggerError_Write;

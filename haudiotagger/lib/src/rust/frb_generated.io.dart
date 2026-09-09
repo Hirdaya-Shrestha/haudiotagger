@@ -75,6 +75,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   NormalizeOptions dco_decode_box_autoadd_normalize_options(dynamic raw);
 
   @protected
+  Picture dco_decode_box_autoadd_picture(dynamic raw);
+
+  @protected
   Tag dco_decode_box_autoadd_tag(dynamic raw);
 
   @protected
@@ -172,6 +175,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   MimeType? dco_decode_opt_box_autoadd_mime_type(dynamic raw);
+
+  @protected
+  Picture? dco_decode_opt_box_autoadd_picture(dynamic raw);
 
   @protected
   Tag? dco_decode_opt_box_autoadd_tag(dynamic raw);
@@ -286,6 +292,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       SseDeserializer deserializer);
 
   @protected
+  Picture sse_decode_box_autoadd_picture(SseDeserializer deserializer);
+
+  @protected
   Tag sse_decode_box_autoadd_tag(SseDeserializer deserializer);
 
   @protected
@@ -391,6 +400,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   MimeType? sse_decode_opt_box_autoadd_mime_type(SseDeserializer deserializer);
+
+  @protected
+  Picture? sse_decode_opt_box_autoadd_picture(SseDeserializer deserializer);
 
   @protected
   Tag? sse_decode_opt_box_autoadd_tag(SseDeserializer deserializer);
@@ -512,6 +524,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
       NormalizeOptions self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_picture(Picture self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_tag(Tag self, SseSerializer serializer);
 
   @protected
@@ -625,6 +640,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
   @protected
   void sse_encode_opt_box_autoadd_mime_type(
       MimeType? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_picture(
+      Picture? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_tag(Tag? self, SseSerializer serializer);

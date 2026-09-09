@@ -1900,4 +1900,173 @@ void main() {
       expect(copy.bytes, [1, 2, 3]);
     });
   });
+
+  // ============================================================
+  // readField / readFieldFromBytes
+  // ============================================================
+
+  group('readField / readFieldFromBytes', () {
+    test('readFieldFromBytes returns correct title', () async {
+      final result = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.title,
+      );
+      expect(result, 'Original Title');
+    });
+
+    test('readFieldFromBytes returns correct artist', () async {
+      final result = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.artist,
+      );
+      expect(result, 'Original Artist');
+    });
+
+    test('readFieldFromBytes returns correct album', () async {
+      final result = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.album,
+      );
+      expect(result, 'Original Album');
+    });
+
+    test('readFieldFromBytes returns null for missing field', () async {
+      final result = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.lyrics,
+      );
+      expect(result, isNull);
+    });
+
+    test('readFieldFromBytes throws on empty bytes', () async {
+      expect(
+        () => Haudiotagger.readFieldFromBytes(
+          Uint8List(0),
+          TagField.title,
+        ),
+        throwsA(isA<HaudiotaggerError>()),
+      );
+    });
+
+    test('readField on file returns same value as read', () async {
+      final dir = Directory.systemTemp.createTempSync('haudiotagger_rf_test_');
+      final file = File('${dir.path}/test.mp3');
+      file.writeAsBytesSync(mp3Bytes);
+
+      final fullTag = await Haudiotagger.read(file.path);
+      final titleFromField = await Haudiotagger.readField(
+        file.path,
+        TagField.title,
+      );
+      expect(titleFromField, fullTag!.title);
+
+      final artistFromField = await Haudiotagger.readField(
+        file.path,
+        TagField.artist,
+      );
+      expect(artistFromField, fullTag.trackArtist);
+
+      dir.deleteSync(recursive: true);
+    });
+
+    test('readField on file returns null for missing field', () async {
+      final dir = Directory.systemTemp.createTempSync('haudiotagger_rf_test_');
+      final file = File('${dir.path}/test.mp3');
+      file.writeAsBytesSync(mp3Bytes);
+
+      final result = await Haudiotagger.readField(
+        file.path,
+        TagField.lyrics,
+      );
+      expect(result, isNull);
+
+      dir.deleteSync(recursive: true);
+    });
+
+    test('readFieldFromBytes is consistent with readFromBytes', () async {
+      final tag = await Haudiotagger.readFromBytes(mp3Bytes);
+
+      final title = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.title,
+      );
+      expect(title, tag!.title);
+
+      final artist = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.artist,
+      );
+      expect(artist, tag.trackArtist);
+
+      final album = await Haudiotagger.readFieldFromBytes(
+        mp3Bytes,
+        TagField.album,
+      );
+      expect(album, tag.album);
+    });
+  });
+
+  // ============================================================
+  // readPictures / readPictureByType
+  // ============================================================
+
+  group('readPictures / readPictureByType', () {
+    test('readPicturesFromBytes returns list', () async {
+      final pictures = await Haudiotagger.readPicturesFromBytes(mp3Bytes);
+      expect(pictures, isA<List<Picture>>());
+    });
+
+    test('readPicturesFromBytes consistent with readFromBytes', () async {
+      final tag = await Haudiotagger.readFromBytes(mp3Bytes);
+      final pictures = await Haudiotagger.readPicturesFromBytes(mp3Bytes);
+      expect(pictures.length, tag!.pictures.length);
+    });
+
+    test('readPictureByTypeFromBytes returns null when no match', () async {
+      final result = await Haudiotagger.readPictureByTypeFromBytes(
+        mp3Bytes,
+        PictureType.coverBack,
+      );
+      expect(result, isNull);
+    });
+
+    test('readPictures on file returns list', () async {
+      final dir = Directory.systemTemp.createTempSync('haudiotagger_pic_test_');
+      final file = File('${dir.path}/test.mp3');
+      file.writeAsBytesSync(mp3Bytes);
+
+      final pictures = await Haudiotagger.readPictures(file.path);
+      expect(pictures, isA<List<Picture>>());
+
+      dir.deleteSync(recursive: true);
+    });
+
+    test('readPictureByType on file returns null when no match', () async {
+      final dir = Directory.systemTemp.createTempSync('haudiotagger_pic_test_');
+      final file = File('${dir.path}/test.mp3');
+      file.writeAsBytesSync(mp3Bytes);
+
+      final result = await Haudiotagger.readPictureByType(
+        file.path,
+        PictureType.coverBack,
+      );
+      expect(result, isNull);
+
+      dir.deleteSync(recursive: true);
+    });
+
+    test('readPictureByTypeFromBytes matches type from full tag', () async {
+      final tag = await Haudiotagger.readFromBytes(mp3Bytes);
+      if (tag!.pictures.isNotEmpty) {
+        final firstType = tag.pictures.first.pictureType;
+        final result = await Haudiotagger.readPictureByTypeFromBytes(
+          mp3Bytes,
+          firstType,
+        );
+        expect(result, isNotNull);
+        expect(result!.pictureType, firstType);
+        expect(result.bytes, tag.pictures.first.bytes);
+      }
+    });
+  });
 }

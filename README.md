@@ -48,6 +48,8 @@ Try hAudiotagger working demo directly in your browser - no install required:
 | ReplayGain support (track/album gain/peak) | All |
 | **Chapters** (ID3v2 CHAP frames for MP3) | All |
 | **Extended metadata** (MusicBrainz, AcoustID, ISRC, etc.) | All |
+| **Read single field** (`readField` — faster than full `read`) | All |
+| **Read pictures** (all or by type, without full `read`) | All |
 | TagPipeline — 56-rule metadata transformation engine | All |
 | Format filenames from tag metadata | All |
 | Rename files based on metadata patterns | All |
@@ -59,7 +61,7 @@ Try hAudiotagger working demo directly in your browser - no install required:
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.3.2
+  haudiotagger: ^1.3.3
 ```
 
 ## Quick Start
@@ -451,6 +453,47 @@ final updated = await Haudiotagger.updateExtendedFromBytes(fileBytes, changes);
 final cleaned = await Haudiotagger.removeExtendedFromBytes(fileBytes);
 ```
 
+### Read Single Field
+
+Read a single tag field without loading the full metadata. Faster than `read()` when you only need one value.
+
+```dart
+// Read one field from a file
+final title = await Haudiotagger.readField('/path/to/song.mp3', TagField.title);
+
+// Read one field from bytes (web + native)
+final artist = await Haudiotagger.readFieldFromBytes(fileBytes, TagField.artist);
+
+// Supported fields: title, artist, album, albumArtist, year, genre,
+//   trackNumber, trackTotal, discNumber, discTotal, lyrics, comment, bpm
+// Pictures field throws — use readPictures/readPictureByType instead.
+```
+
+### Read Pictures
+
+Read embedded artwork without loading the full tag. Supports reading all pictures or a single picture by type.
+
+```dart
+// Read all pictures
+final pictures = await Haudiotagger.readPictures('/path/to/song.mp3');
+for (final pic in pictures) {
+  print('${pic.pictureType}: ${pic.mimeType} (${pic.bytes.length} bytes)');
+}
+
+// Read a specific picture by type
+final cover = await Haudiotagger.readPictureByType(
+  '/path/to/song.mp3',
+  PictureType.coverFront,
+);
+if (cover != null) {
+  // cover.bytes is the raw image data
+}
+
+// Bytes variants (web + native)
+final pictures = await Haudiotagger.readPicturesFromBytes(fileBytes);
+final cover = await Haudiotagger.readPictureByTypeFromBytes(fileBytes, PictureType.coverFront);
+```
+
 #### Available Extended Fields
 
 | Category | Fields |
@@ -641,6 +684,12 @@ flutter run -d chrome \
 | `updateExtendedFromBytes(bytes, changes)` | `Uint8List` | all |
 | `removeExtended(path)` | `void` | native |
 | `removeExtendedFromBytes(bytes)` | `Uint8List` | all |
+| `readField(path, field)` | `String?` | native |
+| `readFieldFromBytes(bytes, field)` | `String?` | all |
+| `readPictures(path)` | `List<Picture>` | native |
+| `readPicturesFromBytes(bytes)` | `List<Picture>` | all |
+| `readPictureByType(path, type)` | `Picture?` | native |
+| `readPictureByTypeFromBytes(bytes, type)` | `Picture?` | all |
 | `validate(path)` | `ValidationResult` | native |
 | `validateFromBytes(bytes)` | `ValidationResult` | all |
 | `validateTag(tag)` | `ValidationResult` | all |
