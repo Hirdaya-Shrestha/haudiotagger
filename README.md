@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="haudiotagger/logo.png" alt="hAudiotagger" width="120">
+  <img src="/haudiotagger/logo.png" alt="hAudiotagger" width="120">
 </p>
 
 <h1 align="center">hAudiotagger</h1>
@@ -13,7 +13,7 @@
   <a href="https://github.com/Hirdaya-Shrestha/haudiotagger/actions"><img src="https://github.com/Hirdaya-Shrestha/haudiotagger/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-4285F4.svg" alt="MIT License"></a>
   <a href="https://pub.dev/packages/haudiotagger"><img src="https://img.shields.io/pub/dm/haudiotagger?label=Downloads&logo=dart" alt="Downloads"></a>
-  <a href="https://haudiotagger.hirdaya-shrestha.com.np/"><img src="https://img.shields.io/badge/Web_Live_Demo-448cf3" alt="Live Demo"></a>
+  <a href="https://haudiotagger.hirdaya-shrestha.com.np/"><img src="https://img.shields.io/badge/Web_Live-Demo-448cf3" alt="Live Demo"></a>
   <a href="https://gist.github.com/Hirdaya-Shrestha/66dd5d4e1fcfebe3f6ac0e744027b96b"><img src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/Hirdaya-Shrestha/66dd5d4e1fcfebe3f6ac0e744027b96b/raw/coverage.json" alt="Coverage"></a>
 </p>
 
@@ -21,13 +21,13 @@
 
 Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge).
 
-![hAudiotagger](haudiotagger/cover.png)
+![hAudiotagger](/haudiotagger/cover.png)
 
 ## Install
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.3.4
+  haudiotagger: ^1.3.5
 ```
 
 ## Quick Start
@@ -100,6 +100,7 @@ final result = await Haudiotagger.batchWrite(paths, tag);
 | **Batch Write** | 29 f/s | 197 f/s |
 | **Batch Update** | 25 f/s | 197 f/s |
 
+> [!NOTE]
 > Native file-path API with rayon parallelism. Benchmarked on Linux with 100 distinct MP3 files (~8 MB each).
 
 ## Documentation
@@ -124,6 +125,7 @@ Try hAudiotagger in your browser — no install required:
 
 **[hAudiotagger Web Demo](https://haudiotagger.hirdaya-shrestha.com.np/)**
 
+> [!NOTE]
 > On the web, use `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`). See [Web Setup](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/Web-Setup) for details.
 
 ## Requirements

@@ -1,3 +1,8 @@
+## 1.3.5
+
+- Minor improvements
+- Documentation fixes
+
 ## 1.3.4
 
 - Removed unused `collection` dependency from CLI
