@@ -62,7 +62,7 @@ pub(crate) fn type_info(ft: FileType) -> (String, String, bool) {
 
 impl AudioProperties {
     /// Builds [`AudioProperties`] from a parsed file.
-    fn from_file(file: &lofty::file::TaggedFile, file_size: Option<u64>) -> Self {
+    pub(crate) fn from_file(file: &lofty::file::TaggedFile, file_size: Option<u64>) -> Self {
         let props = file.properties();
         let (codec, container_format, lossless) = type_info(file.file_type());
 

@@ -50,18 +50,10 @@ pub(crate) fn get_file_from_bytes(bytes: &[u8]) -> Result<TaggedFile, Haudiotagg
 }
 
 fn tag_from_file(file: &TaggedFile) -> Result<Tag, HaudiotaggerError> {
-    let tag = match file.primary_tag() {
-        Some(primary_tag) => Ok(primary_tag),
-        None => match file.first_tag() {
-            Some(first_tag) => Ok(first_tag),
-            None => Err(HaudiotaggerError::NoTags),
-        },
-    }?;
-
+    let tag = primary_tag(file)?;
     let mut tag = Tag::from(tag);
     let duration = file.properties().duration().as_secs() as u32;
     tag.duration = Some(duration);
-
     Ok(tag)
 }
 
@@ -744,13 +736,7 @@ pub fn get_custom_tags_from_bytes(
 fn extract_custom_tags_from_file(
     file: &TaggedFile,
 ) -> Result<std::collections::HashMap<String, String>, HaudiotaggerError> {
-    let tag = match file.primary_tag() {
-        Some(tag) => tag,
-        None => match file.first_tag() {
-            Some(tag) => tag,
-            None => return Err(HaudiotaggerError::NoTags),
-        },
-    };
+    let tag = primary_tag(file)?;
     extract_custom_tags_from_lofty_tag(tag)
 }
 
@@ -1191,7 +1177,6 @@ fn file_format_name(ft: FileType) -> String {
 }
 
 fn build_file_info(file: &TaggedFile, file_size: u64) -> AudioFileInfo {
-    use lofty::file::AudioFile;
     let format = file_format_name(file.file_type());
     let tag_format = format_tag_type(
         file.primary_tag()
@@ -1200,21 +1185,7 @@ fn build_file_info(file: &TaggedFile, file_size: u64) -> AudioFileInfo {
     )
     .to_string();
 
-    let props = file.properties();
-    let (codec, container_format, lossless) = super::audio_properties::type_info(file.file_type());
-
-    let properties = AudioProperties {
-        duration_micros: Some(props.duration().as_micros() as i64),
-        bitrate: props.overall_bitrate().or_else(|| props.audio_bitrate()),
-        sample_rate: props.sample_rate(),
-        channels: props.channels().map(u32::from),
-        bits_per_sample: props.bit_depth().map(u32::from),
-        codec,
-        container_format,
-        lossless,
-        bitrate_mode: super::audio_properties::BitrateMode::Unknown,
-        file_size: Some(file_size),
-    };
+    let properties = super::audio_properties::AudioProperties::from_file(file, Some(file_size));
 
     let (metadata, pictures) = match tag_from_file(file) {
         Ok(tag) => {

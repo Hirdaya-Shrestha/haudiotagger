@@ -1,3 +1,9 @@
+## 1.3.4
+
+- Removed unused `collection` dependency from CLI
+- Deduplicated `AudioProperties` construction — `build_file_info` now reuses `AudioProperties::from_file`
+- Deduplicated primary tag selection — `tag_from_file` and `extract_custom_tags_from_file` now use shared `primary_tag` helper
+
 ## 1.3.3
 
 - **Read single field**: `readField` / `readFieldFromBytes` — read one tag property without loading full metadata

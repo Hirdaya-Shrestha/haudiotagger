@@ -27,7 +27,7 @@ Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Window
 
 ```yaml
 dependencies:
-  haudiotagger: ^1.3.3
+  haudiotagger: ^1.3.4
 ```
 
 ## Quick Start
