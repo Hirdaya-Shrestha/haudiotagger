@@ -14,7 +14,7 @@ cd ..
 
 Pod::Spec.new do |s|
   s.name             = 'haudiotagger'
-  s.version          = '1.3.5'
+  s.version = '1.3.5'
   s.summary          = 'A Flutter plugin for reading and writing audio metadata.'
   s.description      = <<-DESC
 A Flutter plugin for reading and writing audio metadata, powered by Rust.
