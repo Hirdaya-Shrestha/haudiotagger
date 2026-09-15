@@ -21,8 +21,6 @@
 
 Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge).
 
-![hAudiotagger](/haudiotagger/cover.png)
-
 ## Install
 
 ```yaml
