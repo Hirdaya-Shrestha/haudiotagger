@@ -1692,7 +1692,7 @@ mod tests {
         let path = scratch_test_mp3();
         let pictures = read_pictures(path.clone()).unwrap();
         // test.mp3 may or may not have pictures — just verify no error
-        assert!(pictures.len() >= 0);
+        let _ = pictures;
         std::fs::remove_file(&path).ok();
     }
 
@@ -1701,7 +1701,7 @@ mod tests {
         let path = scratch_test_mp3();
         let bytes = std::fs::read(&path).unwrap();
         let pictures = read_pictures_from_bytes(bytes).unwrap();
-        assert!(pictures.len() >= 0);
+        let _ = pictures;
         std::fs::remove_file(&path).ok();
     }
 

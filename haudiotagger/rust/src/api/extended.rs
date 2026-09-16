@@ -1,5 +1,5 @@
 use lofty::file::{AudioFile, TaggedFileExt};
-use lofty::tag::{Accessor, ItemKey, TagExt};
+use lofty::tag::{ItemKey, TagExt};
 
 use crate::api::error::HaudiotaggerError;
 use lofty::config::WriteOptions;
@@ -554,7 +554,7 @@ fn write_extended_to_bytes_inner(
             .guess_file_type()
             .ok()
             .and_then(|p| p.read().ok())
-            .and_then(|mut file| file.primary_tag().cloned())
+            .and_then(|file| file.primary_tag().cloned())
             .unwrap_or_else(|| LoftyTag::new(lofty::tag::TagType::Id3v2));
 
         // Apply extended fields on top of existing tag

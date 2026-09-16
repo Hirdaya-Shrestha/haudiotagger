@@ -1,3 +1,8 @@
+## 2.0.0
+
+- Upgraded lofty from 0.25.1 to 0.25.2 — UFID/ItemKey preservation, Opus panic fix, MP4 offset fix, WAV JUNK padding fix
+- Fixed Rust compiler warnings
+
 ## 1.3.5
 
 - Minor improvements
