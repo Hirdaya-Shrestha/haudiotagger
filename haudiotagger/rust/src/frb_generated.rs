@@ -142,13 +142,13 @@ fn wire__crate__api__pipeline__apply_rule_impl(
             };
             let mut deserializer =
                 flutter_rust_bridge::for_generated::SseDeserializer::new(message);
-            let api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
+            let mut api_tag = <crate::api::tag::Tag>::sse_decode(&mut deserializer);
             let api_rule = <crate::api::pipeline::TransformRule>::sse_decode(&mut deserializer);
             deserializer.end();
             move |context| {
                 transform_result_sse::<_, ()>((move || {
-                    let output_ok =
-                        Ok::<_, ()>(crate::api::pipeline::apply_rule(&api_tag, &api_rule))?;
+                    crate::api::pipeline::apply_rule(&mut api_tag, &api_rule);
+                    let output_ok = Ok::<_, ()>(api_tag)?;
                     std::result::Result::Ok(output_ok)
                 })())
             }

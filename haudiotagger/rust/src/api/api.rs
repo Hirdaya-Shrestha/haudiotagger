@@ -58,7 +58,7 @@ fn tag_from_file(file: &TaggedFile) -> Result<Tag, HaudiotaggerError> {
 }
 
 pub(crate) fn apply_tag_to_lofty_tag(
-    tag: &Tag,
+    tag: Tag,
     lo_tag: &mut lofty::tag::Tag,
 ) -> Result<(), HaudiotaggerError> {
     if let Some(title) = &tag.title {
@@ -99,9 +99,9 @@ pub(crate) fn apply_tag_to_lofty_tag(
     if let Some(genre) = &tag.genre {
         lo_tag.insert_text(ItemKey::Genre, genre.clone());
     }
-    for (i, picture) in tag.pictures.iter().enumerate() {
-        let mut builder = lofty::picture::Picture::unchecked(picture.bytes.clone())
-            .pic_type(picture.picture_type.clone().into());
+    for (i, picture) in tag.pictures.into_iter().enumerate() {
+        let mut builder =
+            lofty::picture::Picture::unchecked(picture.bytes).pic_type(picture.picture_type.into());
         if let Some(mime_type) = &picture.mime_type {
             builder = builder.mime_type(mime_type.clone().into());
         }
@@ -226,7 +226,7 @@ fn read_field_impl(
 /// So we additionally key off the `.mp3` extension and a leading "ID3" marker.
 #[inline]
 pub(crate) fn is_mp3(path: &str, bytes: &[u8]) -> bool {
-    if path.to_lowercase().ends_with(".mp3") {
+    if path.len() >= 4 && path[path.len() - 4..].eq_ignore_ascii_case(".mp3") {
         return true;
     }
     if bytes.starts_with(b"ID3") {
@@ -265,10 +265,10 @@ pub fn write(path: String, data: Tag) -> Result<(), HaudiotaggerError> {
     // `TagType::remove_from`, whose write step re-probes the file format and
     // aborts with `FileEncodingError { format: None }` for some files (and can
     // corrupt others on a second write).
-    let mut file = get_file(&path)?;
+    let mut file = get_file_from_bytes(&bytes)?;
     let mut new_tag = LoftyTag::new(file.primary_tag_type());
     if !data.is_empty() {
-        apply_tag_to_lofty_tag(&data, &mut new_tag)?;
+        apply_tag_to_lofty_tag(data, &mut new_tag)?;
     }
     file.insert_tag(new_tag);
 
@@ -332,7 +332,7 @@ fn write_mp3_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, HaudiotaggerErr
     }
 
     let mut lo_tag = LoftyTag::new(TagType::Id3v2);
-    apply_tag_to_lofty_tag(&data, &mut lo_tag)?;
+    apply_tag_to_lofty_tag(data, &mut lo_tag)?;
 
     let mut tag_bytes = Vec::with_capacity(1024);
     lo_tag
@@ -362,7 +362,7 @@ where
     let mut lo_tag = LoftyTag::new(tag_type);
     if let Some(existing_tag) = file.primary_tag() {
         let std_tag = Tag::from(existing_tag);
-        apply_tag_to_lofty_tag(&std_tag, &mut lo_tag)?;
+        apply_tag_to_lofty_tag(std_tag, &mut lo_tag)?;
     }
 
     let lo_tag = build(lo_tag)?;
@@ -403,7 +403,7 @@ pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, Haudiotagger
 
     let mut new_tag = LoftyTag::new(file.primary_tag_type());
     if !data.is_empty() {
-        apply_tag_to_lofty_tag(&data, &mut new_tag)?;
+        apply_tag_to_lofty_tag(data, &mut new_tag)?;
     }
     file.insert_tag(new_tag);
 
@@ -494,7 +494,7 @@ fn prebuild_tag_bytes(data: &Tag) -> Result<Vec<u8>, HaudiotaggerError> {
         return Ok(Vec::new());
     }
     let mut lo_tag = LoftyTag::new(TagType::Id3v2);
-    apply_tag_to_lofty_tag(data, &mut lo_tag).map_err(|e| HaudiotaggerError::Write {
+    apply_tag_to_lofty_tag(data.clone(), &mut lo_tag).map_err(|e| HaudiotaggerError::Write {
         message: format!("Could not apply tag: {e:?}"),
     })?;
     let mut tag_bytes = Vec::with_capacity(1024);
@@ -778,29 +778,26 @@ fn extract_custom_tags_from_lofty_tag(
 }
 
 fn is_standard_vorbis_key(key: &str) -> bool {
-    matches!(
-        key.to_lowercase().as_str(),
-        "title"
-            | "artist"
-            | "album"
-            | "albumartist"
-            | "date"
-            | "year"
-            | "genre"
-            | "tracknumber"
-            | "tracktotal"
-            | "discnumber"
-            | "disctotal"
-            | "lyrics"
-            | "comment"
-            | "bpm"
-            | "composer"
-            | "conductor"
-            | "isrc"
-            | "label"
-            | "copyright"
-            | "description"
-    )
+    key.eq_ignore_ascii_case("title")
+        || key.eq_ignore_ascii_case("artist")
+        || key.eq_ignore_ascii_case("album")
+        || key.eq_ignore_ascii_case("albumartist")
+        || key.eq_ignore_ascii_case("date")
+        || key.eq_ignore_ascii_case("year")
+        || key.eq_ignore_ascii_case("genre")
+        || key.eq_ignore_ascii_case("tracknumber")
+        || key.eq_ignore_ascii_case("tracktotal")
+        || key.eq_ignore_ascii_case("discnumber")
+        || key.eq_ignore_ascii_case("disctotal")
+        || key.eq_ignore_ascii_case("lyrics")
+        || key.eq_ignore_ascii_case("comment")
+        || key.eq_ignore_ascii_case("bpm")
+        || key.eq_ignore_ascii_case("composer")
+        || key.eq_ignore_ascii_case("conductor")
+        || key.eq_ignore_ascii_case("isrc")
+        || key.eq_ignore_ascii_case("label")
+        || key.eq_ignore_ascii_case("copyright")
+        || key.eq_ignore_ascii_case("description")
 }
 
 fn set_custom_tag_impl(
@@ -815,7 +812,7 @@ fn set_custom_tag_impl(
     // First apply existing standard tags
     if let Some(existing_tag) = file.primary_tag() {
         let std_tag = Tag::from(existing_tag);
-        apply_tag_to_lofty_tag(&std_tag, &mut new_tag)?;
+        apply_tag_to_lofty_tag(std_tag, &mut new_tag)?;
     }
 
     // Now apply the custom tag based on format
@@ -896,7 +893,7 @@ fn remove_custom_tag_impl(file: &TaggedFile, key: String) -> Result<LoftyTag, Ha
     // First apply existing standard tags
     if let Some(existing_tag) = file.primary_tag() {
         let std_tag = Tag::from(existing_tag);
-        apply_tag_to_lofty_tag(&std_tag, &mut new_tag)?;
+        apply_tag_to_lofty_tag(std_tag, &mut new_tag)?;
     }
 
     // Now remove the custom tag based on format
@@ -1013,7 +1010,7 @@ fn convert_id3v2_impl(
     version: Id3v2Version,
 ) -> Result<(Vec<u8>, WriteOptions), HaudiotaggerError> {
     let mut lo_tag = LoftyTag::new(TagType::Id3v2);
-    apply_tag_to_lofty_tag(std_tag, &mut lo_tag)?;
+    apply_tag_to_lofty_tag(std_tag.clone(), &mut lo_tag)?;
 
     let mut write_options = WriteOptions::new();
     if version == Id3v2Version::V3 {
@@ -1044,13 +1041,14 @@ pub fn convert_id3v2(path: String, version: Id3v2Version) -> Result<(), Haudiota
         Id3v2Version::V3 | Id3v2Version::V4 => {}
     }
 
-    // Read the existing tag via our API
-    let std_tag = read(path.clone())?;
-
-    // Read raw bytes and strip existing tags
+    // Read raw bytes
     let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
         message: format!("Could not read file: {e}"),
     })?;
+
+    // Read the existing tag from bytes (reference, no move)
+    let std_tag = get_file_from_bytes(&bytes).and_then(|f| tag_from_file(&f))?;
+
     let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
 
     if std_tag.is_empty() {
@@ -1085,7 +1083,7 @@ pub fn convert_id3v2_from_bytes(
         Id3v2Version::V3 | Id3v2Version::V4 => {}
     }
 
-    let std_tag = read_from_bytes(bytes.clone())?;
+    let std_tag = get_file_from_bytes(&bytes).and_then(|f| tag_from_file(&f))?;
     let audio = strip_ape(strip_id3v1(strip_id3v2(&bytes)));
 
     if std_tag.is_empty() {
@@ -1188,8 +1186,8 @@ fn build_file_info(file: &TaggedFile, file_size: u64) -> AudioFileInfo {
     let properties = super::audio_properties::AudioProperties::from_file(file, Some(file_size));
 
     let (metadata, pictures) = match tag_from_file(file) {
-        Ok(tag) => {
-            let pictures = tag.pictures.clone();
+        Ok(mut tag) => {
+            let pictures = std::mem::take(&mut tag.pictures);
             (Some(tag), pictures)
         }
         Err(_) => (None, vec![]),
@@ -1254,7 +1252,8 @@ pub fn normalize(path: String) -> Result<Tag, HaudiotaggerError> {
 
 /// Normalize in-memory bytes using default options, returning the cleaned bytes.
 pub fn normalize_bytes(bytes: Vec<u8>) -> Result<Vec<u8>, HaudiotaggerError> {
-    let tag = read_from_bytes(bytes.clone())?;
+    let file = get_file_from_bytes(&bytes)?;
+    let tag = tag_from_file(&file)?;
     let normalized =
         super::normalization::normalize(&tag, &super::normalization::NormalizeOptions::default());
     write_to_bytes(bytes, normalized)
@@ -1312,10 +1311,16 @@ pub fn format_filename(tag: &Tag, pattern: &str) -> String {
     }
 
     // Clean up multiple spaces and leading/trailing whitespace
-    while result.contains("  ") {
-        result = result.replace("  ", " ");
+    {
+        let mut out = String::new();
+        for (i, word) in result.split_whitespace().enumerate() {
+            if i > 0 {
+                out.push(' ');
+            }
+            out.push_str(word);
+        }
+        result = out;
     }
-    result = result.trim().to_string();
 
     // Remove trailing dots, dashes, or spaces
     while result.ends_with('.') || result.ends_with('-') || result.ends_with(' ') {
@@ -1411,13 +1416,17 @@ pub fn copy_metadata(
         tag.lyrics = None;
     }
 
+    // Extract custom tags before consuming the source file
+    let custom = if include_custom_tags {
+        get_custom_tags(source)?
+    } else {
+        std::collections::HashMap::new()
+    };
+
     write(destination.clone(), tag)?;
 
-    if include_custom_tags {
-        let custom = get_custom_tags(source)?;
-        for (key, value) in custom {
-            set_custom_tag(destination.clone(), key, value)?;
-        }
+    for (key, value) in custom {
+        set_custom_tag(destination.clone(), key, value)?;
     }
 
     Ok(())
@@ -1431,7 +1440,15 @@ pub fn copy_metadata_from_bytes(
     include_lyrics: bool,
     include_custom_tags: bool,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
-    let mut tag = read_from_bytes(source_bytes.clone())?;
+    // Parse source once, extract both standard tag and custom tags
+    let file = get_file_from_bytes(&source_bytes)?;
+    let mut tag = tag_from_file(&file)?;
+
+    let custom = if include_custom_tags {
+        extract_custom_tags_from_file(&file)?
+    } else {
+        std::collections::HashMap::new()
+    };
 
     if !include_artwork {
         tag.pictures = Vec::new();
@@ -1442,11 +1459,8 @@ pub fn copy_metadata_from_bytes(
 
     let mut result = write_to_bytes(destination_bytes, tag)?;
 
-    if include_custom_tags {
-        let custom = get_custom_tags_from_bytes(source_bytes)?;
-        for (key, value) in custom {
-            result = set_custom_tag_from_bytes(result, key, value)?;
-        }
+    for (key, value) in custom {
+        result = set_custom_tag_from_bytes(result, key, value)?;
     }
 
     Ok(result)
@@ -1468,7 +1482,7 @@ pub fn process_bytes(
     bytes: Vec<u8>,
     rules: Vec<super::pipeline::TransformRule>,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
-    let tag = match read_from_bytes(bytes.clone()) {
+    let tag = match get_file_from_bytes(&bytes).and_then(|f| tag_from_file(&f)) {
         Ok(t) => t,
         Err(_) => return Ok(bytes),
     };
@@ -1511,7 +1525,7 @@ pub fn process_batch_bytes(
         .into_par_iter()
         .enumerate()
         .map(|(i, bytes)| {
-            let tag = match read_from_bytes(bytes.clone()) {
+            let tag = match get_file_from_bytes(&bytes).and_then(|f| tag_from_file(&f)) {
                 Ok(t) => t,
                 Err(e) => return (i, Err(e)),
             };

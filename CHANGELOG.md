@@ -1,3 +1,10 @@
+## 2.0.1
+
+- Performance optimizations: eliminated double file reads, reduced allocations in hot paths
+- Pipeline rules now mutate tags in place instead of cloning per rule
+- Zero-alloc checks for `is_mp3()` and `is_standard_vorbis_key()`
+- Single-pass whitespace collapsing in `format_filename()` and pipeline
+
 ## 2.0.0
 
 - Upgraded lofty from 0.25.1 to 0.25.2 — UFID/ItemKey preservation, Opus panic fix, MP4 offset fix, WAV JUNK padding fix

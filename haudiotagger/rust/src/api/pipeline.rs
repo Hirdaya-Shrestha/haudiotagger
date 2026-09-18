@@ -105,7 +105,7 @@ impl TagPipeline {
     pub fn apply(&self, tag: &Tag) -> Tag {
         let mut result = tag.clone();
         for rule in &self.rules {
-            result = apply_rule(&result, rule);
+            apply_rule(&mut result, rule);
         }
         result
     }
@@ -128,7 +128,14 @@ fn trim(s: &str) -> String {
 }
 
 fn collapse_ws(s: &str) -> String {
-    s.split_whitespace().collect::<Vec<&str>>().join(" ")
+    let mut out = String::new();
+    for (i, word) in s.split_whitespace().enumerate() {
+        if i > 0 {
+            out.push(' ');
+        }
+        out.push_str(word);
+    }
+    out
 }
 
 fn nfkc(s: &str) -> String {
@@ -160,27 +167,24 @@ fn normalize_year(year: u32) -> u32 {
     }
 }
 
-fn apply_to_strings(tag: &Tag, f: impl Fn(&str) -> String) -> Tag {
-    Tag {
-        title: tag.title.as_ref().map(|s| f(s)),
-        track_artist: tag.track_artist.as_ref().map(|s| f(s)),
-        album: tag.album.as_ref().map(|s| f(s)),
-        album_artist: tag.album_artist.as_ref().map(|s| f(s)),
-        genre: tag.genre.as_ref().map(|s| f(s)),
-        lyrics: tag.lyrics.as_ref().map(|s| f(s)),
-        comment: tag.comment.as_ref().map(|s| f(s)),
-        replay_gain_track_gain: tag.replay_gain_track_gain.as_ref().map(|s| f(s)),
-        replay_gain_track_peak: tag.replay_gain_track_peak.as_ref().map(|s| f(s)),
-        replay_gain_album_gain: tag.replay_gain_album_gain.as_ref().map(|s| f(s)),
-        replay_gain_album_peak: tag.replay_gain_album_peak.as_ref().map(|s| f(s)),
-        ..tag.clone()
-    }
+fn apply_to_strings(tag: &mut Tag, f: impl Fn(&str) -> String) {
+    tag.title = tag.title.as_ref().map(|s| f(s));
+    tag.track_artist = tag.track_artist.as_ref().map(|s| f(s));
+    tag.album = tag.album.as_ref().map(|s| f(s));
+    tag.album_artist = tag.album_artist.as_ref().map(|s| f(s));
+    tag.genre = tag.genre.as_ref().map(|s| f(s));
+    tag.lyrics = tag.lyrics.as_ref().map(|s| f(s));
+    tag.comment = tag.comment.as_ref().map(|s| f(s));
+    tag.replay_gain_track_gain = tag.replay_gain_track_gain.as_ref().map(|s| f(s));
+    tag.replay_gain_track_peak = tag.replay_gain_track_peak.as_ref().map(|s| f(s));
+    tag.replay_gain_album_gain = tag.replay_gain_album_gain.as_ref().map(|s| f(s));
+    tag.replay_gain_album_peak = tag.replay_gain_album_peak.as_ref().map(|s| f(s));
 }
 
 // ── Rule application ──────────────────────────────────────
 
 /// Apply a single rule to a tag.
-pub fn apply_rule(tag: &Tag, rule: &TransformRule) -> Tag {
+pub fn apply_rule(tag: &mut Tag, rule: &TransformRule) {
     match rule {
         // ── Whitespace / Unicode ─────────────────────────
         TransformRule::TrimWhitespace => apply_to_strings(tag, trim),
@@ -188,346 +192,211 @@ pub fn apply_rule(tag: &Tag, rule: &TransformRule) -> Tag {
         TransformRule::NormalizeUnicode => apply_to_strings(tag, nfkc),
 
         // ── Setters ─────────────────────────────────────
-        TransformRule::SetTitle(v) => Tag {
-            title: Some(v.clone()),
-            ..tag.clone()
-        },
-        TransformRule::SetArtist(v) => Tag {
-            track_artist: Some(v.clone()),
-            ..tag.clone()
-        },
-        TransformRule::SetAlbum(v) => Tag {
-            album: Some(v.clone()),
-            ..tag.clone()
-        },
-        TransformRule::SetAlbumArtist(v) => Tag {
-            album_artist: Some(v.clone()),
-            ..tag.clone()
-        },
-        TransformRule::SetGenre(v) => Tag {
-            genre: Some(v.clone()),
-            ..tag.clone()
-        },
-        TransformRule::SetYear(y) => Tag {
-            year: Some(*y),
-            ..tag.clone()
-        },
-        TransformRule::SetTrackNumber(n) => Tag {
-            track_number: Some(*n),
-            ..tag.clone()
-        },
-        TransformRule::SetDiscNumber(n) => Tag {
-            disc_number: Some(*n),
-            ..tag.clone()
-        },
-        TransformRule::SetTrackTotal(n) => Tag {
-            track_total: Some(*n),
-            ..tag.clone()
-        },
-        TransformRule::SetDiscTotal(n) => Tag {
-            disc_total: Some(*n),
-            ..tag.clone()
-        },
-        TransformRule::SetBpm(b) => Tag {
-            bpm: Some(*b),
-            ..tag.clone()
-        },
-        TransformRule::SetComment(v) => Tag {
-            comment: Some(v.clone()),
-            ..tag.clone()
-        },
+        TransformRule::SetTitle(v) => tag.title = Some(v.clone()),
+        TransformRule::SetArtist(v) => tag.track_artist = Some(v.clone()),
+        TransformRule::SetAlbum(v) => tag.album = Some(v.clone()),
+        TransformRule::SetAlbumArtist(v) => tag.album_artist = Some(v.clone()),
+        TransformRule::SetGenre(v) => tag.genre = Some(v.clone()),
+        TransformRule::SetYear(y) => tag.year = Some(*y),
+        TransformRule::SetTrackNumber(n) => tag.track_number = Some(*n),
+        TransformRule::SetDiscNumber(n) => tag.disc_number = Some(*n),
+        TransformRule::SetTrackTotal(n) => tag.track_total = Some(*n),
+        TransformRule::SetDiscTotal(n) => tag.disc_total = Some(*n),
+        TransformRule::SetBpm(b) => tag.bpm = Some(*b),
+        TransformRule::SetComment(v) => tag.comment = Some(v.clone()),
 
         // ── Remove ──────────────────────────────────────
-        TransformRule::RemoveLyrics => Tag {
-            lyrics: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveComment => Tag {
-            comment: None,
-            ..tag.clone()
-        },
-        TransformRule::RemovePictures => Tag {
-            pictures: vec![],
-            ..tag.clone()
-        },
-        TransformRule::RemoveBpm => Tag {
-            bpm: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveReplayGain => Tag {
-            replay_gain_track_gain: None,
-            replay_gain_track_peak: None,
-            replay_gain_album_gain: None,
-            replay_gain_album_peak: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveTitle => Tag {
-            title: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveArtist => Tag {
-            track_artist: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveAlbum => Tag {
-            album: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveAlbumArtist => Tag {
-            album_artist: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveGenre => Tag {
-            genre: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveYear => Tag {
-            year: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveTrackNumber => Tag {
-            track_number: None,
-            ..tag.clone()
-        },
-        TransformRule::RemoveDiscNumber => Tag {
-            disc_number: None,
-            ..tag.clone()
-        },
+        TransformRule::RemoveLyrics => tag.lyrics = None,
+        TransformRule::RemoveComment => tag.comment = None,
+        TransformRule::RemovePictures => tag.pictures = vec![],
+        TransformRule::RemoveBpm => tag.bpm = None,
+        TransformRule::RemoveReplayGain => {
+            tag.replay_gain_track_gain = None;
+            tag.replay_gain_track_peak = None;
+            tag.replay_gain_album_gain = None;
+            tag.replay_gain_album_peak = None;
+        }
+        TransformRule::RemoveTitle => tag.title = None,
+        TransformRule::RemoveArtist => tag.track_artist = None,
+        TransformRule::RemoveAlbum => tag.album = None,
+        TransformRule::RemoveAlbumArtist => tag.album_artist = None,
+        TransformRule::RemoveGenre => tag.genre = None,
+        TransformRule::RemoveYear => tag.year = None,
+        TransformRule::RemoveTrackNumber => tag.track_number = None,
+        TransformRule::RemoveDiscNumber => tag.disc_number = None,
 
         // ── Normalize numbers ───────────────────────────
-        TransformRule::NormalizeTrackNumbers => Tag {
-            track_number: tag.track_number.map(|n| n.clamp(0, 999)),
-            ..tag.clone()
-        },
-        TransformRule::NormalizeDiscNumbers => Tag {
-            disc_number: tag.disc_number.map(|n| n.clamp(0, 99)),
-            ..tag.clone()
-        },
-        TransformRule::NormalizeYear => Tag {
-            year: tag.year.map(normalize_year),
-            ..tag.clone()
-        },
+        TransformRule::NormalizeTrackNumbers => {
+            tag.track_number = tag.track_number.map(|n| n.clamp(0, 999));
+        }
+        TransformRule::NormalizeDiscNumbers => {
+            tag.disc_number = tag.disc_number.map(|n| n.clamp(0, 99));
+        }
+        TransformRule::NormalizeYear => {
+            tag.year = tag.year.map(normalize_year);
+        }
 
         // ── Copy between fields ─────────────────────────
         TransformRule::CopyArtistToAlbumArtist => {
             if tag.album_artist.as_deref() == Some("") || tag.album_artist.is_none() {
-                Tag {
-                    album_artist: tag.track_artist.clone(),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.album_artist = tag.track_artist.clone();
             }
         }
         TransformRule::CopyAlbumArtistToArtist => {
             if tag.track_artist.as_deref() == Some("") || tag.track_artist.is_none() {
-                Tag {
-                    track_artist: tag.album_artist.clone(),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.track_artist = tag.album_artist.clone();
             }
         }
         TransformRule::CopyTitleToComment => {
             if tag.comment.as_deref() == Some("") || tag.comment.is_none() {
-                Tag {
-                    comment: tag.title.clone(),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.comment = tag.title.clone();
             }
         }
 
         // ── Prefix / Suffix ─────────────────────────────
-        TransformRule::PrefixTitle(p) => Tag {
-            title: tag.title.as_ref().map(|s| format!("{p}{s}")),
-            ..tag.clone()
-        },
-        TransformRule::SuffixTitle(s) => Tag {
-            title: tag.title.as_ref().map(|t| format!("{t}{s}")),
-            ..tag.clone()
-        },
-        TransformRule::PrefixAlbum(p) => Tag {
-            album: tag.album.as_ref().map(|a| format!("{p}{a}")),
-            ..tag.clone()
-        },
-        TransformRule::SuffixAlbum(s) => Tag {
-            album: tag.album.as_ref().map(|a| format!("{a}{s}")),
-            ..tag.clone()
-        },
-        TransformRule::PrefixArtist(p) => Tag {
-            track_artist: tag.track_artist.as_ref().map(|a| format!("{p}{a}")),
-            ..tag.clone()
-        },
-        TransformRule::SuffixArtist(s) => Tag {
-            track_artist: tag.track_artist.as_ref().map(|a| format!("{a}{s}")),
-            ..tag.clone()
-        },
+        TransformRule::PrefixTitle(p) => {
+            tag.title = tag.title.as_ref().map(|s| format!("{p}{s}"));
+        }
+        TransformRule::SuffixTitle(s) => {
+            tag.title = tag.title.as_ref().map(|t| format!("{t}{s}"));
+        }
+        TransformRule::PrefixAlbum(p) => {
+            tag.album = tag.album.as_ref().map(|a| format!("{p}{a}"));
+        }
+        TransformRule::SuffixAlbum(s) => {
+            tag.album = tag.album.as_ref().map(|a| format!("{a}{s}"));
+        }
+        TransformRule::PrefixArtist(p) => {
+            tag.track_artist = tag.track_artist.as_ref().map(|a| format!("{p}{a}"));
+        }
+        TransformRule::SuffixArtist(s) => {
+            tag.track_artist = tag.track_artist.as_ref().map(|a| format!("{a}{s}"));
+        }
 
         // ── Case transformations ────────────────────────
-        TransformRule::TitleCaseTitle => Tag {
-            title: tag.title.as_ref().map(|s| title_case(s)),
-            ..tag.clone()
-        },
-        TransformRule::TitleCaseArtist => Tag {
-            track_artist: tag.track_artist.as_ref().map(|s| title_case(s)),
-            ..tag.clone()
-        },
-        TransformRule::TitleCaseAlbum => Tag {
-            album: tag.album.as_ref().map(|s| title_case(s)),
-            ..tag.clone()
-        },
+        TransformRule::TitleCaseTitle => {
+            tag.title = tag.title.as_ref().map(|s| title_case(s));
+        }
+        TransformRule::TitleCaseArtist => {
+            tag.track_artist = tag.track_artist.as_ref().map(|s| title_case(s));
+        }
+        TransformRule::TitleCaseAlbum => {
+            tag.album = tag.album.as_ref().map(|s| title_case(s));
+        }
         TransformRule::LowerCaseAll => apply_to_strings(tag, |s| s.to_lowercase()),
         TransformRule::UpperCaseAll => apply_to_strings(tag, |s| s.to_uppercase()),
 
         // ── Search / Replace ────────────────────────────
-        TransformRule::ReplaceInTitle { find, replace } => Tag {
-            title: tag.title.as_ref().map(|s| s.replace(find, replace)),
-            ..tag.clone()
-        },
-        TransformRule::ReplaceInArtist { find, replace } => Tag {
-            track_artist: tag.track_artist.as_ref().map(|s| s.replace(find, replace)),
-            ..tag.clone()
-        },
-        TransformRule::ReplaceInAlbum { find, replace } => Tag {
-            album: tag.album.as_ref().map(|s| s.replace(find, replace)),
-            ..tag.clone()
-        },
+        TransformRule::ReplaceInTitle { find, replace } => {
+            tag.title = tag.title.as_ref().map(|s| s.replace(find, replace));
+        }
+        TransformRule::ReplaceInArtist { find, replace } => {
+            tag.track_artist = tag.track_artist.as_ref().map(|s| s.replace(find, replace));
+        }
+        TransformRule::ReplaceInAlbum { find, replace } => {
+            tag.album = tag.album.as_ref().map(|s| s.replace(find, replace));
+        }
         TransformRule::ReplaceInAll { find, replace } => {
-            apply_to_strings(tag, |s| s.replace(find, replace))
+            apply_to_strings(tag, |s| s.replace(find, replace));
         }
 
         // ── Conditional ─────────────────────────────────
         TransformRule::SetTitleIfEmpty(v) => {
             if tag.title.as_deref() == Some("") || tag.title.is_none() {
-                Tag {
-                    title: Some(v.clone()),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.title = Some(v.clone());
             }
         }
         TransformRule::SetArtistIfEmpty(v) => {
             if tag.track_artist.as_deref() == Some("") || tag.track_artist.is_none() {
-                Tag {
-                    track_artist: Some(v.clone()),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.track_artist = Some(v.clone());
             }
         }
         TransformRule::SetAlbumIfEmpty(v) => {
             if tag.album.as_deref() == Some("") || tag.album.is_none() {
-                Tag {
-                    album: Some(v.clone()),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.album = Some(v.clone());
             }
         }
         TransformRule::SetGenreIfEmpty(v) => {
             if tag.genre.as_deref() == Some("") || tag.genre.is_none() {
-                Tag {
-                    genre: Some(v.clone()),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.genre = Some(v.clone());
             }
         }
         TransformRule::SetAlbumArtistIfEmpty(v) => {
             if tag.album_artist.as_deref() == Some("") || tag.album_artist.is_none() {
-                Tag {
-                    album_artist: Some(v.clone()),
-                    ..tag.clone()
-                }
-            } else {
-                tag.clone()
+                tag.album_artist = Some(v.clone());
             }
         }
 
         // ── Remove empty ────────────────────────────────
-        TransformRule::RemoveEmptyFields => Tag {
-            title: tag.title.as_ref().and_then(|s| {
+        TransformRule::RemoveEmptyFields => {
+            tag.title = tag.title.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            track_artist: tag.track_artist.as_ref().and_then(|s| {
+            });
+            tag.track_artist = tag.track_artist.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            album: tag.album.as_ref().and_then(|s| {
+            });
+            tag.album = tag.album.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            album_artist: tag.album_artist.as_ref().and_then(|s| {
+            });
+            tag.album_artist = tag.album_artist.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            genre: tag.genre.as_ref().and_then(|s| {
+            });
+            tag.genre = tag.genre.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            lyrics: tag.lyrics.as_ref().and_then(|s| {
+            });
+            tag.lyrics = tag.lyrics.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            comment: tag.comment.as_ref().and_then(|s| {
+            });
+            tag.comment = tag.comment.as_ref().and_then(|s| {
                 let t = s.trim();
                 if t.is_empty() {
                     None
                 } else {
                     Some(t.to_string())
                 }
-            }),
-            ..tag.clone()
-        },
+            });
+        }
 
         // ── Pictures ────────────────────────────────────
-        TransformRule::RemoveNonCoverPictures => Tag {
-            pictures: tag
-                .pictures
-                .iter()
-                .filter(|p| {
-                    matches!(
-                        p.picture_type,
-                        super::picture::PictureType::CoverFront
-                            | super::picture::PictureType::CoverBack
-                    )
-                })
-                .cloned()
-                .collect(),
-            ..tag.clone()
-        },
+        TransformRule::RemoveNonCoverPictures => {
+            tag.pictures.retain(|p| {
+                matches!(
+                    p.picture_type,
+                    super::picture::PictureType::CoverFront
+                        | super::picture::PictureType::CoverBack
+                )
+            });
+        }
     }
 }
 

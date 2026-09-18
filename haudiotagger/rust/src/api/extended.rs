@@ -599,8 +599,15 @@ fn write_extended_to_bytes_inner(
 
 /// Apply partial changes to the extended tag at `path`.
 pub fn update_extended(path: String, changes: ExtendedChanges) -> Result<(), HaudiotaggerError> {
-    let base = read_extended_or_empty(&path)?;
-    write_extended(path, changes.merge(&base))
+    let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+        message: format!("Could not read file: {e}"),
+    })?;
+    let base = read_extended_from_bytes(bytes.clone()).unwrap_or_default();
+    let merged = changes.merge(&base);
+    let out = write_extended_to_bytes_inner(&bytes, &merged)?;
+    std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
+        message: format!("Could not write file: {e}"),
+    })
 }
 
 /// Apply partial changes to extended tag bytes, returning modified bytes.
@@ -609,14 +616,8 @@ pub fn update_extended_from_bytes(
     changes: ExtendedChanges,
 ) -> Result<Vec<u8>, HaudiotaggerError> {
     let base = read_extended_from_bytes(bytes.clone()).unwrap_or_default();
-    write_extended_to_bytes(bytes, changes.merge(&base))
-}
-
-fn read_extended_or_empty(path: &str) -> Result<ExtendedTag, HaudiotaggerError> {
-    let bytes = std::fs::read(path).map_err(|e| HaudiotaggerError::OpenFile {
-        message: format!("Could not read file: {e}"),
-    })?;
-    read_extended_from_bytes(bytes).or_else(|_| Ok(ExtendedTag::default()))
+    let merged = changes.merge(&base);
+    write_extended_to_bytes_inner(&bytes, &merged)
 }
 
 // ── Remove ──
