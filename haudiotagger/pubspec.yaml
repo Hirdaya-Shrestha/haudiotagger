@@ -3,7 +3,7 @@ description: Read and write audio metadata in Flutter. Supports MP3, FLAC, OGG, 
 version: 2.0.0
 homepage: https://github.com/Hirdaya-Shrestha/haudiotagger
 repository: https://github.com/Hirdaya-Shrestha/haudiotagger
-documentation: https://github.com/Hirdaya-Shrestha/haudiotagger/wiki
+documentation: https://haudiotagger.hirdaya-shrestha.com.np/docs
 screenshots:
   - description: 'hAudiotagger logo'
     path: logo.png

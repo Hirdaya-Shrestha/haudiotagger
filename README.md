@@ -103,7 +103,7 @@ final result = await Haudiotagger.batchWrite(paths, tag);
 
 ## Documentation
 
-View Full **[Documentation &rarr;](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki)**
+View Full **[Documentation](https://haudiotagger.hirdaya-shrestha.com.np/docs)**
 
 | Page | Description |
 |------|-------------|
@@ -116,6 +116,8 @@ View Full **[Documentation &rarr;](https://github.com/Hirdaya-Shrestha/haudiotag
 | [Web Setup](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/Web-Setup) | Cross-origin isolation & WASM config |
 | [Platform Notes](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/Platform-Notes) | Platform-specific considerations |
 | [FAQ](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/FAQ) | Common questions & troubleshooting |
+
+*Documentation also available on [Github Wiki](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki)*
 
 ## Live Demo
 
