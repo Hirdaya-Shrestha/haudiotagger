@@ -356,12 +356,13 @@ where
     F: FnOnce(LoftyTag) -> Result<LoftyTag, HaudiotaggerError>,
 {
     let audio = strip_ape(strip_id3v1(strip_id3v2(bytes)));
-    let file = get_file_from_bytes(bytes)?;
-    let tag_type = file.primary_tag_type();
 
-    let mut lo_tag = LoftyTag::new(tag_type);
-    if let Some(existing_tag) = file.primary_tag() {
-        let std_tag = Tag::from(existing_tag);
+    // MP3s always use ID3v2 — skip lofty's full file probe.
+    let mut lo_tag = LoftyTag::new(TagType::Id3v2);
+
+    // Preserve existing standard tags by parsing only the ID3v2 portion.
+    if let Some(id3v2) = parse_id3v2_from_bytes(bytes) {
+        let std_tag = Tag::from(&id3v2);
         apply_tag_to_lofty_tag(std_tag, &mut lo_tag)?;
     }
 
@@ -378,6 +379,29 @@ where
     out.extend_from_slice(&tag_bytes);
     out.extend_from_slice(audio);
     Ok(out)
+}
+
+/// Parse only the ID3v2 tag from raw MP3 bytes without full file probing.
+/// Returns `None` if the bytes don't start with an ID3v2 header.
+fn parse_id3v2_from_bytes(bytes: &[u8]) -> Option<lofty::tag::Tag> {
+    use std::io::Cursor;
+    if bytes.len() < 10 || &bytes[0..3] != b"ID3" {
+        return None;
+    }
+    let size = ((bytes[6] as usize & 0x7F) << 21)
+        | ((bytes[7] as usize & 0x7F) << 14)
+        | ((bytes[8] as usize & 0x7F) << 7)
+        | (bytes[9] as usize & 0x7F);
+    let tag_end = 10 + size;
+    if tag_end > bytes.len() {
+        return None;
+    }
+    let mut cursor = Cursor::new(&bytes[..tag_end]);
+    lofty::probe::Probe::new(&mut cursor)
+        .guess_file_type()
+        .ok()
+        .and_then(|p| p.read().ok())
+        .and_then(|f| f.primary_tag().cloned())
 }
 
 /// Write metadata to in-memory bytes, returns modified bytes (for web/WASM).
@@ -555,14 +579,18 @@ pub fn batch_update_changes(paths: Vec<String>, changes: TagChanges) -> BatchRes
     let processed: Vec<(String, Result<(), HaudiotaggerError>)> = paths
         .into_par_iter()
         .map(|path| {
-            let base = match read_or_empty(&path) {
-                Ok(tag) => tag,
-                Err(e) => return (path, Err(e)),
-            };
+            let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+                message: format!("Could not read file: {e}"),
+            })?;
+            let base = read_bytes_or_empty(&bytes)?;
             let merged = changes.merge(&base);
-            let result = write(path.clone(), merged);
-            (path, result)
+            let out = write_to_bytes(bytes, merged)?;
+            std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
+                message: format!("Could not write file: {e}"),
+            })?;
+            Ok(())
         })
+        .map(|r| (String::new(), r))
         .collect();
 
     collect_batch_result(processed)
@@ -1407,7 +1435,17 @@ pub fn copy_metadata(
     include_lyrics: bool,
     include_custom_tags: bool,
 ) -> Result<(), HaudiotaggerError> {
-    let mut tag = read(source.clone())?;
+    let bytes = std::fs::read(&source).map_err(|e| HaudiotaggerError::OpenFile {
+        message: format!("Could not read source file: {e}"),
+    })?;
+    let file = get_file_from_bytes(&bytes)?;
+    let mut tag = tag_from_file(&file)?;
+
+    let custom = if include_custom_tags {
+        extract_custom_tags_from_file(&file)?
+    } else {
+        std::collections::HashMap::new()
+    };
 
     if !include_artwork {
         tag.pictures = Vec::new();
@@ -1415,13 +1453,6 @@ pub fn copy_metadata(
     if !include_lyrics {
         tag.lyrics = None;
     }
-
-    // Extract custom tags before consuming the source file
-    let custom = if include_custom_tags {
-        get_custom_tags(source)?
-    } else {
-        std::collections::HashMap::new()
-    };
 
     write(destination.clone(), tag)?;
 

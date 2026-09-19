@@ -1,4 +1,4 @@
-use crate::api::api::{read, read_from_bytes, write, write_to_bytes};
+use crate::api::api::{read, read_from_bytes, write_to_bytes};
 use crate::api::error::HaudiotaggerError;
 use crate::api::picture::Picture;
 use crate::api::tag::Tag;
@@ -83,8 +83,15 @@ impl TagChanges {
 
 /// Apply [changes] to the tag at `path`, preserving any fields not mentioned.
 pub fn update(path: String, changes: TagChanges) -> Result<(), HaudiotaggerError> {
-    let base = read_or_empty(&path)?;
-    write(path, changes.merge(&base))
+    let bytes = std::fs::read(&path).map_err(|e| HaudiotaggerError::OpenFile {
+        message: format!("Could not read file: {e}"),
+    })?;
+    let base = read_bytes_or_empty(&bytes)?;
+    let merged = changes.merge(&base);
+    let out = crate::api::api::write_to_bytes(bytes, merged)?;
+    std::fs::write(&path, out).map_err(|e| HaudiotaggerError::Write {
+        message: format!("Could not write file: {e}"),
+    })
 }
 
 /// Apply [changes] to a tag held in `bytes`, returning the modified bytes.

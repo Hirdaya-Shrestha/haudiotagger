@@ -4,6 +4,7 @@
 - Pipeline rules now mutate tags in place instead of cloning per rule
 - Zero-alloc checks for `is_mp3()` and `is_standard_vorbis_key()`
 - Single-pass whitespace collapsing in `format_filename()` and pipeline
+- Some other minor improvements
 
 ## 2.0.0
 
