@@ -21,6 +21,15 @@
 
 Read, write, and edit audio metadata across **Android, iOS, Linux, macOS, Windows, and Web**. Built on [lofty](https://github.com/Serial-ATA/lofty-rs) via [flutter_rust_bridge](https://github.com/fzyzcjy/flutter_rust_bridge).
 
+## Live Demo
+
+Try hAudiotagger in your browser! No installation, no servers. Everything runs inside in your browser.
+
+**[hAudiotagger Web Demo](https://haudiotagger.hirdaya-shrestha.com.np/)**
+
+> [!NOTE]
+> On the web, use `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`). See [Web Setup](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/Web-Setup) for details.
+
 ## Install
 
 ```yaml
@@ -30,27 +39,57 @@ dependencies:
 
 ## Quick Start
 
+### Read Metadata
+
+Read metadata from an audio file:
+
 ```dart
 import 'package:haudiotagger/haudiotagger.dart';
 
-// Read
 final tag = await Haudiotagger.read('/path/to/song.mp3');
+
 print(tag?.title);
+print(tag?.artist);
+print(tag?.album);
+```
 
-// Write
-await Haudiotagger.write('/path/to/song.mp3', Tag(
-  title: 'My Song',
-  artist: 'Artist',
-  album: 'Album',
-));
+### Write Metadata
 
-// Update (preserves other fields)
-await Haudiotagger.update('/path/to/song.mp3', TagChanges(
-  album: 'New Album',
-));
+Write or replace metadata for an audio file:
 
-// Batch
-final result = await Haudiotagger.batchWrite(paths, tag);
+```dart
+await Haudiotagger.write(
+  '/path/to/song.mp3',
+  Tag(
+    title: 'My Song',
+    artist: 'Artist',
+    album: 'Album',
+  ),
+);
+```
+
+### Update Metadata
+
+Update specific fields while preserving the existing metadata:
+
+```dart
+await Haudiotagger.update(
+  '/path/to/song.mp3',
+  TagChanges(
+    album: 'New Album',
+  ),
+);
+```
+
+### Batch Write
+
+Write the same metadata to multiple audio files:
+
+```dart
+final result = await Haudiotagger.batchWrite(
+  paths,
+  tag,
+);
 ```
 
 ## Features
@@ -88,7 +127,7 @@ final result = await Haudiotagger.batchWrite(paths, tag);
 | **APE** | Yes | Yes | APE, ID3v2*, ID3v1 |
 | **WavPack** | Yes | Yes | APE, ID3v1 |
 
-\* Read only due to lack of official support
+\* **Read only** due to lack of official support
 
 ## Performance
 
@@ -117,16 +156,7 @@ View Full **[Documentation](https://haudiotagger.hirdaya-shrestha.com.np/docs)**
 | [Platform Notes](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/Platform-Notes) | Platform-specific considerations |
 | [FAQ](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/FAQ) | Common questions & troubleshooting |
 
-*Documentation also available on [Github Wiki](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki)*
-
-## Live Demo
-
-Try hAudiotagger in your browser — no install required:
-
-**[hAudiotagger Web Demo](https://haudiotagger.hirdaya-shrestha.com.np/)**
-
-> [!NOTE]
-> On the web, use `*FromBytes` variants (e.g. `readFromBytes`, `writeToBytes`). See [Web Setup](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki/Web-Setup) for details.
+*Documentation is also available on [Github Wiki](https://github.com/Hirdaya-Shrestha/haudiotagger/wiki)*
 
 ## Requirements
 
