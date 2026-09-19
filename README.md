@@ -62,7 +62,7 @@ Try hAudiotagger directly in your browser.
 
 **No installation. No server-side processing. Everything runs locally in your browser.**
 
-<p align="center">
+<p>
   <a href="https://haudiotagger.hirdaya-shrestha.com.np/">
     <img src="https://img.shields.io/badge/▶_Try_the_Live_Demo-448cf3?style=for-the-badge" alt="Try Live Demo">
   </a>
