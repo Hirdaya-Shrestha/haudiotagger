@@ -9,9 +9,14 @@ let package = Package(
     ],
     targets: [
         .binaryTarget(
+            name: "haudiotaggerFFI",
+            url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v2.0.5/macos.zip",
+            checksum: "beb65e75f0a5a43a81ce452af704219be38615743dd801b2e9d05d3bdd4724a4"
+        ),
+        .target(
             name: "haudiotagger",
-            url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v2.0.4/macos.zip",
-            checksum: "f80bbcf26cdf1f4a38da5ba21b5b36e5e9d1d8d0129d3bef362b75bfb2bd77e5"
+            dependencies: ["haudiotaggerFFI"],
+            path: "Sources/haudiotagger"
         )
     ]
 )
