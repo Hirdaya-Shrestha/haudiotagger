@@ -10,7 +10,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "haudiotagger",
-            path: "Frameworks/haudiotagger.xcframework"
+            url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v2.0.4/ios.zip",
+            checksum: "397025e6507c3c3b3d596bf7f6a9d961d073f2fca5c1a5900edc21759012613a"
         )
     ]
 )
