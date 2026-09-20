@@ -1,20 +1,23 @@
 # Download the binary from GitHub.
-version = "2.0.2"
+version = "2.0.3"
 lib_url = "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v#{version}/macos.zip"
 
 `
 mkdir -p Frameworks
 cd Frameworks
-if [ ! -d macos.zip ]; then
+
+if [ ! -d haudiotagger.xcframework ]; then
   curl -L "#{lib_url}" -o macos.zip
-  unzip -o macos.zip -d 'haudiotagger.xcframework'
+  unzip -o macos.zip
+  rm macos.zip
 fi
+
 cd ..
 `
 
 Pod::Spec.new do |s|
   s.name             = 'haudiotagger'
-  s.version = '2.0.2'
+  s.version = '2.0.3'
   s.summary          = 'A Flutter plugin for reading and writing audio metadata.'
   s.description      = <<-DESC
 A Flutter plugin for reading and writing audio metadata, powered by Rust.

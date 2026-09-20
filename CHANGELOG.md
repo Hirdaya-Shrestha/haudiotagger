@@ -1,3 +1,8 @@
+## 2.0.3
+
+- MacOS and iOS podspec fix
+- Some minor improvements
+
 ## 2.0.2
 
 - Windows CMAKE symlink error fixed 
