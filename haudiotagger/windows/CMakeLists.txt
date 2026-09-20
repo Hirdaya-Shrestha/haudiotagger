@@ -44,9 +44,16 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
+# Resolve the real (non-symlinked) source directory. On Windows this file is
+# reached through Flutter's generated .plugin_symlinks directory, and CMake
+# >= 3.31 refuses to write archive entries through a symlinked directory
+# (ARCHIVE_EXTRACT_SECURE_SYMLINKS). Reading/copying through the symlink is
+# unaffected, so only the download/extract destination needs this.
+get_filename_component(HAUDIOTAGGER_REAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
+
 # Download the binary from GitHub.
 set(Version "2.0.1")
-set(LibPath "${CMAKE_CURRENT_SOURCE_DIR}/windows.tar.gz")
+set(LibPath "${HAUDIOTAGGER_REAL_DIR}/windows.tar.gz")
 if(NOT EXISTS ${LibPath})
   file(DOWNLOAD
     "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${Version}/windows.tar.gz"
@@ -55,17 +62,21 @@ if(NOT EXISTS ${LibPath})
   )
 endif()
 
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/haudiotagger.dll")
+if(NOT EXISTS "${HAUDIOTAGGER_REAL_DIR}/haudiotagger.dll")
   execute_process(
     COMMAND ${CMAKE_COMMAND} -E tar -xzf windows.tar.gz
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    WORKING_DIRECTORY ${HAUDIOTAGGER_REAL_DIR}
+    RESULT_VARIABLE HAUDIOTAGGER_EXTRACT_RESULT
   )
+  if(NOT HAUDIOTAGGER_EXTRACT_RESULT EQUAL 0)
+    message(FATAL_ERROR "haudiotagger: failed to extract windows.tar.gz")
+  endif()
 endif()
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
 set(haudiotagger_bundled_libraries
-  "${CMAKE_CURRENT_SOURCE_DIR}/haudiotagger.dll"
+  "${HAUDIOTAGGER_REAL_DIR}/haudiotagger.dll"
   PARENT_SCOPE
 )
