@@ -52,7 +52,7 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 get_filename_component(HAUDIOTAGGER_REAL_DIR "${CMAKE_CURRENT_SOURCE_DIR}" REALPATH)
 
 # Download the binary from GitHub.
-set(Version "2.0.1")
+set(Version "2.0.2")
 set(LibPath "${HAUDIOTAGGER_REAL_DIR}/windows.tar.gz")
 if(NOT EXISTS ${LibPath})
   file(DOWNLOAD

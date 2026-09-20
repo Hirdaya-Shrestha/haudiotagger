@@ -1,3 +1,9 @@
+## 2.0.2
+
+- Windows CMAKE symlink error fixed 
+- MacOS and iOS package fix
+- Minor improvements
+
 ## 2.0.1
 
 - Performance optimizations: eliminated double file reads, reduced allocations in hot paths
