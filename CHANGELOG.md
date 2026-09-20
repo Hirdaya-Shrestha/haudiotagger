@@ -1,3 +1,8 @@
+## 2.0.5
+
+- Some minor improvements
+- Proper MacOS and iOS package files
+
 ## 2.0.4
 
 - MacOS and iOS Package made to use remote target binary directly

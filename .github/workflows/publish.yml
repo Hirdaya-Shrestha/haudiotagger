@@ -556,6 +556,19 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      # The macOS/iOS SPM manifests below reference a Sources/haudiotagger
+      # Swift target that is checked into the repo (not generated here). If
+      # it's ever missing, Package.swift would resolve but Flutter's
+      # GeneratedPluginRegistrant would fail with "unable to resolve module
+      # dependency: 'haudiotagger'" at app build time instead of here, which
+      # is much harder to diagnose. Fail fast instead.
+      - name: Verify Swift plugin sources exist
+        run: |
+          set -e
+          test -f haudiotagger/macos/haudiotagger/Sources/haudiotagger/HaudiotaggerPlugin.swift
+          test -f haudiotagger/ios/haudiotagger/Sources/haudiotagger/HaudiotaggerPlugin.swift
+          echo "Swift plugin sources present for macOS and iOS SPM packages."
+
       - name: Download released iOS and macOS ZIPs
         env:
           GH_TOKEN: ${{ github.token }}
@@ -601,6 +614,13 @@ jobs:
           echo "ios=$IOS_CHECKSUM" >> "$GITHUB_OUTPUT"
           echo "macos=$MACOS_CHECKSUM" >> "$GITHUB_OUTPUT"
 
+      # NOTE: the binaryTarget is named "haudiotaggerFFI", not "haudiotagger".
+      # The "haudiotagger" product now points at a regular .target that
+      # compiles Sources/haudiotagger/HaudiotaggerPlugin.swift and depends on
+      # the binary. Without that Swift target, this manifest resolves fine
+      # but Flutter's `import haudiotagger` can't find a real module (a
+      # binaryTarget alone has no Swift interface) -- that was the root
+      # cause of the "unable to resolve module dependency" build failures.
       - name: Update macOS Package.swift
         env:
           VERSION: ${{ needs.bump_version.outputs.version }}
@@ -618,9 +638,14 @@ jobs:
               ],
               targets: [
                   .binaryTarget(
-                      name: "haudiotagger",
+                      name: "haudiotaggerFFI",
                       url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/macos.zip",
                       checksum: "${MACOS_CHECKSUM}"
+                  ),
+                  .target(
+                      name: "haudiotagger",
+                      dependencies: ["haudiotaggerFFI"],
+                      path: "Sources/haudiotagger"
                   )
               ]
           )
@@ -643,9 +668,14 @@ jobs:
               ],
               targets: [
                   .binaryTarget(
-                      name: "haudiotagger",
+                      name: "haudiotaggerFFI",
                       url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/ios.zip",
                       checksum: "${IOS_CHECKSUM}"
+                  ),
+                  .target(
+                      name: "haudiotagger",
+                      dependencies: ["haudiotaggerFFI"],
+                      path: "Sources/haudiotagger"
                   )
               ]
           )
