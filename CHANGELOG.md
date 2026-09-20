@@ -1,3 +1,8 @@
+## 2.0.4
+
+- MacOS and iOS Package made to use remote target binary directly
+- Some minor improvements
+
 ## 2.0.3
 
 - MacOS and iOS podspec fix

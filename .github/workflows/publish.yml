@@ -18,46 +18,72 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.extract.outputs.version }}
+
     steps:
       - uses: actions/checkout@v7
 
       - name: Extract version from tag
         id: extract
-        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Update all version references
         run: |
           VERSION="${{ steps.extract.outputs.version }}"
           OLD_VERSION=$(grep -oP '\d+\.\d+\.\d+' haudiotagger/pubspec.yaml | head -1)
-          
+
           # Cargo.toml
-          sed -i "s/^version = .*/version = \"${VERSION}\"/" haudiotagger/rust/Cargo.toml
-          
-          # pubspec.yaml (both main and rust_builder)
-          sed -i "s/^version: .*/version: ${VERSION}/" haudiotagger/pubspec.yaml
-          sed -i "s/^version: .*/version: ${VERSION}/" haudiotagger/rust_builder/pubspec.yaml
-          
-          # Podspecs (both version line and s.version)
-          sed -i "s/^version = .*/version = \"${VERSION}\"/" haudiotagger/ios/haudiotagger.podspec
-          sed -i "s/^  s.version .*/  s.version = '${VERSION}'/" haudiotagger/ios/haudiotagger.podspec
-          sed -i "s/^version = .*/version = \"${VERSION}\"/" haudiotagger/macos/haudiotagger.podspec
-          sed -i "s/^  s.version .*/  s.version = '${VERSION}'/" haudiotagger/macos/haudiotagger.podspec
-          
-          # CMakeLists.txt (all platforms)
-          sed -i "s/^set(Version .*/set(Version \"${VERSION}\")/" haudiotagger/android/CMakeLists.txt
-          sed -i "s/^set(Version .*/set(Version \"${VERSION}\")/" haudiotagger/linux/CMakeLists.txt
-          sed -i "s/^set(Version .*/set(Version \"${VERSION}\")/" haudiotagger/windows/CMakeLists.txt
-          
+          sed -i "s/^version = .*/version = \"${VERSION}\"/" \
+            haudiotagger/rust/Cargo.toml
+
+          # pubspec.yaml
+          sed -i "s/^version: .*/version: ${VERSION}/" \
+            haudiotagger/pubspec.yaml
+
+          # rust_builder/pubspec.yaml
+          sed -i "s/^version: .*/version: ${VERSION}/" \
+            haudiotagger/rust_builder/pubspec.yaml
+
+          # iOS Podspec
+          sed -i "s/^version = .*/version = \"${VERSION}\"/" \
+            haudiotagger/ios/haudiotagger.podspec
+
+          sed -i "s/^  s.version .*/  s.version = '${VERSION}'/" \
+            haudiotagger/ios/haudiotagger.podspec
+
+          # macOS Podspec
+          sed -i "s/^version = .*/version = \"${VERSION}\"/" \
+            haudiotagger/macos/haudiotagger.podspec
+
+          sed -i "s/^  s.version .*/  s.version = '${VERSION}'/" \
+            haudiotagger/macos/haudiotagger.podspec
+
+          # CMakeLists.txt
+          sed -i "s/^set(Version .*/set(Version \"${VERSION}\")/" \
+            haudiotagger/android/CMakeLists.txt
+
+          sed -i "s/^set(Version .*/set(Version \"${VERSION}\")/" \
+            haudiotagger/linux/CMakeLists.txt
+
+          sed -i "s/^set(Version .*/set(Version \"${VERSION}\")/" \
+            haudiotagger/windows/CMakeLists.txt
+
           # README.md
-          sed -i "s/haudiotagger: \^${OLD_VERSION}/haudiotagger: ^${VERSION}/" README.md
-          sed -i "s/hAudiotagger ${OLD_VERSION}/hAudiotagger ${VERSION}/" README.md
-          sed -i "s/\`${OLD_VERSION}\`/\`${VERSION}\`/g" README.md
+          sed -i "s/haudiotagger: \^${OLD_VERSION}/haudiotagger: ^${VERSION}/" \
+            README.md
+
+          sed -i "s/hAudiotagger ${OLD_VERSION}/hAudiotagger ${VERSION}/" \
+            README.md
+
+          sed -i "s/\`${OLD_VERSION}\`/\`${VERSION}\`/g" \
+            README.md
 
       - name: Commit version bump
         run: |
           git config user.name "Hirdaya-Shrestha"
           git config user.email "hirdaya098@gmail.com"
+
           git add -A
+
           if git diff --cached --quiet; then
             echo "No version changes to commit"
           else
@@ -66,22 +92,30 @@ jobs:
           fi
 
   # ============================================================
-  # BUILD FRAMEWORKS (iOS/macOS SPM)
+  # BUILD FRAMEWORKS
   # ============================================================
   build_frameworks:
     name: Build Frameworks
     needs: bump_version
     runs-on: macos-latest
+
     steps:
       - uses: actions/checkout@v7
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
+
       - uses: dtolnay/rust-toolchain@stable
-      - run: flutter pub get
+
+      - name: Flutter pub get
         working-directory: haudiotagger
-      - run: cd cli && flutter pub get
+        run: flutter pub get
+
+      - name: CLI pub get
+        working-directory: cli
+        run: flutter pub get
 
       - name: Build iOS xcframework
         run: dart run cli build ios -v
@@ -89,105 +123,68 @@ jobs:
       - name: Build macOS xcframework
         run: dart run cli build macos -v
 
-      - name: Stage frameworks for SPM
+      - name: Verify frameworks
         run: |
           set -e
-          echo "=== All xcframeworks ==="
-          find . -name "*.xcframework" -type d 2>/dev/null || true
-          
-          mkdir -p haudiotagger/ios/haudiotagger/Frameworks \
-                 haudiotagger/macos/haudiotagger/Frameworks
-          
-          echo "Checking iOS source..."
-          ls -la haudiotagger/ios/Frameworks/ 2>/dev/null || echo "iOS Frameworks dir missing"
-          echo "Checking macOS source..."
-          ls -la haudiotagger/macos/Frameworks/ 2>/dev/null || echo "macOS Frameworks dir missing"
-          
-          cp -R haudiotagger/ios/Frameworks/haudiotagger.xcframework \
-                 haudiotagger/ios/haudiotagger/Frameworks/
-          echo "iOS staged OK"
-          
-          if [ -d "haudiotagger/macos/Frameworks/haudiotagger.xcframework" ]; then
-            cp -R haudiotagger/macos/Frameworks/haudiotagger.xcframework \
-                   haudiotagger/macos/haudiotagger/Frameworks/
-            echo "macOS staged OK"
-          else
-            echo "ERROR: macOS xcframework not found at haudiotagger/macos/Frameworks/haudiotagger.xcframework"
-            echo "Contents of haudiotagger/macos/Frameworks/:"
-            ls -laR haudiotagger/macos/Frameworks/ 2>/dev/null || echo "Directory does not exist"
-            exit 1
-          fi
-          
-          echo "=== Staged ==="
-          ls -laR haudiotagger/ios/haudiotagger/Frameworks/
-          ls -laR haudiotagger/macos/haudiotagger/Frameworks/
 
-      - name: Create zip archives and generate checksums
+          echo "=== iOS Framework ==="
+          ls -la haudiotagger/ios/Frameworks/ 2>/dev/null || true
+          find haudiotagger/ios/Frameworks \
+            -maxdepth 3 \
+            -type f \
+            2>/dev/null || true
+
+          echo
+          echo "=== macOS Framework ==="
+          ls -la haudiotagger/macos/Frameworks/ 2>/dev/null || true
+          find haudiotagger/macos/Frameworks \
+            -maxdepth 3 \
+            -type f \
+            2>/dev/null || true
+
+          test -d haudiotagger/ios/Frameworks/haudiotagger.xcframework
+          test -d haudiotagger/macos/Frameworks/haudiotagger.xcframework
+
+      - name: Create release ZIP archives
         run: |
           set -e
-          IOS_DIR="$GITHUB_WORKSPACE/haudiotagger/ios/haudiotagger/Frameworks"
-          MACOS_DIR="$GITHUB_WORKSPACE/haudiotagger/macos/haudiotagger/Frameworks"
 
-          cd "$IOS_DIR"
+          cd haudiotagger/ios/Frameworks
           zip -r ios.zip haudiotagger.xcframework
-          IOS_CHECKSUM=$(swift package compute-checksum ios.zip)
-          echo "IOS_CHECKSUM=$IOS_CHECKSUM" >> $GITHUB_ENV
 
-          cd "$MACOS_DIR"
+          cd "$GITHUB_WORKSPACE/haudiotagger/macos/Frameworks"
           zip -r macos.zip haudiotagger.xcframework
-          MACOS_CHECKSUM=$(swift package compute-checksum macos.zip)
-          echo "MACOS_CHECKSUM=$MACOS_CHECKSUM" >> $GITHUB_ENV
 
-      - name: Update Package.swift with version and checksums
-        run: |
-          VERSION="${{ needs.bump_version.outputs.version }}"
-          
-          perl -pi -e "s|url: \".*ios.zip\"|url: \"https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/ios.zip\"|" \
-            haudiotagger/ios/haudiotagger/Package.swift
-          perl -pi -e "s|checksum: \".*\"|checksum: \"${IOS_CHECKSUM}\"|" \
-            haudiotagger/ios/haudiotagger/Package.swift
-          
-          perl -pi -e "s|url: \".*macos.zip\"|url: \"https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/macos.zip\"|" \
-            haudiotagger/macos/haudiotagger/Package.swift
-          perl -pi -e "s|checksum: \".*\"|checksum: \"${MACOS_CHECKSUM}\"|" \
-            haudiotagger/macos/haudiotagger/Package.swift
+          echo "=== iOS ZIP ==="
+          unzip -l "$GITHUB_WORKSPACE/haudiotagger/ios/Frameworks/ios.zip"
 
-      - name: Commit updated Package.swift
-        run: |
-          git config user.name "Hirdaya-Shrestha"
-          git config user.email "hirdaya098@gmail.com"
-          git add haudiotagger/ios/haudiotagger/Package.swift \
-                  haudiotagger/macos/haudiotagger/Package.swift
-          if git diff --cached --quiet; then
-            echo "No Package.swift changes to commit"
-          else
-            git commit -m "build: update Package.swift checksums for ${{ needs.bump_version.outputs.version }}"
-            git push origin HEAD:main
-          fi
+          echo
+          echo "=== macOS ZIP ==="
+          unzip -l "$GITHUB_WORKSPACE/haudiotagger/macos/Frameworks/macos.zip"
 
       - name: Upload iOS xcframework
         uses: actions/upload-artifact@v4
         with:
           name: ios-spm
-          path: haudiotagger/ios/haudiotagger/Frameworks/haudiotagger.xcframework
+          path: haudiotagger/ios/Frameworks/haudiotagger.xcframework
 
       - name: Upload macOS xcframework
         uses: actions/upload-artifact@v4
         with:
           name: macos-spm
-          path: haudiotagger/macos/haudiotagger/Frameworks/haudiotagger.xcframework
+          path: haudiotagger/macos/Frameworks/haudiotagger.xcframework
 
-      - name: Upload iOS zip for release
+      - name: Upload iOS ZIP
         uses: actions/upload-artifact@v4
         with:
           name: ios-zip
-          path: haudiotagger/ios/haudiotagger/Frameworks/ios.zip
+          path: haudiotagger/ios/Frameworks/ios.zip
 
-      - name: Upload macOS zip for release
+      - name: Upload macOS ZIP
         uses: actions/upload-artifact@v4
         with:
           name: macos-zip
-          path: haudiotagger/macos/haudiotagger/Frameworks/macos.zip
+          path: haudiotagger/macos/Frameworks/macos.zip
 
   # ============================================================
   # LINT
@@ -195,41 +192,59 @@ jobs:
   rust_lint:
     name: Rust Lint
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v7
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
-      - name: flutter pub get
-        run: cd haudiotagger && flutter pub get
+
+      - name: Flutter pub get
+        working-directory: haudiotagger
+        run: flutter pub get
+
       - name: Format
-        run: cd haudiotagger/rust && cargo fmt --check
+        working-directory: haudiotagger/rust
+        run: cargo fmt --check
+
       - name: Clippy
-        run: cd haudiotagger/rust && cargo clippy
+        working-directory: haudiotagger/rust
+        run: cargo clippy
 
   dart_lint:
     name: Dart Lint
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v7
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
-      - run: cd haudiotagger && flutter pub get
+
+      - name: Flutter pub get
+        working-directory: haudiotagger
+        run: flutter pub get
+
       - name: Format
         working-directory: haudiotagger/lib/src
         run: dart format --set-exit-if-changed .
+
       - name: Lint
         working-directory: haudiotagger/lib/src
         run: dart analyze --fatal-infos
+
       - name: Format Example
         working-directory: haudiotagger/example/lib
         run: dart format --set-exit-if-changed .
+
       - name: Lint Example
         working-directory: haudiotagger/example/lib
         run: dart analyze --fatal-infos
@@ -237,16 +252,23 @@ jobs:
   dart_cli_lint:
     name: Dart CLI Lint
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v7
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
-      - run: cd cli && flutter pub get
+
+      - name: Flutter pub get
+        working-directory: cli
+        run: flutter pub get
+
       - name: Format
         working-directory: cli
         run: dart format --set-exit-if-changed .
+
       - name: Lint
         working-directory: cli
         run: dart analyze --fatal-infos
@@ -256,9 +278,16 @@ jobs:
   # ============================================================
   build_and_upload:
     name: Build ${{ matrix.target }}
-    needs: [bump_version, build_frameworks, rust_lint, dart_lint, dart_cli_lint]
+    needs:
+      - bump_version
+      - build_frameworks
+      - rust_lint
+      - dart_lint
+      - dart_cli_lint
+
     strategy:
       fail-fast: false
+
       matrix:
         include:
           - target: linux
@@ -289,18 +318,27 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           cache: true
+
       - uses: dtolnay/rust-toolchain@stable
-      - run: flutter pub get
+
+      - name: Flutter pub get
         working-directory: haudiotagger
-      - run: cd cli && flutter pub get
+        run: flutter pub get
+
+      - name: CLI pub get
+        working-directory: cli
+        run: flutter pub get
 
       - name: Install MUSL dependencies
         if: matrix.target == 'linux'
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
 
       - name: Build
         run: dart run cli build ${{ matrix.target }} -v
@@ -316,40 +354,77 @@ jobs:
   # ============================================================
   build_web:
     name: Build Web WASM
-    needs: [bump_version, build_frameworks, rust_lint, dart_lint, dart_cli_lint]
+    needs:
+      - bump_version
+      - build_frameworks
+      - rust_lint
+      - dart_lint
+      - dart_cli_lint
+
     runs-on: ubuntu-latest
+
     env:
       RUSTUP_TOOLCHAIN: nightly
       CARGO_UNSTABLE_BUILD_STD: std,panic_abort
       CARGO_TARGET_DIR: ${{ github.workspace }}/haudiotagger/rust/target
       RUSTFLAGS: "-C target-feature=+atomics,+bulk-memory,+mutable-globals -C link-arg=--shared-memory -C link-arg=--import-memory -C link-arg=--max-memory=1073741824 -C link-arg=--export=__heap_base -C link-arg=--export=__wasm_init_tls -C link-arg=--export=__tls_size -C link-arg=--export=__tls_align -C link-arg=--export=__tls_base -C link-arg=--export=__stack_pointer"
+
     steps:
       - uses: actions/checkout@v7
+
       - uses: dtolnay/rust-toolchain@nightly
         with:
           targets: wasm32-unknown-unknown
           components: rust-src
+
       - name: Cache Rust WASM build
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: haudiotagger/rust
           key: wasm
+
       - name: Install wasm-bindgen-cli
         run: |
-          curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.127/wasm-bindgen-0.2.127-x86_64-unknown-linux-musl.tar.gz -o wb.tar.gz
+          curl -L \
+            https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.127/wasm-bindgen-0.2.127-x86_64-unknown-linux-musl.tar.gz \
+            -o wb.tar.gz
+
           tar xzf wb.tar.gz
+
           echo "$PWD/wasm-bindgen-0.2.127-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
+
       - name: Build WASM
-        run: cargo +nightly build --manifest-path haudiotagger/rust/Cargo.toml --target wasm32-unknown-unknown -Z build-std=std,panic_abort --release
+        run: |
+          cargo +nightly build \
+            --manifest-path haudiotagger/rust/Cargo.toml \
+            --target wasm32-unknown-unknown \
+            -Z build-std=std,panic_abort \
+            --release
+
       - name: Run wasm-bindgen
-        run: wasm-bindgen haudiotagger/rust/target/wasm32-unknown-unknown/release/haudiotagger.wasm --out-dir haudiotagger/rust/pkg --no-typescript --target no-modules
+        run: |
+          wasm-bindgen \
+            haudiotagger/rust/target/wasm32-unknown-unknown/release/haudiotagger.wasm \
+            --out-dir haudiotagger/rust/pkg \
+            --no-typescript \
+            --target no-modules
+
       - name: Stage WASM files
         run: |
           mkdir -p haudiotagger/pkg
-          cp haudiotagger/rust/pkg/haudiotagger_bg.wasm haudiotagger/pkg/haudiotagger_bg.wasm
-          cp haudiotagger/rust/pkg/haudiotagger.js haudiotagger/pkg/haudiotagger.js
-          cp haudiotagger/rust/pkg/haudiotagger_bg.wasm haudiotagger_bg.wasm
-          cp haudiotagger/rust/pkg/haudiotagger.js haudiotagger.js
+
+          cp haudiotagger/rust/pkg/haudiotagger_bg.wasm \
+            haudiotagger/pkg/haudiotagger_bg.wasm
+
+          cp haudiotagger/rust/pkg/haudiotagger.js \
+            haudiotagger/pkg/haudiotagger.js
+
+          cp haudiotagger/rust/pkg/haudiotagger_bg.wasm \
+            haudiotagger_bg.wasm
+
+          cp haudiotagger/rust/pkg/haudiotagger.js \
+            haudiotagger.js
+
       - name: Upload Web artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -357,6 +432,7 @@ jobs:
           path: |
             haudiotagger_bg.wasm
             haudiotagger.js
+
       - name: Upload package WASM
         uses: actions/upload-artifact@v4
         with:
@@ -366,18 +442,292 @@ jobs:
             haudiotagger/pkg/haudiotagger_bg.wasm
 
   # ============================================================
+  # GITHUB RELEASE
+  # ============================================================
+  publish_to_release:
+    name: Publish Artifacts to GitHub Release
+    needs:
+      - bump_version
+      - build_frameworks
+      - build_and_upload
+      - build_web
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: linux
+          path: linux
+
+      - name: Download Android
+        uses: actions/download-artifact@v4
+        with:
+          name: android
+          path: android
+
+      - name: Download Windows
+        uses: actions/download-artifact@v4
+        with:
+          name: windows
+          path: windows
+
+      - name: Download iOS ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-zip
+          path: ios-zip
+
+      - name: Download macOS ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-zip
+          path: macos-zip
+
+      - name: Download Web
+        uses: actions/download-artifact@v4
+        with:
+          name: web
+          path: web
+
+      - name: Create archives
+        shell: bash
+        run: |
+          set -e
+
+          tar -C linux -czvf linux.tar.gz .
+          tar -C android -czvf android.tar.gz .
+          tar -C windows -czvf windows.tar.gz .
+
+          cp ios-zip/ios.zip ios.zip
+          cp macos-zip/macos.zip macos.zip
+
+      - name: Verify release files
+        run: |
+          set -e
+
+          echo "=== Release files ==="
+          ls -lh \
+            linux.tar.gz \
+            android.tar.gz \
+            windows.tar.gz \
+            ios.zip \
+            macos.zip \
+            web/haudiotagger_bg.wasm \
+            web/haudiotagger.js
+
+          echo
+          echo "=== iOS ZIP ==="
+          unzip -l ios.zip
+
+          echo
+          echo "=== macOS ZIP ==="
+          unzip -l macos.zip
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            linux.tar.gz
+            android.tar.gz
+            windows.tar.gz
+            ios.zip
+            macos.zip
+            web/haudiotagger_bg.wasm
+            web/haudiotagger.js
+
+  # ============================================================
+  # UPDATE SWIFT PACKAGE MANAGER
+  # ============================================================
+  update_spm:
+    name: Update Swift Package Manager
+    needs:
+      - bump_version
+      - publish_to_release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download released iOS and macOS ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+
+          VERSION="${{ needs.bump_version.outputs.version }}"
+          TAG="v${VERSION}"
+
+          mkdir -p /tmp/spm
+
+          echo "Downloading iOS release archive..."
+          gh release download "$TAG" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "ios.zip" \
+            --dir /tmp/spm
+
+          echo "Downloading macOS release archive..."
+          gh release download "$TAG" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --pattern "macos.zip" \
+            --dir /tmp/spm
+
+          echo
+          echo "=== Downloaded archives ==="
+          ls -lh /tmp/spm
+
+      - name: Generate SPM checksums
+        id: checksum
+        run: |
+          set -e
+
+          IOS_CHECKSUM=$(sha256sum /tmp/spm/ios.zip | awk '{print $1}')
+          MACOS_CHECKSUM=$(sha256sum /tmp/spm/macos.zip | awk '{print $1}')
+
+          echo "iOS checksum:"
+          echo "$IOS_CHECKSUM"
+
+          echo
+          echo "macOS checksum:"
+          echo "$MACOS_CHECKSUM"
+
+          echo "ios=$IOS_CHECKSUM" >> "$GITHUB_OUTPUT"
+          echo "macos=$MACOS_CHECKSUM" >> "$GITHUB_OUTPUT"
+
+      - name: Update macOS Package.swift
+        env:
+          VERSION: ${{ needs.bump_version.outputs.version }}
+          MACOS_CHECKSUM: ${{ steps.checksum.outputs.macos }}
+        run: |
+          cat > haudiotagger/macos/haudiotagger/Package.swift <<EOF
+          // swift-tools-version: 5.9
+          import PackageDescription
+
+          let package = Package(
+              name: "haudiotagger",
+              platforms: [.macOS(.v10_14)],
+              products: [
+                  .library(name: "haudiotagger", targets: ["haudiotagger"])
+              ],
+              targets: [
+                  .binaryTarget(
+                      name: "haudiotagger",
+                      url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/macos.zip",
+                      checksum: "${MACOS_CHECKSUM}"
+                  )
+              ]
+          )
+          EOF
+
+      - name: Update iOS Package.swift
+        env:
+          VERSION: ${{ needs.bump_version.outputs.version }}
+          IOS_CHECKSUM: ${{ steps.checksum.outputs.ios }}
+        run: |
+          cat > haudiotagger/ios/haudiotagger/Package.swift <<EOF
+          // swift-tools-version: 5.9
+          import PackageDescription
+
+          let package = Package(
+              name: "haudiotagger",
+              platforms: [.iOS(.v12)],
+              products: [
+                  .library(name: "haudiotagger", targets: ["haudiotagger"])
+              ],
+              targets: [
+                  .binaryTarget(
+                      name: "haudiotagger",
+                      url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v${VERSION}/ios.zip",
+                      checksum: "${IOS_CHECKSUM}"
+                  )
+              ]
+          )
+          EOF
+
+      - name: Verify Package.swift files
+        run: |
+          set -e
+
+          echo "=========================================="
+          echo "macOS Package.swift"
+          echo "=========================================="
+
+          cat haudiotagger/macos/haudiotagger/Package.swift
+
+          echo
+          echo "=========================================="
+          echo "iOS Package.swift"
+          echo "=========================================="
+
+          cat haudiotagger/ios/haudiotagger/Package.swift
+
+      - name: Verify checksums
+        run: |
+          set -e
+
+          IOS_CHECKSUM=$(sha256sum /tmp/spm/ios.zip | awk '{print $1}')
+          MACOS_CHECKSUM=$(sha256sum /tmp/spm/macos.zip | awk '{print $1}')
+
+          grep -q "$IOS_CHECKSUM" \
+            haudiotagger/ios/haudiotagger/Package.swift
+
+          grep -q "$MACOS_CHECKSUM" \
+            haudiotagger/macos/haudiotagger/Package.swift
+
+          echo "iOS checksum verified."
+          echo "macOS checksum verified."
+
+      - name: Commit and push Package.swift
+        run: |
+          set -e
+
+          VERSION="${{ needs.bump_version.outputs.version }}"
+
+          git config user.name "Hirdaya-Shrestha"
+          git config user.email "hirdaya098@gmail.com"
+
+          git add \
+            haudiotagger/ios/haudiotagger/Package.swift \
+            haudiotagger/macos/haudiotagger/Package.swift
+
+          if git diff --cached --quiet; then
+            echo "No Package.swift changes to commit"
+          else
+            git commit -m "build: update SPM packages for ${VERSION}"
+            git push origin HEAD:main
+          fi
+
+  # ============================================================
   # PUBLISH TO PUB.DEV
   # ============================================================
   publish:
     name: Publish to pub.dev
-    needs: [bump_version, build_and_upload, build_web, publish_to_release]
+    needs:
+      - bump_version
+      - build_and_upload
+      - build_web
+      - publish_to_release
+      - update_spm
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
       - uses: dart-lang/setup-dart@v1
 
       - name: Download native artifacts (linux)
@@ -420,29 +770,62 @@ jobs:
         shell: bash
         run: |
           set -e
+
           mkcp() {
             local d n dst found
-            d="$1"; n="$2"; dst="$3"
+
+            d="$1"
+            n="$2"
+            dst="$3"
+
             found=$(find "$d" -name "$n" | head -1)
-            if [ -z "$found" ]; then echo "WARN: $n not found under $d"; return 0; fi
+
+            if [ -z "$found" ]; then
+              echo "WARN: $n not found under $d"
+              return 0
+            fi
+
             mkdir -p "$(dirname "haudiotagger/$dst")"
             cp -r "$found" "haudiotagger/$dst"
+
             echo "staged $found -> haudiotagger/$dst"
           }
-          mkcp dl/linux        libhaudiotagger.so        linux/libhaudiotagger.so
-          mkcp dl/windows      haudiotagger.dll          windows/haudiotagger.dll
-          mkcp dl/macos        haudiotagger.xcframework  macos/Frameworks/haudiotagger.xcframework
-          mkcp dl/ios          haudiotagger.xcframework  ios/Frameworks/haudiotagger.xcframework
-          mkcp dl/package-wasm haudiotagger.js           pkg/haudiotagger.js
-          mkcp dl/package-wasm haudiotagger_bg.wasm      pkg/haudiotagger_bg.wasm
+
+          mkcp dl/linux \
+            libhaudiotagger.so \
+            linux/libhaudiotagger.so
+
+          mkcp dl/windows \
+            haudiotagger.dll \
+            windows/haudiotagger.dll
+
+          mkcp dl/macos \
+            haudiotagger.xcframework \
+            macos/Frameworks/haudiotagger.xcframework
+
+          mkcp dl/ios \
+            haudiotagger.xcframework \
+            ios/Frameworks/haudiotagger.xcframework
+
+          mkcp dl/package-wasm \
+            haudiotagger.js \
+            pkg/haudiotagger.js
+
+          mkcp dl/package-wasm \
+            haudiotagger_bg.wasm \
+            pkg/haudiotagger_bg.wasm
+
           while IFS= read -r f; do
             rel=${f#dl/android/}
             rel=${rel#haudiotagger/}
+
             mkdir -p "$(dirname "haudiotagger/$rel")"
             cp -r "$f" "haudiotagger/$rel"
+
             echo "staged $f -> haudiotagger/$rel"
           done < <(find dl/android -name 'libhaudiotagger.so')
-          echo "Staged native/web artifacts"
+
+          echo "Staged native/web artifacts."
 
       - name: Remove local Rust dependency
         working-directory: haudiotagger
@@ -464,6 +847,7 @@ jobs:
               )
 
           path.write_text(text.replace(old, ""))
+
           PY
 
           echo "Publish pubspec:"
@@ -476,70 +860,3 @@ jobs:
       - name: Publish to pub.dev (OIDC)
         working-directory: haudiotagger
         run: flutter pub publish --force
-
-  # ============================================================
-  # GITHUB RELEASE
-  # ============================================================
-  publish_to_release:
-    name: Publish Artifacts to GitHub Release
-    needs: [bump_version, build_frameworks, build_and_upload, build_web]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Linux
-        uses: actions/download-artifact@v4
-        with:
-          name: linux
-          path: linux
-
-      - name: Download Android
-        uses: actions/download-artifact@v4
-        with:
-          name: android
-          path: android
-
-      - name: Download Windows
-        uses: actions/download-artifact@v4
-        with:
-          name: windows
-          path: windows
-
-      - name: Download iOS zip (with checksum)
-        uses: actions/download-artifact@v4
-        with:
-          name: ios-zip
-          path: ios-zip
-
-      - name: Download macOS zip (with checksum)
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-zip
-          path: macos-zip
-
-      - name: Download Web
-        uses: actions/download-artifact@v4
-        with:
-          name: web
-          path: web
-
-      - name: Create archives
-        shell: bash
-        run: |
-          tar -C linux -czvf linux.tar.gz .
-          tar -C android -czvf android.tar.gz .
-          tar -C windows -czvf windows.tar.gz .
-          cp ios-zip/ios.zip ios.zip
-          cp macos-zip/macos.zip macos.zip
-
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ github.ref_name }}
-          generate_release_notes: true
-          files: |
-            linux.tar.gz
-            android.tar.gz
-            windows.tar.gz
-            ios.zip
-            macos.zip
-            web/haudiotagger_bg.wasm
-            web/haudiotagger.js

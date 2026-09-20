@@ -1,5 +1,5 @@
 # Download the binary from GitHub.
-version = "2.0.3"
+version = "2.0.4"
 lib_url = "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v#{version}/macos.zip"
 
 `
@@ -17,7 +17,7 @@ cd ..
 
 Pod::Spec.new do |s|
   s.name             = 'haudiotagger'
-  s.version = '2.0.3'
+  s.version = '2.0.4'
   s.summary          = 'A Flutter plugin for reading and writing audio metadata.'
   s.description      = <<-DESC
 A Flutter plugin for reading and writing audio metadata, powered by Rust.
