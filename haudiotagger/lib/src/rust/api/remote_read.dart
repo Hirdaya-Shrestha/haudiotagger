@@ -9,9 +9,7 @@ import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'picture.dart';
 import 'tag.dart';
 
-// These functions are ignored because they are not marked as `pub`: `detect_from_bytes`, `detect_from_url`, `evict`, `get_all`, `get_range`, `get`, `head`, `insert`, `new`, `new`, `new`, `read_at`, `retry`, `select_strategy`, `tag_from_lofty_file`
-// These types are ignored because they are neither used by any `pub` functions nor (for structs and enums) marked `#[frb(unignore)]`: `DetectedFormat`, `HttpResponse`, `RangeCache`, `RemoteFileInfo`, `RemoteReader`, `ReqwestHttpClient`
-// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `assert_fields_are_eq`, `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`, `read`, `seek`
+// These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `assert_fields_are_eq`, `clone`, `eq`, `fmt`
 
 /// Read audio metadata from a remote URL.
 ///
@@ -24,6 +22,9 @@ import 'tag.dart';
 /// - `Full`: downloads the entire file before parsing.
 /// - `Progressive`: fetches only the header + tag progressively.
 /// - `RandomAccess`: uses HTTP range-backed seekable reader.
+///
+/// On WASM, all strategies fall back to Full download (Progressive and
+/// RandomAccess are not yet implemented for async range fetching).
 Future<Tag> readFromUrl(
         {required String url, required UrlReadStrategy strategy}) =>
     RustLib.instance.api

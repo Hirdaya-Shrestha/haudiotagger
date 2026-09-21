@@ -156,7 +156,10 @@ print(tag?.title);
 print(tag?.artist);
 ```
 
-Supports progressive download and HTTP range requests for efficient partial reads.
+Supports progressive download and HTTP range requests for efficient partial reads on native platforms.
+
+> [!NOTE]
+> On web (WASM), `readFromUrl` downloads the full file before parsing metadata.
 
 ---
 

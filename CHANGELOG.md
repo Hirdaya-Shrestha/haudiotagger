@@ -1,7 +1,8 @@
 ## 2.1.0
 
 - New `readFromUrl` API for reading audio metadata from remote files via HTTP/HTTPS
-- Progressive download support for large files (only fetch needed ranges)
+- Progressive download support for large files on native (only fetch needed ranges via HTTP range requests)
+- On web (WASM), `readFromUrl` downloads the full file before parsing metadata
 - Block-based cache with LRU eviction for efficient repeated reads
 - Format detection from partial downloads (ID3v2, FLAC, OGG, MP4, WAV, AIFF, APE, WavPack)
 - Fixed FRB-generated Tag duplicate class issue
