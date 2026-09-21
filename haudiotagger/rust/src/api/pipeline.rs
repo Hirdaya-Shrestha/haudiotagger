@@ -105,7 +105,7 @@ impl TagPipeline {
     pub fn apply(&self, tag: &Tag) -> Tag {
         let mut result = tag.clone();
         for rule in &self.rules {
-            apply_rule(&mut result, rule);
+            result = apply_rule(result, rule);
         }
         result
     }
@@ -167,7 +167,7 @@ fn normalize_year(year: u32) -> u32 {
     }
 }
 
-fn apply_to_strings(tag: &mut Tag, f: impl Fn(&str) -> String) {
+fn apply_to_strings(mut tag: Tag, f: impl Fn(&str) -> String) -> Tag {
     tag.title = tag.title.as_ref().map(|s| f(s));
     tag.track_artist = tag.track_artist.as_ref().map(|s| f(s));
     tag.album = tag.album.as_ref().map(|s| f(s));
@@ -179,17 +179,19 @@ fn apply_to_strings(tag: &mut Tag, f: impl Fn(&str) -> String) {
     tag.replay_gain_track_peak = tag.replay_gain_track_peak.as_ref().map(|s| f(s));
     tag.replay_gain_album_gain = tag.replay_gain_album_gain.as_ref().map(|s| f(s));
     tag.replay_gain_album_peak = tag.replay_gain_album_peak.as_ref().map(|s| f(s));
+    tag
 }
 
 // ── Rule application ──────────────────────────────────────
 
 /// Apply a single rule to a tag.
-pub fn apply_rule(tag: &mut Tag, rule: &TransformRule) {
+pub fn apply_rule(tag: Tag, rule: &TransformRule) -> Tag {
+    let mut tag = tag;
     match rule {
         // ── Whitespace / Unicode ─────────────────────────
-        TransformRule::TrimWhitespace => apply_to_strings(tag, trim),
-        TransformRule::NormalizeWhitespace => apply_to_strings(tag, collapse_ws),
-        TransformRule::NormalizeUnicode => apply_to_strings(tag, nfkc),
+        TransformRule::TrimWhitespace => tag = apply_to_strings(tag, trim),
+        TransformRule::NormalizeWhitespace => tag = apply_to_strings(tag, collapse_ws),
+        TransformRule::NormalizeUnicode => tag = apply_to_strings(tag, nfkc),
 
         // ── Setters ─────────────────────────────────────
         TransformRule::SetTitle(v) => tag.title = Some(v.clone()),
@@ -283,8 +285,8 @@ pub fn apply_rule(tag: &mut Tag, rule: &TransformRule) {
         TransformRule::TitleCaseAlbum => {
             tag.album = tag.album.as_ref().map(|s| title_case(s));
         }
-        TransformRule::LowerCaseAll => apply_to_strings(tag, |s| s.to_lowercase()),
-        TransformRule::UpperCaseAll => apply_to_strings(tag, |s| s.to_uppercase()),
+        TransformRule::LowerCaseAll => tag = apply_to_strings(tag, |s| s.to_lowercase()),
+        TransformRule::UpperCaseAll => tag = apply_to_strings(tag, |s| s.to_uppercase()),
 
         // ── Search / Replace ────────────────────────────
         TransformRule::ReplaceInTitle { find, replace } => {
@@ -297,7 +299,7 @@ pub fn apply_rule(tag: &mut Tag, rule: &TransformRule) {
             tag.album = tag.album.as_ref().map(|s| s.replace(find, replace));
         }
         TransformRule::ReplaceInAll { find, replace } => {
-            apply_to_strings(tag, |s| s.replace(find, replace));
+            tag = apply_to_strings(tag, |s| s.replace(find, replace));
         }
 
         // ── Conditional ─────────────────────────────────
@@ -398,6 +400,7 @@ pub fn apply_rule(tag: &mut Tag, rule: &TransformRule) {
             });
         }
     }
+    tag
 }
 
 /// Apply a pipeline of rules to a tag.

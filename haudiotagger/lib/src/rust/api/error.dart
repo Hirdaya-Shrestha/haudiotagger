@@ -27,4 +27,7 @@ sealed class HaudiotaggerError
   const factory HaudiotaggerError.write({
     required String message,
   }) = HaudiotaggerError_Write;
+  const factory HaudiotaggerError.remote({
+    required String message,
+  }) = HaudiotaggerError_Remote;
 }

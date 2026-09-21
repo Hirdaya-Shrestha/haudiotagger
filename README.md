@@ -53,6 +53,7 @@ Built for everything from **music players and tag editors to media managers, aud
 - 🎧 ReplayGain support
 - 📖 MP3 chapter support
 - 🌐 WebAssembly support
+- 📡 Read metadata from remote URLs via HTTP
 
 ---
 
@@ -80,7 +81,7 @@ Add hAudiotagger to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^2.0.5
+  haudiotagger: ^2.1.0
 ```
 
 Or install it from the command line:
@@ -142,6 +143,21 @@ final result = await Haudiotagger.batchWrite(
 );
 ```
 
+### Read from URL
+
+Fetch metadata directly from a remote audio file:
+
+```dart
+final tag = await Haudiotagger.readFromUrl(
+  'https://example.com/song.mp3',
+);
+
+print(tag?.title);
+print(tag?.artist);
+```
+
+Supports progressive download and HTTP range requests for efficient partial reads.
+
 ---
 
 ## Supported Formats
@@ -195,6 +211,7 @@ final result = await Haudiotagger.batchWrite(
 - Individual picture reads
 - Metadata-driven file renaming
 - TagPipeline transformation engine
+- Remote file metadata via `readFromUrl`
 
 ---
 

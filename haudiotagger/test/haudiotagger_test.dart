@@ -2075,4 +2075,49 @@ void main() {
       }
     });
   });
+
+  // ============================================================
+  // readFromUrl
+  // ============================================================
+
+  group('readFromUrl', () {
+    test('rejects empty url', () async {
+      expect(
+        () => Haudiotagger.readFromUrl(''),
+        throwsA(isA<HaudiotaggerError>()),
+      );
+    });
+
+    test('rejects non-http scheme', () async {
+      expect(
+        () => Haudiotagger.readFromUrl('ftp://example.com/file.mp3'),
+        throwsA(isA<HaudiotaggerError>()),
+      );
+    });
+
+    test('rejects invalid url', () async {
+      expect(
+        () => Haudiotagger.readFromUrl('not-a-url'),
+        throwsA(isA<HaudiotaggerError>()),
+      );
+    });
+
+    test('accepts all strategy values', () async {
+      for (final strategy in UrlReadStrategy.values) {
+        expect(strategy, isNotNull);
+      }
+    });
+
+    test('reads metadata from remote mp3', () async {
+      final tag = await Haudiotagger.readFromUrl(
+        'https://examples.novusstreamsolutions.com/files/audio/tagged/tagged-track.mp3',
+      );
+      expect(tag, isNotNull);
+      expect(tag!.title, 'Novus Example Track');
+      expect(tag.trackArtist, 'Novus Examples');
+      expect(tag.album, 'Reference Signals');
+      expect(tag.genre, 'Test Tone');
+      expect(tag.year, 2026);
+    });
+  });
 }

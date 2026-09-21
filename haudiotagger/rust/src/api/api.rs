@@ -6,6 +6,9 @@ use super::{
     tag_changes::{TagChanges, read_bytes_or_empty, read_or_empty},
     tag_field::TagField,
 };
+
+#[allow(unused_imports)]
+pub use super::remote_read::{UrlReadStrategy, read_from_url};
 use lofty::config::WriteOptions;
 use lofty::file::FileType;
 use lofty::file::TaggedFile;
@@ -416,7 +419,7 @@ pub fn write_to_bytes(bytes: Vec<u8>, data: Tag) -> Result<Vec<u8>, Haudiotagger
 }
 
 /// Clears the given `field` from `tag`.
-fn clear_field(tag: &mut Tag, field: TagField) {
+fn clear_field(mut tag: Tag, field: TagField) -> Tag {
     match field {
         TagField::Title => tag.title = None,
         TagField::Artist => tag.track_artist = None,
@@ -433,13 +436,14 @@ fn clear_field(tag: &mut Tag, field: TagField) {
         TagField::Bpm => tag.bpm = None,
         TagField::Pictures => tag.pictures = Vec::new(),
     }
+    tag
 }
 
 /// Remove the given `fields` from the tag at `path`, keeping everything else.
 pub fn remove(path: String, fields: Vec<TagField>) -> Result<(), HaudiotaggerError> {
     let mut tag = read_or_empty(&path)?;
     for field in fields {
-        clear_field(&mut tag, field);
+        tag = clear_field(tag, field);
     }
     write(path, tag)
 }
@@ -451,7 +455,7 @@ pub fn remove_from_bytes(
 ) -> Result<Vec<u8>, HaudiotaggerError> {
     let mut tag = read_bytes_or_empty(&bytes)?;
     for field in fields {
-        clear_field(&mut tag, field);
+        tag = clear_field(tag, field);
     }
     write_to_bytes(bytes, tag)
 }

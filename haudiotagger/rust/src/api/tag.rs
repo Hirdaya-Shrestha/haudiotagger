@@ -48,7 +48,7 @@ pub struct Tag {
 
 impl Tag {
     /// Returns `true` if the tag has no data.
-    pub fn is_empty(&self) -> bool {
+    pub(crate) fn is_empty(&self) -> bool {
         *self == Self::default()
     }
 }

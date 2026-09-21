@@ -1,3 +1,11 @@
+## 2.1.0
+
+- New `readFromUrl` API for reading audio metadata from remote files via HTTP/HTTPS
+- Progressive download support for large files (only fetch needed ranges)
+- Block-based cache with LRU eviction for efficient repeated reads
+- Format detection from partial downloads (ID3v2, FLAC, OGG, MP4, WAV, AIFF, APE, WavPack)
+- Fixed FRB-generated Tag duplicate class issue
+
 ## 2.0.5
 
 - Some minor improvements

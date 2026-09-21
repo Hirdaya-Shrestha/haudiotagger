@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 import 'error.dart';
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `apply_to_lofty_tag`, `from_lofty_tag`, `get_str`, `merge`, `read_extended_or_empty`, `set_str`, `write_extended_to_bytes_inner`
+// These functions are ignored because they are not marked as `pub`: `apply_to_lofty_tag`, `from_lofty_tag`, `get_str`, `merge`, `set_str`, `write_extended_to_bytes_inner`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `eq`, `eq`, `fmt`, `fmt`
 
 /// Read extended metadata from a file path.

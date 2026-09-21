@@ -6,6 +6,7 @@ pub mod extended;
 pub mod normalization;
 pub mod picture;
 pub mod pipeline;
+pub mod remote_read;
 pub mod tag;
 pub mod tag_changes;
 pub mod tag_field;

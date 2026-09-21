@@ -17,6 +17,8 @@ import 'rust/api/chapters.dart' show Chapter;
 import 'rust/api/extended.dart' as ext;
 import 'rust/api/extended.dart' show ExtendedTag, ExtendedChanges;
 import 'rust/api/picture.dart' show Picture, PictureType;
+import 'rust/api/remote_read.dart' as rr;
+import 'rust/api/remote_read.dart' show UrlReadStrategy;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -31,6 +33,7 @@ export 'rust/api/validation.dart'
 export 'rust/api/normalization.dart' show NormalizeOptions;
 export 'rust/api/chapters.dart' show Chapter;
 export 'rust/api/extended.dart' show ExtendedTag, ExtendedChanges;
+export 'rust/api/remote_read.dart' show UrlReadStrategy;
 export 'copy_with.dart';
 export 'pipeline.dart' show TagPipeline, PreviewResult, FieldChange;
 
@@ -76,6 +79,35 @@ class Haudiotagger {
 
     try {
       return await api.readFromBytes(bytes: bytes);
+    } on HaudiotaggerError catch (e) {
+      switch (e) {
+        case HaudiotaggerError_NoTags():
+          return null;
+        default:
+          rethrow;
+      }
+    }
+  }
+
+  /// Read audio metadata from a remote URL.
+  ///
+  /// Downloads the file (or relevant portions via HTTP range requests) and
+  /// parses the metadata tag. Supports MP3, FLAC, OGG, Opus, MP4, WAV, AIFF,
+  /// APE, and WavPack.
+  ///
+  /// Use [strategy] to control how the file is fetched:
+  /// - `UrlReadStrategy.auto` (default): picks the best strategy.
+  /// - `UrlReadStrategy.full`: downloads the entire file.
+  /// - `UrlReadStrategy.progressive`: fetches header + tag progressively.
+  /// - `UrlReadStrategy.randomAccess`: uses HTTP range-backed reader.
+  static Future<Tag?> readFromUrl(
+    String url, {
+    UrlReadStrategy strategy = UrlReadStrategy.auto,
+  }) async {
+    await _ensureInit();
+
+    try {
+      return await rr.readFromUrl(url: url, strategy: strategy);
     } on HaudiotaggerError catch (e) {
       switch (e) {
         case HaudiotaggerError_NoTags():

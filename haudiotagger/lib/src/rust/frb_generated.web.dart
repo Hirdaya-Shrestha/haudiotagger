@@ -14,6 +14,7 @@ import 'api/extended.dart';
 import 'api/normalization.dart';
 import 'api/picture.dart';
 import 'api/pipeline.dart';
+import 'api/remote_read.dart';
 import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
@@ -231,6 +232,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void dco_decode_unit(dynamic raw);
+
+  @protected
+  UrlReadStrategy dco_decode_url_read_strategy(dynamic raw);
 
   @protected
   BigInt dco_decode_usize(dynamic raw);
@@ -457,6 +461,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_decode_unit(SseDeserializer deserializer);
+
+  @protected
+  UrlReadStrategy sse_decode_url_read_strategy(SseDeserializer deserializer);
 
   @protected
   BigInt sse_decode_usize(SseDeserializer deserializer);
@@ -700,6 +707,10 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_unit(void self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_url_read_strategy(
+      UrlReadStrategy self, SseSerializer serializer);
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);

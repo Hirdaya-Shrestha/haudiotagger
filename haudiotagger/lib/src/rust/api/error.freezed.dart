@@ -57,6 +57,7 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
     TResult Function(HaudiotaggerError_OpenFile value)? openFile,
     TResult Function(HaudiotaggerError_Read value)? read,
     TResult Function(HaudiotaggerError_Write value)? write,
+    TResult Function(HaudiotaggerError_Remote value)? remote,
     required TResult orElse(),
   }) {
     final _that = this;
@@ -71,6 +72,8 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
         return read(_that);
       case HaudiotaggerError_Write() when write != null:
         return write(_that);
+      case HaudiotaggerError_Remote() when remote != null:
+        return remote(_that);
       case _:
         return orElse();
     }
@@ -96,6 +99,7 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
     required TResult Function(HaudiotaggerError_OpenFile value) openFile,
     required TResult Function(HaudiotaggerError_Read value) read,
     required TResult Function(HaudiotaggerError_Write value) write,
+    required TResult Function(HaudiotaggerError_Remote value) remote,
   }) {
     final _that = this;
     switch (_that) {
@@ -109,6 +113,8 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
         return read(_that);
       case HaudiotaggerError_Write():
         return write(_that);
+      case HaudiotaggerError_Remote():
+        return remote(_that);
     }
   }
 
@@ -131,6 +137,7 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
     TResult? Function(HaudiotaggerError_OpenFile value)? openFile,
     TResult? Function(HaudiotaggerError_Read value)? read,
     TResult? Function(HaudiotaggerError_Write value)? write,
+    TResult? Function(HaudiotaggerError_Remote value)? remote,
   }) {
     final _that = this;
     switch (_that) {
@@ -144,6 +151,8 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
         return read(_that);
       case HaudiotaggerError_Write() when write != null:
         return write(_that);
+      case HaudiotaggerError_Remote() when remote != null:
+        return remote(_that);
       case _:
         return null;
     }
@@ -168,6 +177,7 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
     TResult Function(String message)? openFile,
     TResult Function(String message)? read,
     TResult Function(String message)? write,
+    TResult Function(String message)? remote,
     required TResult orElse(),
   }) {
     final _that = this;
@@ -182,6 +192,8 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
         return read(_that.message);
       case HaudiotaggerError_Write() when write != null:
         return write(_that.message);
+      case HaudiotaggerError_Remote() when remote != null:
+        return remote(_that.message);
       case _:
         return orElse();
     }
@@ -207,6 +219,7 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
     required TResult Function(String message) openFile,
     required TResult Function(String message) read,
     required TResult Function(String message) write,
+    required TResult Function(String message) remote,
   }) {
     final _that = this;
     switch (_that) {
@@ -220,6 +233,8 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
         return read(_that.message);
       case HaudiotaggerError_Write():
         return write(_that.message);
+      case HaudiotaggerError_Remote():
+        return remote(_that.message);
     }
   }
 
@@ -242,6 +257,7 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
     TResult? Function(String message)? openFile,
     TResult? Function(String message)? read,
     TResult? Function(String message)? write,
+    TResult? Function(String message)? remote,
   }) {
     final _that = this;
     switch (_that) {
@@ -255,6 +271,8 @@ extension HaudiotaggerErrorPatterns on HaudiotaggerError {
         return read(_that.message);
       case HaudiotaggerError_Write() when write != null:
         return write(_that.message);
+      case HaudiotaggerError_Remote() when remote != null:
+        return remote(_that.message);
       case _:
         return null;
     }
@@ -496,6 +514,73 @@ class _$HaudiotaggerError_WriteCopyWithImpl<$Res>
     Object? message = null,
   }) {
     return _then(HaudiotaggerError_Write(
+      message: null == message
+          ? _self.message
+          : message // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class HaudiotaggerError_Remote extends HaudiotaggerError {
+  const HaudiotaggerError_Remote({required this.message}) : super._();
+
+  final String message;
+
+  /// Create a copy of HaudiotaggerError
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $HaudiotaggerError_RemoteCopyWith<HaudiotaggerError_Remote> get copyWith =>
+      _$HaudiotaggerError_RemoteCopyWithImpl<HaudiotaggerError_Remote>(
+          this, _$identity);
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is HaudiotaggerError_Remote &&
+            (identical(other.message, message) || other.message == message));
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(runtimeType, message);
+  }
+
+  @override
+  String toString() {
+    return 'HaudiotaggerError.remote(message: $message)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $HaudiotaggerError_RemoteCopyWith<$Res>
+    implements $HaudiotaggerErrorCopyWith<$Res> {
+  factory $HaudiotaggerError_RemoteCopyWith(HaudiotaggerError_Remote value,
+          $Res Function(HaudiotaggerError_Remote) _then) =
+      _$HaudiotaggerError_RemoteCopyWithImpl;
+  @useResult
+  $Res call({String message});
+}
+
+/// @nodoc
+class _$HaudiotaggerError_RemoteCopyWithImpl<$Res>
+    implements $HaudiotaggerError_RemoteCopyWith<$Res> {
+  _$HaudiotaggerError_RemoteCopyWithImpl(this._self, this._then);
+
+  final HaudiotaggerError_Remote _self;
+  final $Res Function(HaudiotaggerError_Remote) _then;
+
+  /// Create a copy of HaudiotaggerError
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? message = null,
+  }) {
+    return _then(HaudiotaggerError_Remote(
       message: null == message
           ? _self.message
           : message // ignore: cast_nullable_to_non_nullable

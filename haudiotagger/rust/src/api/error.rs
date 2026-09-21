@@ -5,6 +5,7 @@ pub enum HaudiotaggerError {
     OpenFile { message: String },
     Read { message: String },
     Write { message: String },
+    Remote { message: String },
 }
 
 impl std::error::Error for HaudiotaggerError {}
@@ -17,6 +18,7 @@ impl std::fmt::Display for HaudiotaggerError {
             Self::OpenFile { message } => write!(f, "Failed to open file: {message}"),
             Self::Read { message } => write!(f, "Failed to read tag: {message}"),
             Self::Write { message } => write!(f, "Failed to write tag: {message}"),
+            Self::Remote { message } => write!(f, "Remote read error: {message}"),
         }
     }
 }
