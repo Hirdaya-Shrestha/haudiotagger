@@ -6,6 +6,7 @@
 - Block-based cache with LRU eviction for efficient repeated reads
 - Format detection from partial downloads (ID3v2, FLAC, OGG, MP4, WAV, AIFF, APE, WavPack)
 - Fixed FRB-generated Tag duplicate class issue
+- lofty-rs upgraded to 0.25.4
 
 ## 2.0.5
 
