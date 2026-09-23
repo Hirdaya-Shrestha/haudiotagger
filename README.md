@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/haudiotagger/logo.png" alt="hAudiotagger" width="140">
+  <img src="https://raw.githubusercontent.com/Hirdaya-Shrestha/haudiotagger/main/haudiotagger/logo.png" alt="hAudiotagger" width="140">
 </p>
 
 <h1 align="center">hAudiotagger</h1>

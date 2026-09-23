@@ -19,3 +19,5 @@ x86/
 x86_64/
 *.zip
 *.tar.gz
+logo.png
+cover.png
