@@ -26,6 +26,7 @@ dependencies:
   ffi: ^2.2.0
   flutter_rust_bridge: ^2.13.0
   freezed_annotation: ^3.1.0
+  haudiotagger_interface: ^0.1.0
   rust_lib_haudiotagger:
     path: rust_builder
 

@@ -1,3 +1,15 @@
+## 2.2.0
+
+### Features
+
+- New `Haudiotagger.fingerprint(path)` / `fingerprintFromBytes(bytes)` / `similarity(a, b)` API for perceptual audio fingerprinting by content
+- Registry-backed: calls delegate to `FingerprintRegistry`, provided by the `haudiotagger_fingerprint` package when installed; pure metadata users pay nothing
+- New exports: `AudioFingerprint`, `FingerprintBackend`, `FingerprintRegistry`
+
+### Dependencies
+
+- `haudiotagger_fingerprint_interface ^0.1.0` for the fingerprint contract (pure Dart, zero native weight)
+
 ## 2.1.0
 
 ### Features
