@@ -54,6 +54,7 @@ Built for everything from **music players and tag editors to media managers, aud
 - 📖 MP3 chapter support
 - 🌐 WebAssembly support
 - 📡 Read metadata from remote URLs via HTTP
+- 🧬 Perceptual audio fingerprinting via [`haudiotagger_fingerprint`](https://pub.dev/packages/haudiotagger_fingerprint)
 
 ---
 
@@ -81,7 +82,7 @@ Add hAudiotagger to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^2.1.0
+  haudiotagger: ^2.2.0
 ```
 
 Or install it from the command line:
@@ -160,6 +161,24 @@ Supports progressive download and HTTP range requests for efficient partial read
 
 > [!NOTE]
 > On web (WASM), `readFromUrl` downloads the full file before parsing metadata.
+
+### Fingerprint audio
+
+Compare recordings by content — copies, renames, and re-encodes match
+regardless of tags or filenames:
+
+```dart
+final fp = await Haudiotagger.fingerprint('song.mp3');
+final score = await Haudiotagger.similarity(a, b);
+
+print(score); // 1.0 is (near-)identical, 0.0 is unrelated
+```
+
+> [!NOTE]
+> Fingerprinting is powered by the [`haudiotagger_fingerprint`](https://pub.dev/packages/haudiotagger_fingerprint)
+> package. Install it alongside haudiotagger and the calls above just work —
+> without it they throw a `StateError` telling you to add it. Pure metadata
+> users pay nothing for this.
 
 ---
 
