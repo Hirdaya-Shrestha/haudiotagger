@@ -23,11 +23,7 @@ import 'package:haudiotagger_interface/haudiotagger_interface.dart'
     show AudioFingerprint, CancellationToken, FingerprintRegistry;
 
 export 'package:haudiotagger_interface/haudiotagger_interface.dart'
-    show
-        AudioFingerprint,
-        CancellationToken,
-        FingerprintBackend,
-        FingerprintRegistry;
+    show AudioFingerprint, FingerprintBackend, FingerprintRegistry;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';

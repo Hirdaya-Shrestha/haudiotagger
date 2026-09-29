@@ -1,3 +1,9 @@
+## 3.0.0
+
+### Bug Fixes
+
+- **Breaking:** no longer re-exports `CancellationToken` from `haudiotagger_interface`, so importing `haudiotagger` and `haudiotagger_fingerprint` together no longer collides with `ambiguous_import`. The token parameter on `fingerprint`/`fingerprintFromBytes` is unaffected — create tokens via `haudiotagger_fingerprint` as before, and import the interface package directly only if you need to name the type
+
 ## 2.2.1
 
 ### Features
