@@ -82,7 +82,7 @@ Add hAudiotagger to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  haudiotagger: ^2.2.1
+  haudiotagger: ^3.0.0
 ```
 
 Or install it from the command line:
