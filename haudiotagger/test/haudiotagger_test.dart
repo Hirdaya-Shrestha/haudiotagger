@@ -2140,17 +2140,40 @@ void main() {
       expect(fp.durationSecs, 5);
       expect(await Haudiotagger.similarity(fp, fp), 1.0);
     });
+
+    test('forwards cancellation token to backend', () async {
+      final backend = _FakeBackend();
+      FingerprintRegistry.instance = backend;
+      final token = _FakeToken();
+      await Haudiotagger.fingerprint('a.mp3', cancellationToken: token);
+      expect(backend.lastToken, same(token));
+    });
   });
 }
 
-class _FakeBackend implements FingerprintBackend {
+class _FakeToken implements CancellationToken {
   @override
-  Future<AudioFingerprint> fingerprint(String path) async =>
-      AudioFingerprint(values: Uint32List.fromList([1, 2, 3]), durationSecs: 5);
+  Future<void> cancel() async {}
+}
+
+class _FakeBackend implements FingerprintBackend {
+  CancellationToken? lastToken;
 
   @override
-  Future<AudioFingerprint> fingerprintFromBytes(Uint8List bytes) async =>
-      AudioFingerprint(values: Uint32List.fromList([1, 2, 3]), durationSecs: 5);
+  Future<AudioFingerprint> fingerprint(String path,
+      {CancellationToken? cancellationToken}) async {
+    lastToken = cancellationToken;
+    return AudioFingerprint(
+        values: Uint32List.fromList([1, 2, 3]), durationSecs: 5);
+  }
+
+  @override
+  Future<AudioFingerprint> fingerprintFromBytes(Uint8List bytes,
+      {CancellationToken? cancellationToken}) async {
+    lastToken = cancellationToken;
+    return AudioFingerprint(
+        values: Uint32List.fromList([1, 2, 3]), durationSecs: 5);
+  }
 
   @override
   Future<double> similarity(AudioFingerprint a, AudioFingerprint b) async =>

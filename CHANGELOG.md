@@ -1,3 +1,13 @@
+## 2.2.1
+
+### Features
+
+- `Haudiotagger.fingerprint` and `fingerprintFromBytes` accept an optional `CancellationToken` for aborting long scans (re-exported from the interface package)
+
+### Dependencies
+
+- `haudiotagger_interface ^0.2.0` for the cancellation token contract
+
 ## 2.2.0
 
 ### Features

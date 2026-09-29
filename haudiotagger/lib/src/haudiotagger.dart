@@ -20,10 +20,14 @@ import 'rust/api/picture.dart' show Picture, PictureType;
 import 'rust/api/remote_read.dart' as rr;
 import 'rust/api/remote_read.dart' show UrlReadStrategy;
 import 'package:haudiotagger_interface/haudiotagger_interface.dart'
-    show AudioFingerprint, FingerprintRegistry;
+    show AudioFingerprint, CancellationToken, FingerprintRegistry;
 
 export 'package:haudiotagger_interface/haudiotagger_interface.dart'
-    show AudioFingerprint, FingerprintBackend, FingerprintRegistry;
+    show
+        AudioFingerprint,
+        CancellationToken,
+        FingerprintBackend,
+        FingerprintRegistry;
 
 export 'rust/api/picture.dart';
 export 'rust/api/tag.dart';
@@ -130,15 +134,23 @@ class Haudiotagger {
   ///
   /// Requires the `haudiotagger_fingerprint` package installed, otherwise
   /// throws [StateError]. Pure metadata users pay nothing for this.
-  static Future<AudioFingerprint> fingerprint(String path) =>
-      FingerprintRegistry.instance.fingerprint(path);
+  ///
+  /// Pass a [CancellationToken] to abort long scans.
+  static Future<AudioFingerprint> fingerprint(String path,
+          {CancellationToken? cancellationToken}) =>
+      FingerprintRegistry.instance
+          .fingerprint(path, cancellationToken: cancellationToken);
 
   /// Fingerprint in-memory audio [bytes] by content (for web/WASM).
   ///
   /// Requires the `haudiotagger_fingerprint` package installed, otherwise
   /// throws [StateError].
-  static Future<AudioFingerprint> fingerprintFromBytes(Uint8List bytes) =>
-      FingerprintRegistry.instance.fingerprintFromBytes(bytes);
+  ///
+  /// Pass a [CancellationToken] to abort long scans.
+  static Future<AudioFingerprint> fingerprintFromBytes(Uint8List bytes,
+          {CancellationToken? cancellationToken}) =>
+      FingerprintRegistry.instance
+          .fingerprintFromBytes(bytes, cancellationToken: cancellationToken);
 
   /// Compare two fingerprints: `1.0` is (near-)identical audio, `0.0` is
   /// unrelated.
