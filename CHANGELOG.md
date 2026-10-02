@@ -1,3 +1,9 @@
+## 3.1.0
+
+### Features
+
+- `Haudiotagger.contains(haystack, clip)` for clip lookup: scores how much of a short excerpt is inside a longer recording (`1.0` present, `0.0` absent), via the installed fingerprint backend. Requires `haudiotagger_interface ^0.3.0`
+
 ## 3.0.0
 
 ### Bug Fixes

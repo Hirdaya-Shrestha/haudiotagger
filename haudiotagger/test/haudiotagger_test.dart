@@ -2150,6 +2150,12 @@ void main() {
       await Haudiotagger.fingerprint('a.mp3', cancellationToken: token);
       expect(backend.lastToken, same(token));
     });
+
+    test('contains delegates to registered backend', () async {
+      FingerprintRegistry.instance = _FakeBackend();
+      final fp = await Haudiotagger.fingerprint('a.mp3');
+      expect(await Haudiotagger.contains(fp, fp), 0.9);
+    });
   });
 }
 
@@ -2180,4 +2186,9 @@ class _FakeBackend implements FingerprintBackend {
   @override
   Future<double> similarity(AudioFingerprint a, AudioFingerprint b) async =>
       1.0;
+
+  @override
+  Future<double> contains(
+          AudioFingerprint haystack, AudioFingerprint clip) async =>
+      0.9;
 }

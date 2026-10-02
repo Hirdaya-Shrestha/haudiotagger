@@ -156,6 +156,19 @@ class Haudiotagger {
   static Future<double> similarity(AudioFingerprint a, AudioFingerprint b) =>
       FingerprintRegistry.instance.similarity(a, b);
 
+  /// Score how much of `clip` is contained in `haystack`, `0.0` to `1.0`.
+  ///
+  /// Clip lookup: a short recording matched against a full song
+  /// scores near `1.0` when present and near `0.0` when absent, regardless
+  /// of the length ratio. Directional — pass the full audio as `haystack`,
+  /// the excerpt as `clip`.
+  ///
+  /// Requires the `haudiotagger_fingerprint` package installed, otherwise
+  /// throws [StateError].
+  static Future<double> contains(
+          AudioFingerprint haystack, AudioFingerprint clip) =>
+      FingerprintRegistry.instance.contains(haystack, clip);
+
   /// Read a single tag field from the file at [path].
   /// Returns the field value as a string, or null if the field is not set.
   /// This is faster than [read] when you only need one field.
