@@ -11,7 +11,7 @@ let package = Package(
         .binaryTarget(
             name: "haudiotaggerFFI",
             url: "https://github.com/Hirdaya-Shrestha/haudiotagger/releases/download/v3.2.0/macos.zip",
-            checksum: "5fc194c466f13b0041752caa8495927d2ac0894dc32d7da05554bde05635c1e9"
+            checksum: "ee419e6eec5cc7fcd6974942387a084012d317db8bb9845bcc8ec517f72744a6"
         ),
         .target(
             name: "haudiotagger",
