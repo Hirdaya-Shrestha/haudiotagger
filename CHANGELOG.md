@@ -1,3 +1,8 @@
+## 3.2.0
+
+### Migration
+- `material_ui` package used in example.
+
 ## 3.1.0
 
 ### Features
