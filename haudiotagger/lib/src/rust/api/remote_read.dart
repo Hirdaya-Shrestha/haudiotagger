@@ -5,7 +5,9 @@
 
 import '../frb_generated.dart';
 import 'error.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+
 import 'picture.dart';
 import 'tag.dart';
 
@@ -25,17 +27,20 @@ import 'tag.dart';
 ///
 /// On WASM, all strategies fall back to Full download (Progressive and
 /// RandomAccess are not yet implemented for async range fetching).
-Future<Tag> readFromUrl(
-        {required String url, required UrlReadStrategy strategy}) =>
-    RustLib.instance.api
-        .crateApiRemoteReadReadFromUrl(url: url, strategy: strategy);
+Future<Tag> readFromUrl({
+  required String url,
+  required UrlReadStrategy strategy,
+}) =>
+    RustLib.instance.api.crateApiRemoteReadReadFromUrl(
+      url: url,
+      strategy: strategy,
+    );
 
 enum UrlReadStrategy {
   auto,
   full,
   progressive,
-  randomAccess,
-  ;
+  randomAccess;
 
   static Future<UrlReadStrategy> default_() =>
       RustLib.instance.api.crateApiRemoteReadUrlReadStrategyDefault();

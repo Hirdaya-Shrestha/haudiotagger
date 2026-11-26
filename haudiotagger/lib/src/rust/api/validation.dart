@@ -4,7 +4,9 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+
 import 'picture.dart';
 import 'tag.dart';
 
@@ -40,14 +42,10 @@ class ValidationIssue {
 class ValidationResult {
   final List<ValidationIssue> issues;
 
-  const ValidationResult({
-    required this.issues,
-  });
+  const ValidationResult({required this.issues});
 
-  Future<bool> isValid() =>
-      RustLib.instance.api.crateApiValidationValidationResultIsValid(
-        that: this,
-      );
+  Future<bool> isValid() => RustLib.instance.api
+      .crateApiValidationValidationResultIsValid(that: this);
 
   @override
   int get hashCode => issues.hashCode;
@@ -60,8 +58,4 @@ class ValidationResult {
           issues == other.issues;
 }
 
-enum ValidationSeverity {
-  error,
-  warning,
-  ;
-}
+enum ValidationSeverity { error, warning }

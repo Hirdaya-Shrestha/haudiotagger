@@ -51,8 +51,10 @@ void main() {
     });
 
     test('write with empty tag clears metadata', () async {
-      final written =
-          await Haudiotagger.writeToBytes(mp3Bytes, Tag(pictures: []));
+      final written = await Haudiotagger.writeToBytes(
+        mp3Bytes,
+        Tag(pictures: []),
+      );
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNull);
     });
@@ -74,10 +76,7 @@ void main() {
     });
 
     test('update preserves all other fields', () async {
-      final changes = TagChanges(
-        year: 2030,
-        genre: 'Jazz',
-      );
+      final changes = TagChanges(year: 2030, genre: 'Jazz');
       final written = await Haudiotagger.updateFromBytes(mp3Bytes, changes);
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNotNull);
@@ -109,10 +108,10 @@ void main() {
 
   group('remove / clear', () {
     test('removeFromBytes clears specific fields', () async {
-      final written = await Haudiotagger.removeFromBytes(
-        mp3Bytes,
-        [TagField.title, TagField.artist],
-      );
+      final written = await Haudiotagger.removeFromBytes(mp3Bytes, [
+        TagField.title,
+        TagField.artist,
+      ]);
       final readBack = await Haudiotagger.readFromBytes(written);
       expect(readBack, isNotNull);
       expect(readBack!.title, isNull);
@@ -134,8 +133,11 @@ void main() {
   group('batch operations', () {
     test('batchWriteFromBytes writes to all byte arrays', () async {
       final arrays = [mp3Bytes, mp3Bytes, mp3Bytes];
-      final tag =
-          Tag(title: 'Batch Title', trackArtist: 'Batch Artist', pictures: []);
+      final tag = Tag(
+        title: 'Batch Title',
+        trackArtist: 'Batch Artist',
+        pictures: [],
+      );
 
       final result = await Haudiotagger.batchWriteFromBytes(arrays, tag);
 
@@ -154,8 +156,10 @@ void main() {
       final arrays = [mp3Bytes, mp3Bytes];
       final changes = TagChanges(title: 'Updated');
 
-      final result =
-          await Haudiotagger.batchUpdateChangesFromBytes(arrays, changes);
+      final result = await Haudiotagger.batchUpdateChangesFromBytes(
+        arrays,
+        changes,
+      );
 
       expect(result.failures, 0);
       expect(result.results.length, 2);
@@ -173,9 +177,7 @@ void main() {
 
       final result = await Haudiotagger.batchUpdateFromBytes(
         arrays,
-        (index, current) => current.copyWith(
-          title: 'Track $index',
-        ),
+        (index, current) => current.copyWith(title: 'Track $index'),
       );
 
       expect(result.failures, 0);
@@ -254,16 +256,20 @@ void main() {
   group('diff', () {
     test('diff detects added fields', () {
       final oldTag = Tag(pictures: []);
-      final newTag =
-          Tag(title: 'New Title', trackArtist: 'New Artist', pictures: []);
+      final newTag = Tag(
+        title: 'New Title',
+        trackArtist: 'New Artist',
+        pictures: [],
+      );
 
       final diff = Haudiotagger.diff(oldTag, newTag);
 
       expect(diff.isNotEmpty, true);
       expect(diff.changes.length, 2);
 
-      final titleChange =
-          diff.changes.firstWhere((c) => c.field == TagField.title);
+      final titleChange = diff.changes.firstWhere(
+        (c) => c.field == TagField.title,
+      );
       expect(titleChange.type, ChangeType.added);
       expect(titleChange.oldValue, isNull);
       expect(titleChange.newValue, 'New Title');
@@ -295,12 +301,9 @@ void main() {
     test('diff returns empty for identical tags', () {
       final tag = Tag(title: 'Title', year: 2025, pictures: []);
       final diff = Haudiotagger.diff(
-          tag,
-          Tag(
-            title: 'Title',
-            year: 2025,
-            pictures: [],
-          ));
+        tag,
+        Tag(title: 'Title', year: 2025, pictures: []),
+      );
 
       expect(diff.isEmpty, true);
     });
@@ -314,7 +317,11 @@ void main() {
     test('preferFirstNonEmpty uses first tag unless empty', () {
       final tagA = Tag(title: 'Title A', trackArtist: 'Artist A', pictures: []);
       final tagB = Tag(
-          title: '', trackArtist: 'Artist B', album: 'Album B', pictures: []);
+        title: '',
+        trackArtist: 'Artist B',
+        album: 'Album B',
+        pictures: [],
+      );
 
       final merged = Haudiotagger.mergeTags(tagA, tagB);
 
@@ -405,15 +412,17 @@ void main() {
         trackNumber: 1,
         trackTotal: 10,
         pictures: [
-          Picture(pictureType: PictureType.coverFront, bytes: Uint8List(1))
+          Picture(pictureType: PictureType.coverFront, bytes: Uint8List(1)),
         ],
       );
 
       final result = await Haudiotagger.validateTag(tag);
 
       expect(await result.isValid(), true);
-      expect(result.issues.where((i) => i.severity == ValidationSeverity.error),
-          isEmpty);
+      expect(
+        result.issues.where((i) => i.severity == ValidationSeverity.error),
+        isEmpty,
+      );
     });
 
     test('validateTag detects track number > total', () async {
@@ -422,8 +431,9 @@ void main() {
       final result = await Haudiotagger.validateTag(tag);
 
       expect(await result.isValid(), false);
-      final errors =
-          result.issues.where((i) => i.severity == ValidationSeverity.error);
+      final errors = result.issues.where(
+        (i) => i.severity == ValidationSeverity.error,
+      );
       expect(errors.any((i) => i.field == 'track_number'), true);
     });
 
@@ -433,8 +443,9 @@ void main() {
       final result = await Haudiotagger.validateTag(tag);
 
       expect(await result.isValid(), false);
-      final errors =
-          result.issues.where((i) => i.severity == ValidationSeverity.error);
+      final errors = result.issues.where(
+        (i) => i.severity == ValidationSeverity.error,
+      );
       expect(errors.any((i) => i.field == 'disc_number'), true);
     });
 
@@ -443,8 +454,9 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings =
-          result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings = result.issues.where(
+        (i) => i.severity == ValidationSeverity.warning,
+      );
       expect(warnings.any((i) => i.field == 'track_artist'), true);
     });
 
@@ -453,19 +465,25 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings =
-          result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings = result.issues.where(
+        (i) => i.severity == ValidationSeverity.warning,
+      );
       expect(warnings.any((i) => i.field == 'album'), true);
     });
 
     test('validateTag warns on missing artwork', () async {
       final tag = Tag(
-          title: 'Title', trackArtist: 'Artist', album: 'Album', pictures: []);
+        title: 'Title',
+        trackArtist: 'Artist',
+        album: 'Album',
+        pictures: [],
+      );
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings =
-          result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings = result.issues.where(
+        (i) => i.severity == ValidationSeverity.warning,
+      );
       expect(warnings.any((i) => i.field == 'pictures'), true);
     });
 
@@ -474,8 +492,9 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings =
-          result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings = result.issues.where(
+        (i) => i.severity == ValidationSeverity.warning,
+      );
       expect(warnings.any((i) => i.field == 'bpm'), true);
     });
 
@@ -484,8 +503,9 @@ void main() {
 
       final result = await Haudiotagger.validateTag(tag);
 
-      final warnings =
-          result.issues.where((i) => i.severity == ValidationSeverity.warning);
+      final warnings = result.issues.where(
+        (i) => i.severity == ValidationSeverity.warning,
+      );
       expect(warnings.any((i) => i.field == 'year'), true);
     });
   });
@@ -521,19 +541,21 @@ void main() {
       expect(normalized.album, 'Some Album');
     });
 
-    test('normalizeTag removes empty values when removeEmptyValues is true',
-        () async {
-      final tag = Tag(
-        title: '  ', // only whitespace → empty after trim
-        trackArtist: 'Artist',
-        pictures: [],
-      );
+    test(
+      'normalizeTag removes empty values when removeEmptyValues is true',
+      () async {
+        final tag = Tag(
+          title: '  ', // only whitespace → empty after trim
+          trackArtist: 'Artist',
+          pictures: [],
+        );
 
-      final normalized = await Haudiotagger.normalizeTag(tag);
+        final normalized = await Haudiotagger.normalizeTag(tag);
 
-      expect(normalized.title, isNull);
-      expect(normalized.trackArtist, 'Artist');
-    });
+        expect(normalized.title, isNull);
+        expect(normalized.trackArtist, 'Artist');
+      },
+    );
 
     test('normalizeTag with custom options', () async {
       final tag = Tag(title: '  My Song  ', pictures: []);
@@ -631,11 +653,7 @@ void main() {
 
     test('update preserves ReplayGain when not modified', () async {
       // Write ReplayGain first
-      var tag = Tag(
-        title: 'Song',
-        pictures: [],
-        replayGainTrackGain: '-6.43',
-      );
+      var tag = Tag(title: 'Song', pictures: [], replayGainTrackGain: '-6.43');
       var bytes = await Haudiotagger.writeToBytes(mp3Bytes, tag);
 
       // Now update only title
@@ -703,14 +721,12 @@ void main() {
 
   group('formatFilename / rename', () {
     test('formatFilename with track and title', () {
-      final tag = Tag(
-        trackNumber: 1,
-        title: 'My Song',
-        pictures: [],
-      );
+      final tag = Tag(trackNumber: 1, title: 'My Song', pictures: []);
 
-      final result =
-          Haudiotagger.formatFilename(tag, pattern: '{track}. {title}');
+      final result = Haudiotagger.formatFilename(
+        tag,
+        pattern: '{track}. {title}',
+      );
       expect(result, '01. My Song');
     });
 
@@ -739,8 +755,10 @@ void main() {
     test('formatFilename handles missing fields gracefully', () {
       final tag = Tag(pictures: []);
 
-      final result =
-          Haudiotagger.formatFilename(tag, pattern: '{track}. {title}');
+      final result = Haudiotagger.formatFilename(
+        tag,
+        pattern: '{track}. {title}',
+      );
       expect(result, isEmpty);
     });
 
@@ -758,8 +776,10 @@ void main() {
 
     test('formatFilename cleans up multiple spaces', () {
       final tag = Tag(title: 'Song', pictures: []);
-      final result =
-          Haudiotagger.formatFilename(tag, pattern: '{title}  {title}');
+      final result = Haudiotagger.formatFilename(
+        tag,
+        pattern: '{title}  {title}',
+      );
       expect(result, 'Song Song');
     });
 
@@ -1223,8 +1243,10 @@ void main() {
         ),
       ];
 
-      final written =
-          await Haudiotagger.setChaptersFromBytes(mp3Bytes, chapters);
+      final written = await Haudiotagger.setChaptersFromBytes(
+        mp3Bytes,
+        chapters,
+      );
       final readBack = await Haudiotagger.getChaptersFromBytes(written);
 
       expect(readBack.length, 3);
@@ -1248,8 +1270,10 @@ void main() {
         ),
       ];
 
-      final written1 =
-          await Haudiotagger.setChaptersFromBytes(mp3Bytes, chapters1);
+      final written1 = await Haudiotagger.setChaptersFromBytes(
+        mp3Bytes,
+        chapters1,
+      );
       final read1 = await Haudiotagger.getChaptersFromBytes(written1);
       expect(read1.length, 1);
       expect(read1[0].title, 'Chapter 1');
@@ -1267,8 +1291,10 @@ void main() {
         ),
       ];
 
-      final written2 =
-          await Haudiotagger.setChaptersFromBytes(written1, chapters2);
+      final written2 = await Haudiotagger.setChaptersFromBytes(
+        written1,
+        chapters2,
+      );
       final read2 = await Haudiotagger.getChaptersFromBytes(written2);
       expect(read2.length, 2);
       expect(read2[0].title, 'New Chapter A');
@@ -1284,8 +1310,10 @@ void main() {
         ),
       ];
 
-      final written =
-          await Haudiotagger.setChaptersFromBytes(mp3Bytes, chapters);
+      final written = await Haudiotagger.setChaptersFromBytes(
+        mp3Bytes,
+        chapters,
+      );
       final cleared = await Haudiotagger.setChaptersFromBytes(written, []);
       final readBack = await Haudiotagger.getChaptersFromBytes(cleared);
       expect(readBack, isEmpty);
@@ -1325,14 +1353,15 @@ void main() {
 
   group('extended metadata', () {
     test(
-        'getExtendedFromBytes returns empty default tag for no extended fields',
-        () async {
-      final ext = await Haudiotagger.getExtendedFromBytes(mp3Bytes);
-      expect(ext.isrc, isNull);
-      expect(ext.mood, isNull);
-      expect(ext.catalogNumber, isNull);
-      expect(ext.barcode, isNull);
-    });
+      'getExtendedFromBytes returns empty default tag for no extended fields',
+      () async {
+        final ext = await Haudiotagger.getExtendedFromBytes(mp3Bytes);
+        expect(ext.isrc, isNull);
+        expect(ext.mood, isNull);
+        expect(ext.catalogNumber, isNull);
+        expect(ext.barcode, isNull);
+      },
+    );
 
     test('setExtendedFromBytes writes fields that read back', () async {
       final data = ExtendedTag(
@@ -1360,9 +1389,7 @@ void main() {
       var bytes = await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
 
       // Replace with new extended tag (only isrc, catalogNumber should be gone)
-      final replacement = ExtendedTag(
-        isrc: 'NEW-ISRC',
-      );
+      final replacement = ExtendedTag(isrc: 'NEW-ISRC');
       bytes = await Haudiotagger.setExtendedFromBytes(bytes, replacement);
       final readBack = await Haudiotagger.getExtendedFromBytes(bytes);
 
@@ -1379,9 +1406,7 @@ void main() {
       var bytes = await Haudiotagger.setExtendedFromBytes(mp3Bytes, initial);
 
       // Update only isrc, catalogNumber should be preserved
-      final changes = ExtendedChanges(
-        isrc: 'UPDATED-ISRC',
-      );
+      final changes = ExtendedChanges(isrc: 'UPDATED-ISRC');
       bytes = await Haudiotagger.updateExtendedFromBytes(bytes, changes);
       final readBack = await Haudiotagger.getExtendedFromBytes(bytes);
 
@@ -1417,10 +1442,7 @@ void main() {
       var bytes = await Haudiotagger.writeToBytes(mp3Bytes, tag);
 
       // Write extended fields
-      final ext = ExtendedTag(
-        isrc: 'US-XX-00-00001',
-        mood: 'chill',
-      );
+      final ext = ExtendedTag(isrc: 'US-XX-00-00001', mood: 'chill');
       bytes = await Haudiotagger.setExtendedFromBytes(bytes, ext);
 
       // Both standard and extended tags should be readable
@@ -1440,10 +1462,7 @@ void main() {
 
       try {
         // Write extended fields
-        final data = ExtendedTag(
-          isrc: 'US-FILE-TEST',
-          mood: 'energetic',
-        );
+        final data = ExtendedTag(isrc: 'US-FILE-TEST', mood: 'energetic');
         await Haudiotagger.setExtended(filePath, data);
 
         // Read back
@@ -1624,10 +1643,7 @@ void main() {
     test('rename renames file based on pattern', () async {
       final filePath = '${tempDir.path}/rename_me.mp3';
       await File(filePath).writeAsBytes(mp3Bytes);
-      final newPath = await Haudiotagger.rename(
-        filePath,
-        pattern: '{title}',
-      );
+      final newPath = await Haudiotagger.rename(filePath, pattern: '{title}');
       expect(File(newPath).existsSync(), true);
     });
 
@@ -1643,11 +1659,15 @@ void main() {
       await File(filePath).writeAsBytes(mp3Bytes);
       final chapters = [
         Chapter(
-            title: 'Intro', startMs: BigInt.from(0), endMs: BigInt.from(30000)),
+          title: 'Intro',
+          startMs: BigInt.from(0),
+          endMs: BigInt.from(30000),
+        ),
         Chapter(
-            title: 'Main',
-            startMs: BigInt.from(30000),
-            endMs: BigInt.from(120000)),
+          title: 'Main',
+          startMs: BigInt.from(30000),
+          endMs: BigInt.from(120000),
+        ),
       ];
       await Haudiotagger.setChapters(filePath, chapters);
       final readBack = await Haudiotagger.getChapters(filePath);
@@ -1674,11 +1694,9 @@ void main() {
       final filePath = '${tempDir.path}/extupd.mp3';
       await File(filePath).writeAsBytes(mp3Bytes);
       await Haudiotagger.setExtended(
-          filePath,
-          ExtendedTag(
-            mood: 'happy',
-            isrc: 'US-TEST',
-          ));
+        filePath,
+        ExtendedTag(mood: 'happy', isrc: 'US-TEST'),
+      );
       await Haudiotagger.updateExtended(filePath, ExtendedChanges(mood: 'sad'));
       final ext = await Haudiotagger.getExtended(filePath);
       expect(ext.mood, 'sad');
@@ -1777,10 +1795,9 @@ void main() {
     });
 
     test('batchUpdate error handling', () async {
-      final result = await Haudiotagger.batchUpdate(
-        ['/nonexistent/path.mp3'],
-        (path, current) => current.copyWith(title: 'X'),
-      );
+      final result = await Haudiotagger.batchUpdate([
+        '/nonexistent/path.mp3',
+      ], (path, current) => current.copyWith(title: 'X'));
       expect(result.failures, 1);
       expect(result.errors, isNotEmpty);
     });
@@ -1788,10 +1805,9 @@ void main() {
     test('batchUpdate generic exception handling', () async {
       final filePath = '${tempDir.path}/batcherr.mp3';
       await File(filePath).writeAsBytes(mp3Bytes);
-      final result = await Haudiotagger.batchUpdate(
-        [filePath],
-        (path, current) => throw Exception('generic error'),
-      );
+      final result = await Haudiotagger.batchUpdate([
+        filePath,
+      ], (path, current) => throw Exception('generic error'));
       expect(result.failures, 1);
     });
 
@@ -1818,10 +1834,9 @@ void main() {
     });
 
     test('batchUpdateFromBytes generic exception handling', () async {
-      final result = await Haudiotagger.batchUpdateFromBytes(
-        [mp3Bytes],
-        (index, current) => throw Exception('generic error'),
-      );
+      final result = await Haudiotagger.batchUpdateFromBytes([
+        mp3Bytes,
+      ], (index, current) => throw Exception('generic error'));
       expect(result.failures, 1);
     });
 
@@ -1948,10 +1963,7 @@ void main() {
 
     test('readFieldFromBytes throws on empty bytes', () async {
       expect(
-        () => Haudiotagger.readFieldFromBytes(
-          Uint8List(0),
-          TagField.title,
-        ),
+        () => Haudiotagger.readFieldFromBytes(Uint8List(0), TagField.title),
         throwsA(isA<HaudiotaggerError>()),
       );
     });
@@ -1982,10 +1994,7 @@ void main() {
       final file = File('${dir.path}/test.mp3');
       file.writeAsBytesSync(mp3Bytes);
 
-      final result = await Haudiotagger.readField(
-        file.path,
-        TagField.lyrics,
-      );
+      final result = await Haudiotagger.readField(file.path, TagField.lyrics);
       expect(result, isNull);
 
       dir.deleteSync(recursive: true);
@@ -2129,10 +2138,7 @@ void main() {
 
   group('fingerprint', () {
     test('throws helpful StateError without backend', () {
-      expect(
-        Haudiotagger.fingerprint('a.mp3'),
-        throwsA(isA<StateError>()),
-      );
+      expect(Haudiotagger.fingerprint('a.mp3'), throwsA(isA<StateError>()));
     });
 
     test('delegates to registered backend', () async {
@@ -2168,19 +2174,27 @@ class _FakeBackend implements FingerprintBackend {
   CancellationToken? lastToken;
 
   @override
-  Future<AudioFingerprint> fingerprint(String path,
-      {CancellationToken? cancellationToken}) async {
+  Future<AudioFingerprint> fingerprint(
+    String path, {
+    CancellationToken? cancellationToken,
+  }) async {
     lastToken = cancellationToken;
     return AudioFingerprint(
-        values: Uint32List.fromList([1, 2, 3]), durationSecs: 5);
+      values: Uint32List.fromList([1, 2, 3]),
+      durationSecs: 5,
+    );
   }
 
   @override
-  Future<AudioFingerprint> fingerprintFromBytes(Uint8List bytes,
-      {CancellationToken? cancellationToken}) async {
+  Future<AudioFingerprint> fingerprintFromBytes(
+    Uint8List bytes, {
+    CancellationToken? cancellationToken,
+  }) async {
     lastToken = cancellationToken;
     return AudioFingerprint(
-        values: Uint32List.fromList([1, 2, 3]), durationSecs: 5);
+      values: Uint32List.fromList([1, 2, 3]),
+      durationSecs: 5,
+    );
   }
 
   @override
@@ -2189,6 +2203,8 @@ class _FakeBackend implements FingerprintBackend {
 
   @override
   Future<double> contains(
-          AudioFingerprint haystack, AudioFingerprint clip) async =>
+    AudioFingerprint haystack,
+    AudioFingerprint clip,
+  ) async =>
       0.9;
 }

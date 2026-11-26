@@ -4,19 +4,13 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `clone`, `clone`, `clone`, `eq`, `eq`, `eq`, `fmt`, `fmt`, `fmt`, `from`, `from`, `from`, `from`
 
 /// The MIME type of the picture.
-enum MimeType {
-  png,
-  jpeg,
-  tiff,
-  bmp,
-  gif,
-  ;
-}
+enum MimeType { png, jpeg, tiff, bmp, gif }
 
 /// An object representing a picture metadata.
 class Picture {
@@ -36,12 +30,16 @@ class Picture {
   });
 
   // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
-  static Future<Picture> newInstance(
-          {required PictureType pictureType,
-          MimeType? mimeType,
-          required List<int> bytes}) =>
+  static Future<Picture> newInstance({
+    required PictureType pictureType,
+    MimeType? mimeType,
+    required List<int> bytes,
+  }) =>
       RustLib.instance.api.crateApiPicturePictureNew(
-          pictureType: pictureType, mimeType: mimeType, bytes: bytes);
+        pictureType: pictureType,
+        mimeType: mimeType,
+        bytes: bytes,
+      );
 
   @override
   int get hashCode => pictureType.hashCode ^ mimeType.hashCode ^ bytes.hashCode;
@@ -79,5 +77,4 @@ enum PictureType {
   illustration,
   bandLogo,
   publisherLogo,
-  ;
 }

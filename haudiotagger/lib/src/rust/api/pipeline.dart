@@ -4,8 +4,10 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
+
 import 'picture.dart';
 import 'tag.dart';
 part 'pipeline.freezed.dart';
@@ -19,16 +21,16 @@ Future<Tag> applyRule({required Tag tag, required TransformRule rule}) =>
 
 /// Apply a pipeline of rules to a tag.
 Future<Tag> applyPipeline({required Tag tag, required TagPipeline pipeline}) =>
-    RustLib.instance.api
-        .crateApiPipelineApplyPipeline(tag: tag, pipeline: pipeline);
+    RustLib.instance.api.crateApiPipelineApplyPipeline(
+      tag: tag,
+      pipeline: pipeline,
+    );
 
 /// A pipeline of transformation rules to apply to tags.
 class TagPipeline {
   final List<TransformRule> rules;
 
-  const TagPipeline({
-    required this.rules,
-  });
+  const TagPipeline({required this.rules});
 
   /// Apply all rules to a tag and return the transformed tag.
   Future<Tag> apply({required Tag tag}) => RustLib.instance.api
@@ -43,14 +45,11 @@ class TagPipeline {
 
   /// Check if the pipeline has no rules.
   Future<bool> isEmpty() =>
-      RustLib.instance.api.crateApiPipelineTagPipelineIsEmpty(
-        that: this,
-      );
+      RustLib.instance.api.crateApiPipelineTagPipelineIsEmpty(that: this);
 
   /// Get the number of rules in this pipeline.
-  Future<BigInt> len() => RustLib.instance.api.crateApiPipelineTagPipelineLen(
-        that: this,
-      );
+  Future<BigInt> len() =>
+      RustLib.instance.api.crateApiPipelineTagPipelineLen(that: this);
 
   // HINT: Make it `#[frb(sync)]` to let it become the default constructor of Dart class.
   /// Create a new empty pipeline.
@@ -77,42 +76,25 @@ sealed class TransformRule with _$TransformRule {
       TransformRule_NormalizeWhitespace;
   const factory TransformRule.normalizeUnicode() =
       TransformRule_NormalizeUnicode;
-  const factory TransformRule.setTitle(
-    String field0,
-  ) = TransformRule_SetTitle;
-  const factory TransformRule.setArtist(
-    String field0,
-  ) = TransformRule_SetArtist;
-  const factory TransformRule.setAlbum(
-    String field0,
-  ) = TransformRule_SetAlbum;
-  const factory TransformRule.setAlbumArtist(
-    String field0,
-  ) = TransformRule_SetAlbumArtist;
-  const factory TransformRule.setGenre(
-    String field0,
-  ) = TransformRule_SetGenre;
-  const factory TransformRule.setYear(
-    int field0,
-  ) = TransformRule_SetYear;
-  const factory TransformRule.setTrackNumber(
-    int field0,
-  ) = TransformRule_SetTrackNumber;
-  const factory TransformRule.setDiscNumber(
-    int field0,
-  ) = TransformRule_SetDiscNumber;
-  const factory TransformRule.setTrackTotal(
-    int field0,
-  ) = TransformRule_SetTrackTotal;
-  const factory TransformRule.setDiscTotal(
-    int field0,
-  ) = TransformRule_SetDiscTotal;
-  const factory TransformRule.setBpm(
-    double field0,
-  ) = TransformRule_SetBpm;
-  const factory TransformRule.setComment(
-    String field0,
-  ) = TransformRule_SetComment;
+  const factory TransformRule.setTitle(String field0) = TransformRule_SetTitle;
+  const factory TransformRule.setArtist(String field0) =
+      TransformRule_SetArtist;
+  const factory TransformRule.setAlbum(String field0) = TransformRule_SetAlbum;
+  const factory TransformRule.setAlbumArtist(String field0) =
+      TransformRule_SetAlbumArtist;
+  const factory TransformRule.setGenre(String field0) = TransformRule_SetGenre;
+  const factory TransformRule.setYear(int field0) = TransformRule_SetYear;
+  const factory TransformRule.setTrackNumber(int field0) =
+      TransformRule_SetTrackNumber;
+  const factory TransformRule.setDiscNumber(int field0) =
+      TransformRule_SetDiscNumber;
+  const factory TransformRule.setTrackTotal(int field0) =
+      TransformRule_SetTrackTotal;
+  const factory TransformRule.setDiscTotal(int field0) =
+      TransformRule_SetDiscTotal;
+  const factory TransformRule.setBpm(double field0) = TransformRule_SetBpm;
+  const factory TransformRule.setComment(String field0) =
+      TransformRule_SetComment;
   const factory TransformRule.removeLyrics() = TransformRule_RemoveLyrics;
   const factory TransformRule.removeComment() = TransformRule_RemoveComment;
   const factory TransformRule.removePictures() = TransformRule_RemovePictures;
@@ -141,24 +123,18 @@ sealed class TransformRule with _$TransformRule {
       TransformRule_CopyAlbumArtistToArtist;
   const factory TransformRule.copyTitleToComment() =
       TransformRule_CopyTitleToComment;
-  const factory TransformRule.prefixTitle(
-    String field0,
-  ) = TransformRule_PrefixTitle;
-  const factory TransformRule.suffixTitle(
-    String field0,
-  ) = TransformRule_SuffixTitle;
-  const factory TransformRule.prefixAlbum(
-    String field0,
-  ) = TransformRule_PrefixAlbum;
-  const factory TransformRule.suffixAlbum(
-    String field0,
-  ) = TransformRule_SuffixAlbum;
-  const factory TransformRule.prefixArtist(
-    String field0,
-  ) = TransformRule_PrefixArtist;
-  const factory TransformRule.suffixArtist(
-    String field0,
-  ) = TransformRule_SuffixArtist;
+  const factory TransformRule.prefixTitle(String field0) =
+      TransformRule_PrefixTitle;
+  const factory TransformRule.suffixTitle(String field0) =
+      TransformRule_SuffixTitle;
+  const factory TransformRule.prefixAlbum(String field0) =
+      TransformRule_PrefixAlbum;
+  const factory TransformRule.suffixAlbum(String field0) =
+      TransformRule_SuffixAlbum;
+  const factory TransformRule.prefixArtist(String field0) =
+      TransformRule_PrefixArtist;
+  const factory TransformRule.suffixArtist(String field0) =
+      TransformRule_SuffixArtist;
   const factory TransformRule.titleCaseTitle() = TransformRule_TitleCaseTitle;
   const factory TransformRule.titleCaseArtist() = TransformRule_TitleCaseArtist;
   const factory TransformRule.titleCaseAlbum() = TransformRule_TitleCaseAlbum;
@@ -180,21 +156,16 @@ sealed class TransformRule with _$TransformRule {
     required String find,
     required String replace,
   }) = TransformRule_ReplaceInAll;
-  const factory TransformRule.setTitleIfEmpty(
-    String field0,
-  ) = TransformRule_SetTitleIfEmpty;
-  const factory TransformRule.setArtistIfEmpty(
-    String field0,
-  ) = TransformRule_SetArtistIfEmpty;
-  const factory TransformRule.setAlbumIfEmpty(
-    String field0,
-  ) = TransformRule_SetAlbumIfEmpty;
-  const factory TransformRule.setGenreIfEmpty(
-    String field0,
-  ) = TransformRule_SetGenreIfEmpty;
-  const factory TransformRule.setAlbumArtistIfEmpty(
-    String field0,
-  ) = TransformRule_SetAlbumArtistIfEmpty;
+  const factory TransformRule.setTitleIfEmpty(String field0) =
+      TransformRule_SetTitleIfEmpty;
+  const factory TransformRule.setArtistIfEmpty(String field0) =
+      TransformRule_SetArtistIfEmpty;
+  const factory TransformRule.setAlbumIfEmpty(String field0) =
+      TransformRule_SetAlbumIfEmpty;
+  const factory TransformRule.setGenreIfEmpty(String field0) =
+      TransformRule_SetGenreIfEmpty;
+  const factory TransformRule.setAlbumArtistIfEmpty(String field0) =
+      TransformRule_SetAlbumArtistIfEmpty;
   const factory TransformRule.removeEmptyFields() =
       TransformRule_RemoveEmptyFields;
   const factory TransformRule.removeNonCoverPictures() =

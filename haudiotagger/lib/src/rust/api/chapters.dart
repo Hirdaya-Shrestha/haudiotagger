@@ -5,6 +5,7 @@
 
 import '../frb_generated.dart';
 import 'error.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `create_id3v2_header`, `decode_syncsafe`, `encode_syncsafe`, `parse_chap_frame`, `serialize_chap_frames`, `strip_chapter_frames`
@@ -16,30 +17,42 @@ Future<List<Chapter>> readChaptersFromMp3Bytes({required List<int> bytes}) =>
 
 /// Write chapters as ID3v2 CHAP frames to MP3 bytes.
 /// Strips existing CHAP/CTOC frames, then appends new ones.
-Future<Uint8List> writeChaptersToMp3Bytes(
-        {required List<int> bytes, required List<Chapter> chapters}) =>
+Future<Uint8List> writeChaptersToMp3Bytes({
+  required List<int> bytes,
+  required List<Chapter> chapters,
+}) =>
     RustLib.instance.api.crateApiChaptersWriteChaptersToMp3Bytes(
-        bytes: bytes, chapters: chapters);
+      bytes: bytes,
+      chapters: chapters,
+    );
 
 /// Read chapters from in-memory bytes (for web/WASM).
 Future<List<Chapter>> readChaptersFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiChaptersReadChaptersFromBytes(bytes: bytes);
 
 /// Write chapters to in-memory bytes, returning modified bytes.
-Future<Uint8List> writeChaptersToBytes(
-        {required List<int> bytes, required List<Chapter> chapters}) =>
-    RustLib.instance.api
-        .crateApiChaptersWriteChaptersToBytes(bytes: bytes, chapters: chapters);
+Future<Uint8List> writeChaptersToBytes({
+  required List<int> bytes,
+  required List<Chapter> chapters,
+}) =>
+    RustLib.instance.api.crateApiChaptersWriteChaptersToBytes(
+      bytes: bytes,
+      chapters: chapters,
+    );
 
 /// Read chapters from the file at `path`.
 Future<List<Chapter>> getChapters({required String path}) =>
     RustLib.instance.api.crateApiChaptersGetChapters(path: path);
 
 /// Write chapters to the file at `path`.
-Future<void> setChapters(
-        {required String path, required List<Chapter> chapters}) =>
-    RustLib.instance.api
-        .crateApiChaptersSetChapters(path: path, chapters: chapters);
+Future<void> setChapters({
+  required String path,
+  required List<Chapter> chapters,
+}) =>
+    RustLib.instance.api.crateApiChaptersSetChapters(
+      path: path,
+      chapters: chapters,
+    );
 
 /// Represents a chapter marker in an audio file.
 class Chapter {

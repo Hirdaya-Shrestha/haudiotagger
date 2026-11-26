@@ -4,6 +4,7 @@
 // ignore_for_file: invalid_use_of_internal_member, unused_import, unnecessary_import
 
 import '../frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 import 'package:freezed_annotation/freezed_annotation.dart' hide protected;
 part 'error.freezed.dart';
@@ -18,16 +19,12 @@ sealed class HaudiotaggerError
 
   const factory HaudiotaggerError.invalidPath() = HaudiotaggerError_InvalidPath;
   const factory HaudiotaggerError.noTags() = HaudiotaggerError_NoTags;
-  const factory HaudiotaggerError.openFile({
-    required String message,
-  }) = HaudiotaggerError_OpenFile;
-  const factory HaudiotaggerError.read({
-    required String message,
-  }) = HaudiotaggerError_Read;
-  const factory HaudiotaggerError.write({
-    required String message,
-  }) = HaudiotaggerError_Write;
-  const factory HaudiotaggerError.remote({
-    required String message,
-  }) = HaudiotaggerError_Remote;
+  const factory HaudiotaggerError.openFile({required String message}) =
+      HaudiotaggerError_OpenFile;
+  const factory HaudiotaggerError.read({required String message}) =
+      HaudiotaggerError_Read;
+  const factory HaudiotaggerError.write({required String message}) =
+      HaudiotaggerError_Write;
+  const factory HaudiotaggerError.remote({required String message}) =
+      HaudiotaggerError_Remote;
 }

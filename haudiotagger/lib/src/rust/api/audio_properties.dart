@@ -5,6 +5,7 @@
 
 import '../frb_generated.dart';
 import 'error.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `from_file`, `type_info`
@@ -16,8 +17,9 @@ Future<AudioProperties> readProperties({required String path}) =>
 
 /// Read the technical audio properties from in-memory bytes (for web/WASM).
 Future<AudioProperties> readPropertiesFromBytes({required List<int> bytes}) =>
-    RustLib.instance.api
-        .crateApiAudioPropertiesReadPropertiesFromBytes(bytes: bytes);
+    RustLib.instance.api.crateApiAudioPropertiesReadPropertiesFromBytes(
+      bytes: bytes,
+    );
 
 /// Immutable, read-only technical audio properties of a file.
 class AudioProperties {
@@ -104,5 +106,4 @@ enum BitrateMode {
 
   /// Variable bitrate.
   vbr,
-  ;
 }

@@ -16,10 +16,13 @@ import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
 import 'api/validation.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi' as ffi;
+
 import 'frb_generated.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated_io.dart';
 
 abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
@@ -248,7 +251,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Map<String, String> sse_decode_Map_String_String_None(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   String sse_decode_String(SseDeserializer deserializer);
@@ -273,7 +277,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ExtendedChanges sse_decode_box_autoadd_extended_changes(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   ExtendedTag sse_decode_box_autoadd_extended_tag(SseDeserializer deserializer);
@@ -286,14 +291,16 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Id3v2Version sse_decode_box_autoadd_id_3_v_2_version(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   MimeType sse_decode_box_autoadd_mime_type(SseDeserializer deserializer);
 
   @protected
   NormalizeOptions sse_decode_box_autoadd_normalize_options(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   Picture sse_decode_box_autoadd_picture(SseDeserializer deserializer);
@@ -309,7 +316,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   TransformRule sse_decode_box_autoadd_transform_rule(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   int sse_decode_box_autoadd_u_32(SseDeserializer deserializer);
@@ -319,7 +327,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ValidationResult sse_decode_box_autoadd_validation_result(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   Chapter sse_decode_chapter(SseDeserializer deserializer);
@@ -353,7 +362,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<Uint8List> sse_decode_list_list_prim_u_8_strict(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<Picture> sse_decode_list_picture(SseDeserializer deserializer);
@@ -366,22 +376,26 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   List<(String, String)> sse_decode_list_record_string_string(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<(int, String)> sse_decode_list_record_u_32_string(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<TagField> sse_decode_list_tag_field(SseDeserializer deserializer);
 
   @protected
   List<TransformRule> sse_decode_list_transform_rule(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   List<ValidationIssue> sse_decode_list_validation_issue(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   MimeType sse_decode_mime_type(SseDeserializer deserializer);
@@ -400,7 +414,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   Id3v2Version? sse_decode_opt_box_autoadd_id_3_v_2_version(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   MimeType? sse_decode_opt_box_autoadd_mime_type(SseDeserializer deserializer);
@@ -428,7 +443,8 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   (String, String) sse_decode_record_string_string(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   (int, String) sse_decode_record_u_32_string(SseDeserializer deserializer);
@@ -474,11 +490,14 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   ValidationSeverity sse_decode_validation_severity(
-      SseDeserializer deserializer);
+    SseDeserializer deserializer,
+  );
 
   @protected
   void sse_encode_Map_String_String_None(
-      Map<String, String> self, SseSerializer serializer);
+    Map<String, String> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_String(String self, SseSerializer serializer);
@@ -488,11 +507,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_audio_properties(
-      AudioProperties self, SseSerializer serializer);
+    AudioProperties self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_batch_bytes_result(
-      BatchBytesResult self, SseSerializer serializer);
+    BatchBytesResult self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_batch_result(BatchResult self, SseSerializer serializer);
@@ -505,30 +528,42 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_extended_changes(
-      ExtendedChanges self, SseSerializer serializer);
+    ExtendedChanges self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_extended_tag(
-      ExtendedTag self, SseSerializer serializer);
+    ExtendedTag self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_f_32(double self, SseSerializer serializer);
 
   @protected
   void sse_encode_box_autoadd_i_64(
-      PlatformInt64 self, SseSerializer serializer);
+    PlatformInt64 self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_id_3_v_2_version(
-      Id3v2Version self, SseSerializer serializer);
+    Id3v2Version self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_mime_type(
-      MimeType self, SseSerializer serializer);
+    MimeType self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_normalize_options(
-      NormalizeOptions self, SseSerializer serializer);
+    NormalizeOptions self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_picture(Picture self, SseSerializer serializer);
@@ -538,15 +573,21 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_tag_changes(
-      TagChanges self, SseSerializer serializer);
+    TagChanges self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_tag_pipeline(
-      TagPipeline self, SseSerializer serializer);
+    TagPipeline self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_transform_rule(
-      TransformRule self, SseSerializer serializer);
+    TransformRule self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_box_autoadd_u_32(int self, SseSerializer serializer);
@@ -556,14 +597,18 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_box_autoadd_validation_result(
-      ValidationResult self, SseSerializer serializer);
+    ValidationResult self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_chapter(Chapter self, SseSerializer serializer);
 
   @protected
   void sse_encode_extended_changes(
-      ExtendedChanges self, SseSerializer serializer);
+    ExtendedChanges self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_extended_tag(ExtendedTag self, SseSerializer serializer);
@@ -573,7 +618,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_haudiotagger_error(
-      HaudiotaggerError self, SseSerializer serializer);
+    HaudiotaggerError self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_i_32(int self, SseSerializer serializer);
@@ -592,7 +639,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_list_prim_u_8_strict(
-      List<Uint8List> self, SseSerializer serializer);
+    List<Uint8List> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_picture(List<Picture> self, SseSerializer serializer);
@@ -602,33 +651,45 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_list_prim_u_8_strict(
-      Uint8List self, SseSerializer serializer);
+    Uint8List self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_record_string_string(
-      List<(String, String)> self, SseSerializer serializer);
+    List<(String, String)> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_record_u_32_string(
-      List<(int, String)> self, SseSerializer serializer);
+    List<(int, String)> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_tag_field(List<TagField> self, SseSerializer serializer);
 
   @protected
   void sse_encode_list_transform_rule(
-      List<TransformRule> self, SseSerializer serializer);
+    List<TransformRule> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_list_validation_issue(
-      List<ValidationIssue> self, SseSerializer serializer);
+    List<ValidationIssue> self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_mime_type(MimeType self, SseSerializer serializer);
 
   @protected
   void sse_encode_normalize_options(
-      NormalizeOptions self, SseSerializer serializer);
+    NormalizeOptions self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_String(String? self, SseSerializer serializer);
@@ -638,19 +699,27 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_opt_box_autoadd_i_64(
-      PlatformInt64? self, SseSerializer serializer);
+    PlatformInt64? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_id_3_v_2_version(
-      Id3v2Version? self, SseSerializer serializer);
+    Id3v2Version? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_mime_type(
-      MimeType? self, SseSerializer serializer);
+    MimeType? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_picture(
-      Picture? self, SseSerializer serializer);
+    Picture? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_opt_box_autoadd_tag(Tag? self, SseSerializer serializer);
@@ -663,7 +732,9 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_opt_list_picture(
-      List<Picture>? self, SseSerializer serializer);
+    List<Picture>? self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_picture(Picture self, SseSerializer serializer);
@@ -673,11 +744,15 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_record_string_string(
-      (String, String) self, SseSerializer serializer);
+    (String, String) self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_record_u_32_string(
-      (int, String) self, SseSerializer serializer);
+    (int, String) self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_tag(Tag self, SseSerializer serializer);
@@ -708,22 +783,30 @@ abstract class RustLibApiImplPlatform extends BaseApiImpl<RustLibWire> {
 
   @protected
   void sse_encode_url_read_strategy(
-      UrlReadStrategy self, SseSerializer serializer);
+    UrlReadStrategy self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_usize(BigInt self, SseSerializer serializer);
 
   @protected
   void sse_encode_validation_issue(
-      ValidationIssue self, SseSerializer serializer);
+    ValidationIssue self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_validation_result(
-      ValidationResult self, SseSerializer serializer);
+    ValidationResult self,
+    SseSerializer serializer,
+  );
 
   @protected
   void sse_encode_validation_severity(
-      ValidationSeverity self, SseSerializer serializer);
+    ValidationSeverity self,
+    SseSerializer serializer,
+  );
 }
 
 // Section: wire_class

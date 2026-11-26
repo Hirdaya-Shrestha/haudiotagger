@@ -7,7 +7,9 @@ import '../frb_generated.dart';
 import 'audio_properties.dart';
 import 'error.dart';
 import 'normalization.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+
 import 'picture.dart';
 import 'pipeline.dart';
 import 'tag.dart';
@@ -33,10 +35,14 @@ Future<String?> readField({required String path, required TagField field}) =>
 
 /// Read a single tag field from in-memory `bytes`.
 /// Returns the field value as a string (or None if unset).
-Future<String?> readFieldFromBytes(
-        {required List<int> bytes, required TagField field}) =>
-    RustLib.instance.api
-        .crateApiApiReadFieldFromBytes(bytes: bytes, field: field);
+Future<String?> readFieldFromBytes({
+  required List<int> bytes,
+  required TagField field,
+}) =>
+    RustLib.instance.api.crateApiApiReadFieldFromBytes(
+      bytes: bytes,
+      field: field,
+    );
 
 Future<void> write({required String path, required Tag data}) =>
     RustLib.instance.api.crateApiApiWrite(path: path, data: data);
@@ -50,10 +56,14 @@ Future<void> remove({required String path, required List<TagField> fields}) =>
     RustLib.instance.api.crateApiApiRemove(path: path, fields: fields);
 
 /// Remove the given `fields` from a tag held in `bytes`, returning the modified bytes.
-Future<Uint8List> removeFromBytes(
-        {required List<int> bytes, required List<TagField> fields}) =>
-    RustLib.instance.api
-        .crateApiApiRemoveFromBytes(bytes: bytes, fields: fields);
+Future<Uint8List> removeFromBytes({
+  required List<int> bytes,
+  required List<TagField> fields,
+}) =>
+    RustLib.instance.api.crateApiApiRemoveFromBytes(
+      bytes: bytes,
+      fields: fields,
+    );
 
 /// Remove all metadata from the file at `path`.
 Future<void> clear({required String path}) =>
@@ -64,31 +74,45 @@ Future<Uint8List> clearFromBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiClearFromBytes(bytes: bytes);
 
 /// Write the same tag to multiple files. Returns the number of successes and failures.
-Future<BatchResult> batchWrite(
-        {required List<String> paths, required Tag data}) =>
+Future<BatchResult> batchWrite({
+  required List<String> paths,
+  required Tag data,
+}) =>
     RustLib.instance.api.crateApiApiBatchWrite(paths: paths, data: data);
 
 /// Apply the same [TagChanges] to multiple files. Returns the number of successes and failures.
-Future<BatchResult> batchUpdateChanges(
-        {required List<String> paths, required TagChanges changes}) =>
-    RustLib.instance.api
-        .crateApiApiBatchUpdateChanges(paths: paths, changes: changes);
+Future<BatchResult> batchUpdateChanges({
+  required List<String> paths,
+  required TagChanges changes,
+}) =>
+    RustLib.instance.api.crateApiApiBatchUpdateChanges(
+      paths: paths,
+      changes: changes,
+    );
 
 /// Write the same tag to multiple in-memory byte arrays. Returns modified bytes.
 ///
 /// Optimized path: builds the lofty tag and serializes it **once**, then
 /// reuses the pre-serialized bytes for every file. This eliminates redundant
 /// tag construction and serialization across the batch.
-Future<BatchBytesResult> batchWriteFromBytes(
-        {required List<Uint8List> byteArrays, required Tag data}) =>
-    RustLib.instance.api
-        .crateApiApiBatchWriteFromBytes(byteArrays: byteArrays, data: data);
+Future<BatchBytesResult> batchWriteFromBytes({
+  required List<Uint8List> byteArrays,
+  required Tag data,
+}) =>
+    RustLib.instance.api.crateApiApiBatchWriteFromBytes(
+      byteArrays: byteArrays,
+      data: data,
+    );
 
 /// Apply the same [TagChanges] to multiple in-memory byte arrays. Returns modified bytes.
-Future<BatchBytesResult> batchUpdateChangesFromBytes(
-        {required List<Uint8List> byteArrays, required TagChanges changes}) =>
+Future<BatchBytesResult> batchUpdateChangesFromBytes({
+  required List<Uint8List> byteArrays,
+  required TagChanges changes,
+}) =>
     RustLib.instance.api.crateApiApiBatchUpdateChangesFromBytes(
-        byteArrays: byteArrays, changes: changes);
+      byteArrays: byteArrays,
+      changes: changes,
+    );
 
 /// Returns the list of tag formats present in the file at `path`.
 /// Possible values: "ID3v1", "ID3v2", "APE", "iTunes", "VorbisComments", "RiffInfo", "AiffText".
@@ -109,36 +133,51 @@ Future<Map<String, String>> getCustomTags({required String path}) =>
     RustLib.instance.api.crateApiApiGetCustomTags(path: path);
 
 /// Get all custom tags from in-memory `bytes`.
-Future<Map<String, String>> getCustomTagsFromBytes(
-        {required List<int> bytes}) =>
+Future<Map<String, String>> getCustomTagsFromBytes({
+  required List<int> bytes,
+}) =>
     RustLib.instance.api.crateApiApiGetCustomTagsFromBytes(bytes: bytes);
 
 /// Set a custom tag on the file at `path`.
 /// For ID3v2: creates a TXXX frame with the key as description.
 /// For Vorbis Comments: inserts with the key directly.
 /// For APE: inserts with the key directly.
-Future<void> setCustomTag(
-        {required String path, required String key, required String value}) =>
-    RustLib.instance.api
-        .crateApiApiSetCustomTag(path: path, key: key, value: value);
+Future<void> setCustomTag({
+  required String path,
+  required String key,
+  required String value,
+}) =>
+    RustLib.instance.api.crateApiApiSetCustomTag(
+      path: path,
+      key: key,
+      value: value,
+    );
 
 /// Set a custom tag on in-memory `bytes`, returning the modified bytes.
-Future<Uint8List> setCustomTagFromBytes(
-        {required List<int> bytes,
-        required String key,
-        required String value}) =>
-    RustLib.instance.api
-        .crateApiApiSetCustomTagFromBytes(bytes: bytes, key: key, value: value);
+Future<Uint8List> setCustomTagFromBytes({
+  required List<int> bytes,
+  required String key,
+  required String value,
+}) =>
+    RustLib.instance.api.crateApiApiSetCustomTagFromBytes(
+      bytes: bytes,
+      key: key,
+      value: value,
+    );
 
 /// Remove a custom tag from the file at `path`.
 Future<void> removeCustomTag({required String path, required String key}) =>
     RustLib.instance.api.crateApiApiRemoveCustomTag(path: path, key: key);
 
 /// Remove a custom tag from in-memory `bytes`, returning the modified bytes.
-Future<Uint8List> removeCustomTagFromBytes(
-        {required List<int> bytes, required String key}) =>
-    RustLib.instance.api
-        .crateApiApiRemoveCustomTagFromBytes(bytes: bytes, key: key);
+Future<Uint8List> removeCustomTagFromBytes({
+  required List<int> bytes,
+  required String key,
+}) =>
+    RustLib.instance.api.crateApiApiRemoveCustomTagFromBytes(
+      bytes: bytes,
+      key: key,
+    );
 
 /// Get the ID3v2 version of the tag in the file at `path`.
 /// Returns None if the file has no ID3v2 tag.
@@ -154,15 +193,21 @@ Future<Id3v2Version?> getId3V2VersionFromBytes({required List<int> bytes}) =>
 /// ID3v2.2 is not supported for writing (lofty doesn't support it).
 /// ID3v2.3 uses `WriteOptions::use_id3v23(true)`.
 /// ID3v2.4 uses default `WriteOptions`.
-Future<void> convertId3V2(
-        {required String path, required Id3v2Version version}) =>
+Future<void> convertId3V2({
+  required String path,
+  required Id3v2Version version,
+}) =>
     RustLib.instance.api.crateApiApiConvertId3V2(path: path, version: version);
 
 /// Convert the ID3v2 tag in in-memory `bytes` to the specified version, returning modified bytes.
-Future<Uint8List> convertId3V2FromBytes(
-        {required List<int> bytes, required Id3v2Version version}) =>
-    RustLib.instance.api
-        .crateApiApiConvertId3V2FromBytes(bytes: bytes, version: version);
+Future<Uint8List> convertId3V2FromBytes({
+  required List<int> bytes,
+  required Id3v2Version version,
+}) =>
+    RustLib.instance.api.crateApiApiConvertId3V2FromBytes(
+      bytes: bytes,
+      version: version,
+    );
 
 /// Remove the ID3v1 tag from the file at `path`.
 Future<void> removeId3V1({required String path}) =>
@@ -202,8 +247,10 @@ Future<Uint8List> normalizeBytes({required List<int> bytes}) =>
     RustLib.instance.api.crateApiApiNormalizeBytes(bytes: bytes);
 
 /// Normalize a Tag directly with custom options.
-Future<Tag> normalizeTag(
-        {required Tag tag, required NormalizeOptions options}) =>
+Future<Tag> normalizeTag({
+  required Tag tag,
+  required NormalizeOptions options,
+}) =>
     RustLib.instance.api.crateApiApiNormalizeTag(tag: tag, options: options);
 
 /// Format a filename from a tag using a pattern string.
@@ -223,64 +270,81 @@ Future<String> renameFile({required String path, required String pattern}) =>
     RustLib.instance.api.crateApiApiRenameFile(path: path, pattern: pattern);
 
 /// Apply a pipeline of transformation rules to a tag.
-Future<Tag> applyPipeline(
-        {required Tag tag, required List<TransformRule> rules}) =>
+Future<Tag> applyPipeline({
+  required Tag tag,
+  required List<TransformRule> rules,
+}) =>
     RustLib.instance.api.crateApiApiApplyPipeline(tag: tag, rules: rules);
 
 /// Apply a pipeline of rules to multiple files. Returns successes and failures.
-Future<BatchResult> batchTransform(
-        {required List<String> paths, required List<TransformRule> rules}) =>
+Future<BatchResult> batchTransform({
+  required List<String> paths,
+  required List<TransformRule> rules,
+}) =>
     RustLib.instance.api.crateApiApiBatchTransform(paths: paths, rules: rules);
 
 /// Copy metadata from source to destination file in a single FFI call.
-Future<void> copyMetadata(
-        {required String source,
-        required String destination,
-        required bool includeArtwork,
-        required bool includeLyrics,
-        required bool includeCustomTags}) =>
+Future<void> copyMetadata({
+  required String source,
+  required String destination,
+  required bool includeArtwork,
+  required bool includeLyrics,
+  required bool includeCustomTags,
+}) =>
     RustLib.instance.api.crateApiApiCopyMetadata(
-        source: source,
-        destination: destination,
-        includeArtwork: includeArtwork,
-        includeLyrics: includeLyrics,
-        includeCustomTags: includeCustomTags);
+      source: source,
+      destination: destination,
+      includeArtwork: includeArtwork,
+      includeLyrics: includeLyrics,
+      includeCustomTags: includeCustomTags,
+    );
 
 /// Copy metadata from source bytes to destination bytes in a single FFI call.
-Future<Uint8List> copyMetadataFromBytes(
-        {required List<int> sourceBytes,
-        required List<int> destinationBytes,
-        required bool includeArtwork,
-        required bool includeLyrics,
-        required bool includeCustomTags}) =>
+Future<Uint8List> copyMetadataFromBytes({
+  required List<int> sourceBytes,
+  required List<int> destinationBytes,
+  required bool includeArtwork,
+  required bool includeLyrics,
+  required bool includeCustomTags,
+}) =>
     RustLib.instance.api.crateApiApiCopyMetadataFromBytes(
-        sourceBytes: sourceBytes,
-        destinationBytes: destinationBytes,
-        includeArtwork: includeArtwork,
-        includeLyrics: includeLyrics,
-        includeCustomTags: includeCustomTags);
+      sourceBytes: sourceBytes,
+      destinationBytes: destinationBytes,
+      includeArtwork: includeArtwork,
+      includeLyrics: includeLyrics,
+      includeCustomTags: includeCustomTags,
+    );
 
 /// Apply a pipeline to a file and write the result in a single FFI call.
-Future<void> processFile(
-        {required String path, required List<TransformRule> rules}) =>
+Future<void> processFile({
+  required String path,
+  required List<TransformRule> rules,
+}) =>
     RustLib.instance.api.crateApiApiProcessFile(path: path, rules: rules);
 
 /// Apply a pipeline to byte data and return modified bytes in a single FFI call.
-Future<Uint8List> processBytes(
-        {required List<int> bytes, required List<TransformRule> rules}) =>
+Future<Uint8List> processBytes({
+  required List<int> bytes,
+  required List<TransformRule> rules,
+}) =>
     RustLib.instance.api.crateApiApiProcessBytes(bytes: bytes, rules: rules);
 
 /// Apply a pipeline to multiple files. Returns successes and failures.
-Future<BatchResult> processBatch(
-        {required List<String> paths, required List<TransformRule> rules}) =>
+Future<BatchResult> processBatch({
+  required List<String> paths,
+  required List<TransformRule> rules,
+}) =>
     RustLib.instance.api.crateApiApiProcessBatch(paths: paths, rules: rules);
 
 /// Apply a pipeline to multiple byte arrays. Returns modified bytes.
-Future<BatchBytesResult> processBatchBytes(
-        {required List<Uint8List> byteArrays,
-        required List<TransformRule> rules}) =>
-    RustLib.instance.api
-        .crateApiApiProcessBatchBytes(byteArrays: byteArrays, rules: rules);
+Future<BatchBytesResult> processBatchBytes({
+  required List<Uint8List> byteArrays,
+  required List<TransformRule> rules,
+}) =>
+    RustLib.instance.api.crateApiApiProcessBatchBytes(
+      byteArrays: byteArrays,
+      rules: rules,
+    );
 
 /// Read all pictures from the file at `path`.
 Future<List<Picture>> readPictures({required String path}) =>
@@ -292,17 +356,25 @@ Future<List<Picture>> readPicturesFromBytes({required List<int> bytes}) =>
 
 /// Read a single picture by type from the file at `path`.
 /// Returns `None` if no picture of the given type exists.
-Future<Picture?> readPictureByType(
-        {required String path, required PictureType pictureType}) =>
-    RustLib.instance.api
-        .crateApiApiReadPictureByType(path: path, pictureType: pictureType);
+Future<Picture?> readPictureByType({
+  required String path,
+  required PictureType pictureType,
+}) =>
+    RustLib.instance.api.crateApiApiReadPictureByType(
+      path: path,
+      pictureType: pictureType,
+    );
 
 /// Read a single picture by type from in-memory `bytes`.
 /// Returns `None` if no picture of the given type exists.
-Future<Picture?> readPictureByTypeFromBytes(
-        {required List<int> bytes, required PictureType pictureType}) =>
+Future<Picture?> readPictureByTypeFromBytes({
+  required List<int> bytes,
+  required PictureType pictureType,
+}) =>
     RustLib.instance.api.crateApiApiReadPictureByTypeFromBytes(
-        bytes: bytes, pictureType: pictureType);
+      bytes: bytes,
+      pictureType: pictureType,
+    );
 
 /// Comprehensive info about an audio file, returned by `inspect`.
 class AudioFileInfo {
@@ -425,5 +497,4 @@ enum Id3v2Version {
 
   /// ID3v2.4 (latest spec, but less software support)
   v4,
-  ;
 }

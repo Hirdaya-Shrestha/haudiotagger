@@ -16,11 +16,14 @@ import 'api/tag.dart';
 import 'api/tag_changes.dart';
 import 'api/tag_field.dart';
 import 'api/validation.dart';
+
 import 'dart:async';
 import 'dart:convert';
+
 import 'frb_generated.dart';
 import 'frb_generated.io.dart'
     if (dart.library.js_interop) 'frb_generated.web.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 /// Main entrypoint of the Rust API
@@ -47,12 +50,8 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 
   /// Initialize flutter_rust_bridge in mock mode.
   /// No libraries for FFI are loaded.
-  static void initMock({
-    required RustLibApi api,
-  }) {
-    instance.initMockImpl(
-      api: api,
-    );
+  static void initMock({required RustLibApi api}) {
+    instance.initMockImpl(api: api);
   }
 
   /// Dispose flutter_rust_bridge
@@ -92,82 +91,110 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
 }
 
 abstract class RustLibApi extends BaseApi {
-  Future<Tag> crateApiApiApplyPipeline(
-      {required Tag tag, required List<TransformRule> rules});
+  Future<Tag> crateApiApiApplyPipeline({
+    required Tag tag,
+    required List<TransformRule> rules,
+  });
 
-  Future<Tag> crateApiPipelineApplyPipeline(
-      {required Tag tag, required TagPipeline pipeline});
+  Future<Tag> crateApiPipelineApplyPipeline({
+    required Tag tag,
+    required TagPipeline pipeline,
+  });
 
-  Future<Tag> crateApiPipelineApplyRule(
-      {required Tag tag, required TransformRule rule});
+  Future<Tag> crateApiPipelineApplyRule({
+    required Tag tag,
+    required TransformRule rule,
+  });
 
-  Future<BatchResult> crateApiApiBatchTransform(
-      {required List<String> paths, required List<TransformRule> rules});
+  Future<BatchResult> crateApiApiBatchTransform({
+    required List<String> paths,
+    required List<TransformRule> rules,
+  });
 
-  Future<BatchResult> crateApiApiBatchUpdateChanges(
-      {required List<String> paths, required TagChanges changes});
+  Future<BatchResult> crateApiApiBatchUpdateChanges({
+    required List<String> paths,
+    required TagChanges changes,
+  });
 
-  Future<BatchBytesResult> crateApiApiBatchUpdateChangesFromBytes(
-      {required List<Uint8List> byteArrays, required TagChanges changes});
+  Future<BatchBytesResult> crateApiApiBatchUpdateChangesFromBytes({
+    required List<Uint8List> byteArrays,
+    required TagChanges changes,
+  });
 
-  Future<BatchResult> crateApiApiBatchWrite(
-      {required List<String> paths, required Tag data});
+  Future<BatchResult> crateApiApiBatchWrite({
+    required List<String> paths,
+    required Tag data,
+  });
 
-  Future<BatchBytesResult> crateApiApiBatchWriteFromBytes(
-      {required List<Uint8List> byteArrays, required Tag data});
+  Future<BatchBytesResult> crateApiApiBatchWriteFromBytes({
+    required List<Uint8List> byteArrays,
+    required Tag data,
+  });
 
   Future<void> crateApiApiClear({required String path});
 
   Future<Uint8List> crateApiApiClearFromBytes({required List<int> bytes});
 
-  Future<void> crateApiApiConvertId3V2(
-      {required String path, required Id3v2Version version});
+  Future<void> crateApiApiConvertId3V2({
+    required String path,
+    required Id3v2Version version,
+  });
 
-  Future<Uint8List> crateApiApiConvertId3V2FromBytes(
-      {required List<int> bytes, required Id3v2Version version});
+  Future<Uint8List> crateApiApiConvertId3V2FromBytes({
+    required List<int> bytes,
+    required Id3v2Version version,
+  });
 
-  Future<void> crateApiApiCopyMetadata(
-      {required String source,
-      required String destination,
-      required bool includeArtwork,
-      required bool includeLyrics,
-      required bool includeCustomTags});
+  Future<void> crateApiApiCopyMetadata({
+    required String source,
+    required String destination,
+    required bool includeArtwork,
+    required bool includeLyrics,
+    required bool includeCustomTags,
+  });
 
-  Future<Uint8List> crateApiApiCopyMetadataFromBytes(
-      {required List<int> sourceBytes,
-      required List<int> destinationBytes,
-      required bool includeArtwork,
-      required bool includeLyrics,
-      required bool includeCustomTags});
+  Future<Uint8List> crateApiApiCopyMetadataFromBytes({
+    required List<int> sourceBytes,
+    required List<int> destinationBytes,
+    required bool includeArtwork,
+    required bool includeLyrics,
+    required bool includeCustomTags,
+  });
 
   Future<ExtendedChanges> crateApiExtendedExtendedChangesDefault();
 
-  Future<bool> crateApiExtendedExtendedChangesIsEmpty(
-      {required ExtendedChanges that});
+  Future<bool> crateApiExtendedExtendedChangesIsEmpty({
+    required ExtendedChanges that,
+  });
 
   Future<ExtendedTag> crateApiExtendedExtendedTagDefault();
 
   Future<bool> crateApiExtendedExtendedTagIsEmpty({required ExtendedTag that});
 
-  Future<String> crateApiApiFormatFilename(
-      {required Tag tag, required String pattern});
+  Future<String> crateApiApiFormatFilename({
+    required Tag tag,
+    required String pattern,
+  });
 
   Future<List<Chapter>> crateApiChaptersGetChapters({required String path});
 
   Future<Map<String, String>> crateApiApiGetCustomTags({required String path});
 
-  Future<Map<String, String>> crateApiApiGetCustomTagsFromBytes(
-      {required List<int> bytes});
+  Future<Map<String, String>> crateApiApiGetCustomTagsFromBytes({
+    required List<int> bytes,
+  });
 
   Future<Id3v2Version?> crateApiApiGetId3V2Version({required String path});
 
-  Future<Id3v2Version?> crateApiApiGetId3V2VersionFromBytes(
-      {required List<int> bytes});
+  Future<Id3v2Version?> crateApiApiGetId3V2VersionFromBytes({
+    required List<int> bytes,
+  });
 
   Future<List<String>> crateApiApiGetTagFormats({required String path});
 
-  Future<List<String>> crateApiApiGetTagFormatsFromBytes(
-      {required List<int> bytes});
+  Future<List<String>> crateApiApiGetTagFormatsFromBytes({
+    required List<int> bytes,
+  });
 
   Future<AudioFileInfo> crateApiApiInspect({required String path});
 
@@ -175,107 +202,154 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Tag> crateApiApiNormalize({required String path});
 
-  Future<Tag> crateApiNormalizationNormalize(
-      {required Tag tag, required NormalizeOptions opts});
+  Future<Tag> crateApiNormalizationNormalize({
+    required Tag tag,
+    required NormalizeOptions opts,
+  });
 
   Future<Uint8List> crateApiApiNormalizeBytes({required List<int> bytes});
 
   Future<NormalizeOptions> crateApiNormalizationNormalizeOptionsDefault();
 
-  Future<Tag> crateApiApiNormalizeTag(
-      {required Tag tag, required NormalizeOptions options});
+  Future<Tag> crateApiApiNormalizeTag({
+    required Tag tag,
+    required NormalizeOptions options,
+  });
 
-  Future<Picture> crateApiPicturePictureNew(
-      {required PictureType pictureType,
-      MimeType? mimeType,
-      required List<int> bytes});
+  Future<Picture> crateApiPicturePictureNew({
+    required PictureType pictureType,
+    MimeType? mimeType,
+    required List<int> bytes,
+  });
 
-  Future<BatchResult> crateApiApiProcessBatch(
-      {required List<String> paths, required List<TransformRule> rules});
+  Future<BatchResult> crateApiApiProcessBatch({
+    required List<String> paths,
+    required List<TransformRule> rules,
+  });
 
-  Future<BatchBytesResult> crateApiApiProcessBatchBytes(
-      {required List<Uint8List> byteArrays,
-      required List<TransformRule> rules});
+  Future<BatchBytesResult> crateApiApiProcessBatchBytes({
+    required List<Uint8List> byteArrays,
+    required List<TransformRule> rules,
+  });
 
-  Future<Uint8List> crateApiApiProcessBytes(
-      {required List<int> bytes, required List<TransformRule> rules});
+  Future<Uint8List> crateApiApiProcessBytes({
+    required List<int> bytes,
+    required List<TransformRule> rules,
+  });
 
-  Future<void> crateApiApiProcessFile(
-      {required String path, required List<TransformRule> rules});
+  Future<void> crateApiApiProcessFile({
+    required String path,
+    required List<TransformRule> rules,
+  });
 
   Future<Tag> crateApiApiRead({required String path});
 
-  Future<List<Chapter>> crateApiChaptersReadChaptersFromBytes(
-      {required List<int> bytes});
+  Future<List<Chapter>> crateApiChaptersReadChaptersFromBytes({
+    required List<int> bytes,
+  });
 
-  Future<List<Chapter>> crateApiChaptersReadChaptersFromMp3Bytes(
-      {required List<int> bytes});
+  Future<List<Chapter>> crateApiChaptersReadChaptersFromMp3Bytes({
+    required List<int> bytes,
+  });
 
   Future<ExtendedTag> crateApiExtendedReadExtended({required String path});
 
-  Future<ExtendedTag> crateApiExtendedReadExtendedFromBytes(
-      {required List<int> bytes});
+  Future<ExtendedTag> crateApiExtendedReadExtendedFromBytes({
+    required List<int> bytes,
+  });
 
-  Future<String?> crateApiApiReadField(
-      {required String path, required TagField field});
+  Future<String?> crateApiApiReadField({
+    required String path,
+    required TagField field,
+  });
 
-  Future<String?> crateApiApiReadFieldFromBytes(
-      {required List<int> bytes, required TagField field});
+  Future<String?> crateApiApiReadFieldFromBytes({
+    required List<int> bytes,
+    required TagField field,
+  });
 
   Future<Tag> crateApiApiReadFromBytes({required List<int> bytes});
 
-  Future<Tag> crateApiRemoteReadReadFromUrl(
-      {required String url, required UrlReadStrategy strategy});
+  Future<Tag> crateApiRemoteReadReadFromUrl({
+    required String url,
+    required UrlReadStrategy strategy,
+  });
 
-  Future<Picture?> crateApiApiReadPictureByType(
-      {required String path, required PictureType pictureType});
+  Future<Picture?> crateApiApiReadPictureByType({
+    required String path,
+    required PictureType pictureType,
+  });
 
-  Future<Picture?> crateApiApiReadPictureByTypeFromBytes(
-      {required List<int> bytes, required PictureType pictureType});
+  Future<Picture?> crateApiApiReadPictureByTypeFromBytes({
+    required List<int> bytes,
+    required PictureType pictureType,
+  });
 
   Future<List<Picture>> crateApiApiReadPictures({required String path});
 
-  Future<List<Picture>> crateApiApiReadPicturesFromBytes(
-      {required List<int> bytes});
+  Future<List<Picture>> crateApiApiReadPicturesFromBytes({
+    required List<int> bytes,
+  });
 
-  Future<AudioProperties> crateApiAudioPropertiesReadProperties(
-      {required String path});
+  Future<AudioProperties> crateApiAudioPropertiesReadProperties({
+    required String path,
+  });
 
-  Future<AudioProperties> crateApiAudioPropertiesReadPropertiesFromBytes(
-      {required List<int> bytes});
+  Future<AudioProperties> crateApiAudioPropertiesReadPropertiesFromBytes({
+    required List<int> bytes,
+  });
 
-  Future<void> crateApiApiRemove(
-      {required String path, required List<TagField> fields});
+  Future<void> crateApiApiRemove({
+    required String path,
+    required List<TagField> fields,
+  });
 
-  Future<void> crateApiApiRemoveCustomTag(
-      {required String path, required String key});
+  Future<void> crateApiApiRemoveCustomTag({
+    required String path,
+    required String key,
+  });
 
-  Future<Uint8List> crateApiApiRemoveCustomTagFromBytes(
-      {required List<int> bytes, required String key});
+  Future<Uint8List> crateApiApiRemoveCustomTagFromBytes({
+    required List<int> bytes,
+    required String key,
+  });
 
   Future<void> crateApiExtendedRemoveExtended({required String path});
 
-  Future<Uint8List> crateApiExtendedRemoveExtendedFromBytes(
-      {required List<int> bytes});
+  Future<Uint8List> crateApiExtendedRemoveExtendedFromBytes({
+    required List<int> bytes,
+  });
 
-  Future<Uint8List> crateApiApiRemoveFromBytes(
-      {required List<int> bytes, required List<TagField> fields});
+  Future<Uint8List> crateApiApiRemoveFromBytes({
+    required List<int> bytes,
+    required List<TagField> fields,
+  });
 
   Future<void> crateApiApiRemoveId3V1({required String path});
 
   Future<Uint8List> crateApiApiRemoveId3V1FromBytes({required List<int> bytes});
 
-  Future<String> crateApiApiRenameFile(
-      {required String path, required String pattern});
+  Future<String> crateApiApiRenameFile({
+    required String path,
+    required String pattern,
+  });
 
-  Future<void> crateApiChaptersSetChapters(
-      {required String path, required List<Chapter> chapters});
+  Future<void> crateApiChaptersSetChapters({
+    required String path,
+    required List<Chapter> chapters,
+  });
 
-  Future<void> crateApiApiSetCustomTag(
-      {required String path, required String key, required String value});
+  Future<void> crateApiApiSetCustomTag({
+    required String path,
+    required String key,
+    required String value,
+  });
 
-  Future<Uint8List> crateApiApiSetCustomTagFromBytes(
-      {required List<int> bytes, required String key, required String value});
+  Future<Uint8List> crateApiApiSetCustomTagFromBytes({
+    required List<int> bytes,
+    required String key,
+    required String value,
+  });
 
   Future<TagChanges> crateApiTagChangesTagChangesDefault();
 
@@ -283,13 +357,16 @@ abstract class RustLibApi extends BaseApi {
 
   Future<Tag> crateApiTagTagDefault();
 
-  Future<Tag> crateApiPipelineTagPipelineApply(
-      {required TagPipeline that, required Tag tag});
+  Future<Tag> crateApiPipelineTagPipelineApply({
+    required TagPipeline that,
+    required Tag tag,
+  });
 
   Future<TagPipeline> crateApiPipelineTagPipelineDefault();
 
-  Future<TagPipeline> crateApiPipelineTagPipelineFromRules(
-      {required List<TransformRule> rules});
+  Future<TagPipeline> crateApiPipelineTagPipelineFromRules({
+    required List<TransformRule> rules,
+  });
 
   Future<bool> crateApiPipelineTagPipelineIsEmpty({required TagPipeline that});
 
@@ -297,17 +374,25 @@ abstract class RustLibApi extends BaseApi {
 
   Future<TagPipeline> crateApiPipelineTagPipelineNew();
 
-  Future<void> crateApiTagChangesUpdate(
-      {required String path, required TagChanges changes});
+  Future<void> crateApiTagChangesUpdate({
+    required String path,
+    required TagChanges changes,
+  });
 
-  Future<void> crateApiExtendedUpdateExtended(
-      {required String path, required ExtendedChanges changes});
+  Future<void> crateApiExtendedUpdateExtended({
+    required String path,
+    required ExtendedChanges changes,
+  });
 
-  Future<Uint8List> crateApiExtendedUpdateExtendedFromBytes(
-      {required List<int> bytes, required ExtendedChanges changes});
+  Future<Uint8List> crateApiExtendedUpdateExtendedFromBytes({
+    required List<int> bytes,
+    required ExtendedChanges changes,
+  });
 
-  Future<Uint8List> crateApiTagChangesUpdateFromBytes(
-      {required List<int> bytes, required TagChanges changes});
+  Future<Uint8List> crateApiTagChangesUpdateFromBytes({
+    required List<int> bytes,
+    required TagChanges changes,
+  });
 
   Future<UrlReadStrategy> crateApiRemoteReadUrlReadStrategyDefault();
 
@@ -315,30 +400,42 @@ abstract class RustLibApi extends BaseApi {
 
   Future<ValidationResult> crateApiValidationValidate({required Tag tag});
 
-  Future<ValidationResult> crateApiApiValidateFromBytes(
-      {required List<int> bytes});
+  Future<ValidationResult> crateApiApiValidateFromBytes({
+    required List<int> bytes,
+  });
 
   Future<ValidationResult> crateApiApiValidateTag({required Tag tag});
 
-  Future<bool> crateApiValidationValidationResultIsValid(
-      {required ValidationResult that});
+  Future<bool> crateApiValidationValidationResultIsValid({
+    required ValidationResult that,
+  });
 
   Future<void> crateApiApiWrite({required String path, required Tag data});
 
-  Future<Uint8List> crateApiChaptersWriteChaptersToBytes(
-      {required List<int> bytes, required List<Chapter> chapters});
+  Future<Uint8List> crateApiChaptersWriteChaptersToBytes({
+    required List<int> bytes,
+    required List<Chapter> chapters,
+  });
 
-  Future<Uint8List> crateApiChaptersWriteChaptersToMp3Bytes(
-      {required List<int> bytes, required List<Chapter> chapters});
+  Future<Uint8List> crateApiChaptersWriteChaptersToMp3Bytes({
+    required List<int> bytes,
+    required List<Chapter> chapters,
+  });
 
-  Future<void> crateApiExtendedWriteExtended(
-      {required String path, required ExtendedTag data});
+  Future<void> crateApiExtendedWriteExtended({
+    required String path,
+    required ExtendedTag data,
+  });
 
-  Future<Uint8List> crateApiExtendedWriteExtendedToBytes(
-      {required List<int> bytes, required ExtendedTag data});
+  Future<Uint8List> crateApiExtendedWriteExtendedToBytes({
+    required List<int> bytes,
+    required ExtendedTag data,
+  });
 
-  Future<Uint8List> crateApiApiWriteToBytes(
-      {required List<int> bytes, required Tag data});
+  Future<Uint8List> crateApiApiWriteToBytes({
+    required List<int> bytes,
+    required Tag data,
+  });
 }
 
 class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
@@ -350,24 +447,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   });
 
   @override
-  Future<Tag> crateApiApiApplyPipeline(
-      {required Tag tag, required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 1, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+  Future<Tag> crateApiApiApplyPipeline({
+    required Tag tag,
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 1,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiApplyPipelineConstMeta,
+        argValues: [tag, rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiApplyPipelineConstMeta,
-      argValues: [tag, rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiApplyPipelineConstMeta => const TaskConstMeta(
@@ -376,24 +481,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Tag> crateApiPipelineApplyPipeline(
-      {required Tag tag, required TagPipeline pipeline}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        sse_encode_box_autoadd_tag_pipeline(pipeline, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 2, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+  Future<Tag> crateApiPipelineApplyPipeline({
+    required Tag tag,
+    required TagPipeline pipeline,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          sse_encode_box_autoadd_tag_pipeline(pipeline, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 2,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineApplyPipelineConstMeta,
+        argValues: [tag, pipeline],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineApplyPipelineConstMeta,
-      argValues: [tag, pipeline],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineApplyPipelineConstMeta =>
@@ -403,50 +516,64 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Tag> crateApiPipelineApplyRule(
-      {required Tag tag, required TransformRule rule}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        sse_encode_box_autoadd_transform_rule(rule, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 3, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+  Future<Tag> crateApiPipelineApplyRule({
+    required Tag tag,
+    required TransformRule rule,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          sse_encode_box_autoadd_transform_rule(rule, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 3,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineApplyRuleConstMeta,
+        argValues: [tag, rule],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineApplyRuleConstMeta,
-      argValues: [tag, rule],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiPipelineApplyRuleConstMeta => const TaskConstMeta(
-        debugName: "apply_rule",
-        argNames: ["tag", "rule"],
-      );
+  TaskConstMeta get kCrateApiPipelineApplyRuleConstMeta =>
+      const TaskConstMeta(debugName: "apply_rule", argNames: ["tag", "rule"]);
 
   @override
-  Future<BatchResult> crateApiApiBatchTransform(
-      {required List<String> paths, required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_String(paths, serializer);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 4, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_result,
-        decodeErrorData: null,
+  Future<BatchResult> crateApiApiBatchTransform({
+    required List<String> paths,
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_String(paths, serializer);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 4,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiBatchTransformConstMeta,
+        argValues: [paths, rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiBatchTransformConstMeta,
-      argValues: [paths, rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiBatchTransformConstMeta => const TaskConstMeta(
@@ -455,24 +582,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BatchResult> crateApiApiBatchUpdateChanges(
-      {required List<String> paths, required TagChanges changes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_String(paths, serializer);
-        sse_encode_box_autoadd_tag_changes(changes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 5, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_result,
-        decodeErrorData: null,
+  Future<BatchResult> crateApiApiBatchUpdateChanges({
+    required List<String> paths,
+    required TagChanges changes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_String(paths, serializer);
+          sse_encode_box_autoadd_tag_changes(changes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 5,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiBatchUpdateChangesConstMeta,
+        argValues: [paths, changes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiBatchUpdateChangesConstMeta,
-      argValues: [paths, changes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiBatchUpdateChangesConstMeta =>
@@ -482,24 +617,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BatchBytesResult> crateApiApiBatchUpdateChangesFromBytes(
-      {required List<Uint8List> byteArrays, required TagChanges changes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
-        sse_encode_box_autoadd_tag_changes(changes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 6, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_bytes_result,
-        decodeErrorData: null,
+  Future<BatchBytesResult> crateApiApiBatchUpdateChangesFromBytes({
+    required List<Uint8List> byteArrays,
+    required TagChanges changes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
+          sse_encode_box_autoadd_tag_changes(changes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 6,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_bytes_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiBatchUpdateChangesFromBytesConstMeta,
+        argValues: [byteArrays, changes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiBatchUpdateChangesFromBytesConstMeta,
-      argValues: [byteArrays, changes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiBatchUpdateChangesFromBytesConstMeta =>
@@ -509,24 +652,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BatchResult> crateApiApiBatchWrite(
-      {required List<String> paths, required Tag data}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_String(paths, serializer);
-        sse_encode_box_autoadd_tag(data, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 7, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_result,
-        decodeErrorData: null,
+  Future<BatchResult> crateApiApiBatchWrite({
+    required List<String> paths,
+    required Tag data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_String(paths, serializer);
+          sse_encode_box_autoadd_tag(data, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 7,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiBatchWriteConstMeta,
+        argValues: [paths, data],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiBatchWriteConstMeta,
-      argValues: [paths, data],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiBatchWriteConstMeta => const TaskConstMeta(
@@ -535,24 +686,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BatchBytesResult> crateApiApiBatchWriteFromBytes(
-      {required List<Uint8List> byteArrays, required Tag data}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
-        sse_encode_box_autoadd_tag(data, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 8, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_bytes_result,
-        decodeErrorData: null,
+  Future<BatchBytesResult> crateApiApiBatchWriteFromBytes({
+    required List<Uint8List> byteArrays,
+    required Tag data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
+          sse_encode_box_autoadd_tag(data, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 8,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_bytes_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiBatchWriteFromBytesConstMeta,
+        argValues: [byteArrays, data],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiBatchWriteFromBytesConstMeta,
-      argValues: [byteArrays, data],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiBatchWriteFromBytesConstMeta =>
@@ -563,71 +722,87 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<void> crateApiApiClear({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 9, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 9,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiClearConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiClearConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiClearConstMeta => const TaskConstMeta(
-        debugName: "clear",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiClearConstMeta =>
+      const TaskConstMeta(debugName: "clear", argNames: ["path"]);
 
   @override
   Future<Uint8List> crateApiApiClearFromBytes({required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 10, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 10,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiClearFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiClearFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiClearFromBytesConstMeta => const TaskConstMeta(
-        debugName: "clear_from_bytes",
-        argNames: ["bytes"],
-      );
+  TaskConstMeta get kCrateApiApiClearFromBytesConstMeta =>
+      const TaskConstMeta(debugName: "clear_from_bytes", argNames: ["bytes"]);
 
   @override
-  Future<void> crateApiApiConvertId3V2(
-      {required String path, required Id3v2Version version}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_id_3_v_2_version(version, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 11, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiApiConvertId3V2({
+    required String path,
+    required Id3v2Version version,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_id_3_v_2_version(version, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 11,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiConvertId3V2ConstMeta,
+        argValues: [path, version],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiConvertId3V2ConstMeta,
-      argValues: [path, version],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiConvertId3V2ConstMeta => const TaskConstMeta(
@@ -636,24 +811,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiApiConvertId3V2FromBytes(
-      {required List<int> bytes, required Id3v2Version version}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_id_3_v_2_version(version, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 12, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiConvertId3V2FromBytes({
+    required List<int> bytes,
+    required Id3v2Version version,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_id_3_v_2_version(version, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 12,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiConvertId3V2FromBytesConstMeta,
+        argValues: [bytes, version],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiConvertId3V2FromBytesConstMeta,
-      argValues: [bytes, version],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiConvertId3V2FromBytesConstMeta =>
@@ -663,37 +846,44 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiApiCopyMetadata(
-      {required String source,
-      required String destination,
-      required bool includeArtwork,
-      required bool includeLyrics,
-      required bool includeCustomTags}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(source, serializer);
-        sse_encode_String(destination, serializer);
-        sse_encode_bool(includeArtwork, serializer);
-        sse_encode_bool(includeLyrics, serializer);
-        sse_encode_bool(includeCustomTags, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 13, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiApiCopyMetadata({
+    required String source,
+    required String destination,
+    required bool includeArtwork,
+    required bool includeLyrics,
+    required bool includeCustomTags,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(source, serializer);
+          sse_encode_String(destination, serializer);
+          sse_encode_bool(includeArtwork, serializer);
+          sse_encode_bool(includeLyrics, serializer);
+          sse_encode_bool(includeCustomTags, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 13,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiCopyMetadataConstMeta,
+        argValues: [
+          source,
+          destination,
+          includeArtwork,
+          includeLyrics,
+          includeCustomTags,
+        ],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiCopyMetadataConstMeta,
-      argValues: [
-        source,
-        destination,
-        includeArtwork,
-        includeLyrics,
-        includeCustomTags
-      ],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiCopyMetadataConstMeta => const TaskConstMeta(
@@ -703,42 +893,49 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           "destination",
           "includeArtwork",
           "includeLyrics",
-          "includeCustomTags"
+          "includeCustomTags",
         ],
       );
 
   @override
-  Future<Uint8List> crateApiApiCopyMetadataFromBytes(
-      {required List<int> sourceBytes,
-      required List<int> destinationBytes,
-      required bool includeArtwork,
-      required bool includeLyrics,
-      required bool includeCustomTags}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(sourceBytes, serializer);
-        sse_encode_list_prim_u_8_loose(destinationBytes, serializer);
-        sse_encode_bool(includeArtwork, serializer);
-        sse_encode_bool(includeLyrics, serializer);
-        sse_encode_bool(includeCustomTags, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 14, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiCopyMetadataFromBytes({
+    required List<int> sourceBytes,
+    required List<int> destinationBytes,
+    required bool includeArtwork,
+    required bool includeLyrics,
+    required bool includeCustomTags,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(sourceBytes, serializer);
+          sse_encode_list_prim_u_8_loose(destinationBytes, serializer);
+          sse_encode_bool(includeArtwork, serializer);
+          sse_encode_bool(includeLyrics, serializer);
+          sse_encode_bool(includeCustomTags, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 14,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiCopyMetadataFromBytesConstMeta,
+        argValues: [
+          sourceBytes,
+          destinationBytes,
+          includeArtwork,
+          includeLyrics,
+          includeCustomTags,
+        ],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiCopyMetadataFromBytesConstMeta,
-      argValues: [
-        sourceBytes,
-        destinationBytes,
-        includeArtwork,
-        includeLyrics,
-        includeCustomTags
-      ],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiCopyMetadataFromBytesConstMeta =>
@@ -749,52 +946,62 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           "destinationBytes",
           "includeArtwork",
           "includeLyrics",
-          "includeCustomTags"
+          "includeCustomTags",
         ],
       );
 
   @override
   Future<ExtendedChanges> crateApiExtendedExtendedChangesDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 15, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_extended_changes,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 15,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_extended_changes,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiExtendedExtendedChangesDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedExtendedChangesDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedExtendedChangesDefaultConstMeta =>
-      const TaskConstMeta(
-        debugName: "extended_changes_default",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "extended_changes_default", argNames: []);
 
   @override
-  Future<bool> crateApiExtendedExtendedChangesIsEmpty(
-      {required ExtendedChanges that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_extended_changes(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 16, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
+  Future<bool> crateApiExtendedExtendedChangesIsEmpty({
+    required ExtendedChanges that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_extended_changes(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 16,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiExtendedExtendedChangesIsEmptyConstMeta,
+        argValues: [that],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedExtendedChangesIsEmptyConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedExtendedChangesIsEmptyConstMeta =>
@@ -805,45 +1012,54 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<ExtendedTag> crateApiExtendedExtendedTagDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 17, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_extended_tag,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 17,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_extended_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiExtendedExtendedTagDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedExtendedTagDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedExtendedTagDefaultConstMeta =>
-      const TaskConstMeta(
-        debugName: "extended_tag_default",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "extended_tag_default", argNames: []);
 
   @override
   Future<bool> crateApiExtendedExtendedTagIsEmpty({required ExtendedTag that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_extended_tag(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 18, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_extended_tag(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 18,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiExtendedExtendedTagIsEmptyConstMeta,
+        argValues: [that],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedExtendedTagIsEmptyConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedExtendedTagIsEmptyConstMeta =>
@@ -853,24 +1069,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiApiFormatFilename(
-      {required Tag tag, required String pattern}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        sse_encode_String(pattern, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 19, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
-        decodeErrorData: null,
+  Future<String> crateApiApiFormatFilename({
+    required Tag tag,
+    required String pattern,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          sse_encode_String(pattern, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 19,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiFormatFilenameConstMeta,
+        argValues: [tag, pattern],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiFormatFilenameConstMeta,
-      argValues: [tag, pattern],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiFormatFilenameConstMeta => const TaskConstMeta(
@@ -880,71 +1104,85 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<List<Chapter>> crateApiChaptersGetChapters({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 20, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_chapter,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 20,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_chapter,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiChaptersGetChaptersConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiChaptersGetChaptersConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiChaptersGetChaptersConstMeta =>
-      const TaskConstMeta(
-        debugName: "get_chapters",
-        argNames: ["path"],
-      );
+      const TaskConstMeta(debugName: "get_chapters", argNames: ["path"]);
 
   @override
   Future<Map<String, String>> crateApiApiGetCustomTags({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 21, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_Map_String_String_None,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 21,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_Map_String_String_None,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiGetCustomTagsConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiGetCustomTagsConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiGetCustomTagsConstMeta => const TaskConstMeta(
-        debugName: "get_custom_tags",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiGetCustomTagsConstMeta =>
+      const TaskConstMeta(debugName: "get_custom_tags", argNames: ["path"]);
 
   @override
-  Future<Map<String, String>> crateApiApiGetCustomTagsFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 22, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_Map_String_String_None,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Map<String, String>> crateApiApiGetCustomTagsFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 22,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_Map_String_String_None,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiGetCustomTagsFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiGetCustomTagsFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiGetCustomTagsFromBytesConstMeta =>
@@ -955,46 +1193,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<Id3v2Version?> crateApiApiGetId3V2Version({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 23, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 23,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiGetId3V2VersionConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiGetId3V2VersionConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiGetId3V2VersionConstMeta => const TaskConstMeta(
-        debugName: "get_id3v2_version",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiGetId3V2VersionConstMeta =>
+      const TaskConstMeta(debugName: "get_id3v2_version", argNames: ["path"]);
 
   @override
-  Future<Id3v2Version?> crateApiApiGetId3V2VersionFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 24, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Id3v2Version?> crateApiApiGetId3V2VersionFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 24,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_id_3_v_2_version,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiGetId3V2VersionFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiGetId3V2VersionFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiGetId3V2VersionFromBytesConstMeta =>
@@ -1005,46 +1254,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<List<String>> crateApiApiGetTagFormats({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 25, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_String,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 25,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_String,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiGetTagFormatsConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiGetTagFormatsConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiGetTagFormatsConstMeta => const TaskConstMeta(
-        debugName: "get_tag_formats",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiGetTagFormatsConstMeta =>
+      const TaskConstMeta(debugName: "get_tag_formats", argNames: ["path"]);
 
   @override
-  Future<List<String>> crateApiApiGetTagFormatsFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 26, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_String,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<List<String>> crateApiApiGetTagFormatsFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 26,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_String,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiGetTagFormatsFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiGetTagFormatsFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiGetTagFormatsFromBytesConstMeta =>
@@ -1055,172 +1315,204 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<AudioFileInfo> crateApiApiInspect({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 27, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_audio_file_info,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 27,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_audio_file_info,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiInspectConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiInspectConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiInspectConstMeta => const TaskConstMeta(
-        debugName: "inspect",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiInspectConstMeta =>
+      const TaskConstMeta(debugName: "inspect", argNames: ["path"]);
 
   @override
-  Future<AudioFileInfo> crateApiApiInspectFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 28, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_audio_file_info,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<AudioFileInfo> crateApiApiInspectFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 28,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_audio_file_info,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiInspectFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiInspectFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiInspectFromBytesConstMeta =>
-      const TaskConstMeta(
-        debugName: "inspect_from_bytes",
-        argNames: ["bytes"],
-      );
+      const TaskConstMeta(debugName: "inspect_from_bytes", argNames: ["bytes"]);
 
   @override
   Future<Tag> crateApiApiNormalize({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 29, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 29,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiNormalizeConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiNormalizeConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiNormalizeConstMeta => const TaskConstMeta(
-        debugName: "normalize",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiNormalizeConstMeta =>
+      const TaskConstMeta(debugName: "normalize", argNames: ["path"]);
 
   @override
-  Future<Tag> crateApiNormalizationNormalize(
-      {required Tag tag, required NormalizeOptions opts}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        sse_encode_box_autoadd_normalize_options(opts, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 30, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+  Future<Tag> crateApiNormalizationNormalize({
+    required Tag tag,
+    required NormalizeOptions opts,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          sse_encode_box_autoadd_normalize_options(opts, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 30,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiNormalizationNormalizeConstMeta,
+        argValues: [tag, opts],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiNormalizationNormalizeConstMeta,
-      argValues: [tag, opts],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiNormalizationNormalizeConstMeta =>
-      const TaskConstMeta(
-        debugName: "normalize",
-        argNames: ["tag", "opts"],
-      );
+      const TaskConstMeta(debugName: "normalize", argNames: ["tag", "opts"]);
 
   @override
   Future<Uint8List> crateApiApiNormalizeBytes({required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 31, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 31,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiNormalizeBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiNormalizeBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiNormalizeBytesConstMeta => const TaskConstMeta(
-        debugName: "normalize_bytes",
-        argNames: ["bytes"],
-      );
+  TaskConstMeta get kCrateApiApiNormalizeBytesConstMeta =>
+      const TaskConstMeta(debugName: "normalize_bytes", argNames: ["bytes"]);
 
   @override
   Future<NormalizeOptions> crateApiNormalizationNormalizeOptionsDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 32, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_normalize_options,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 32,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_normalize_options,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiNormalizationNormalizeOptionsDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiNormalizationNormalizeOptionsDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiNormalizationNormalizeOptionsDefaultConstMeta =>
-      const TaskConstMeta(
-        debugName: "normalize_options_default",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "normalize_options_default", argNames: []);
 
   @override
-  Future<Tag> crateApiApiNormalizeTag(
-      {required Tag tag, required NormalizeOptions options}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        sse_encode_box_autoadd_normalize_options(options, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 33, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+  Future<Tag> crateApiApiNormalizeTag({
+    required Tag tag,
+    required NormalizeOptions options,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          sse_encode_box_autoadd_normalize_options(options, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 33,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiNormalizeTagConstMeta,
+        argValues: [tag, options],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiNormalizeTagConstMeta,
-      argValues: [tag, options],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiNormalizeTagConstMeta => const TaskConstMeta(
@@ -1229,27 +1521,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Picture> crateApiPicturePictureNew(
-      {required PictureType pictureType,
-      MimeType? mimeType,
-      required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_picture_type(pictureType, serializer);
-        sse_encode_opt_box_autoadd_mime_type(mimeType, serializer);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 34, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_picture,
-        decodeErrorData: null,
+  Future<Picture> crateApiPicturePictureNew({
+    required PictureType pictureType,
+    MimeType? mimeType,
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_picture_type(pictureType, serializer);
+          sse_encode_opt_box_autoadd_mime_type(mimeType, serializer);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 34,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_picture,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPicturePictureNewConstMeta,
+        argValues: [pictureType, mimeType, bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPicturePictureNewConstMeta,
-      argValues: [pictureType, mimeType, bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPicturePictureNewConstMeta => const TaskConstMeta(
@@ -1258,24 +1557,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BatchResult> crateApiApiProcessBatch(
-      {required List<String> paths, required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_String(paths, serializer);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 35, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_result,
-        decodeErrorData: null,
+  Future<BatchResult> crateApiApiProcessBatch({
+    required List<String> paths,
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_String(paths, serializer);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 35,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiProcessBatchConstMeta,
+        argValues: [paths, rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiProcessBatchConstMeta,
-      argValues: [paths, rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiProcessBatchConstMeta => const TaskConstMeta(
@@ -1284,25 +1591,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<BatchBytesResult> crateApiApiProcessBatchBytes(
-      {required List<Uint8List> byteArrays,
-      required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 36, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_batch_bytes_result,
-        decodeErrorData: null,
+  Future<BatchBytesResult> crateApiApiProcessBatchBytes({
+    required List<Uint8List> byteArrays,
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_list_prim_u_8_strict(byteArrays, serializer);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 36,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_batch_bytes_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiProcessBatchBytesConstMeta,
+        argValues: [byteArrays, rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiProcessBatchBytesConstMeta,
-      argValues: [byteArrays, rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiProcessBatchBytesConstMeta =>
@@ -1312,24 +1626,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiApiProcessBytes(
-      {required List<int> bytes, required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 37, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiProcessBytes({
+    required List<int> bytes,
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 37,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiProcessBytesConstMeta,
+        argValues: [bytes, rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiProcessBytesConstMeta,
-      argValues: [bytes, rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiProcessBytesConstMeta => const TaskConstMeta(
@@ -1338,24 +1660,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiApiProcessFile(
-      {required String path, required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 38, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiApiProcessFile({
+    required String path,
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 38,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiProcessFileConstMeta,
+        argValues: [path, rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiProcessFileConstMeta,
-      argValues: [path, rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiProcessFileConstMeta => const TaskConstMeta(
@@ -1365,46 +1695,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<Tag> crateApiApiRead({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 39, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 39,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiReadConstMeta => const TaskConstMeta(
-        debugName: "read",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiReadConstMeta =>
+      const TaskConstMeta(debugName: "read", argNames: ["path"]);
 
   @override
-  Future<List<Chapter>> crateApiChaptersReadChaptersFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 40, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_chapter,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<List<Chapter>> crateApiChaptersReadChaptersFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 40,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_chapter,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiChaptersReadChaptersFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiChaptersReadChaptersFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiChaptersReadChaptersFromBytesConstMeta =>
@@ -1414,23 +1755,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<List<Chapter>> crateApiChaptersReadChaptersFromMp3Bytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 41, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_chapter,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<List<Chapter>> crateApiChaptersReadChaptersFromMp3Bytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 41,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_chapter,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiChaptersReadChaptersFromMp3BytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiChaptersReadChaptersFromMp3BytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiChaptersReadChaptersFromMp3BytesConstMeta =>
@@ -1441,47 +1789,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<ExtendedTag> crateApiExtendedReadExtended({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 42, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_extended_tag,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 42,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_extended_tag,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedReadExtendedConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedReadExtendedConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedReadExtendedConstMeta =>
-      const TaskConstMeta(
-        debugName: "read_extended",
-        argNames: ["path"],
-      );
+      const TaskConstMeta(debugName: "read_extended", argNames: ["path"]);
 
   @override
-  Future<ExtendedTag> crateApiExtendedReadExtendedFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 43, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_extended_tag,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<ExtendedTag> crateApiExtendedReadExtendedFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 43,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_extended_tag,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedReadExtendedFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedReadExtendedFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedReadExtendedFromBytesConstMeta =>
@@ -1491,50 +1849,64 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String?> crateApiApiReadField(
-      {required String path, required TagField field}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_tag_field(field, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 44, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_String,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<String?> crateApiApiReadField({
+    required String path,
+    required TagField field,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_tag_field(field, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 44,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_String,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadFieldConstMeta,
+        argValues: [path, field],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadFieldConstMeta,
-      argValues: [path, field],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiReadFieldConstMeta => const TaskConstMeta(
-        debugName: "read_field",
-        argNames: ["path", "field"],
-      );
+  TaskConstMeta get kCrateApiApiReadFieldConstMeta =>
+      const TaskConstMeta(debugName: "read_field", argNames: ["path", "field"]);
 
   @override
-  Future<String?> crateApiApiReadFieldFromBytes(
-      {required List<int> bytes, required TagField field}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_tag_field(field, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 45, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_String,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<String?> crateApiApiReadFieldFromBytes({
+    required List<int> bytes,
+    required TagField field,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_tag_field(field, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 45,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_String,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadFieldFromBytesConstMeta,
+        argValues: [bytes, field],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadFieldFromBytesConstMeta,
-      argValues: [bytes, field],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiReadFieldFromBytesConstMeta =>
@@ -1545,47 +1917,59 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<Tag> crateApiApiReadFromBytes({required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 46, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 46,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiReadFromBytesConstMeta => const TaskConstMeta(
-        debugName: "read_from_bytes",
-        argNames: ["bytes"],
-      );
+  TaskConstMeta get kCrateApiApiReadFromBytesConstMeta =>
+      const TaskConstMeta(debugName: "read_from_bytes", argNames: ["bytes"]);
 
   @override
-  Future<Tag> crateApiRemoteReadReadFromUrl(
-      {required String url, required UrlReadStrategy strategy}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(url, serializer);
-        sse_encode_url_read_strategy(strategy, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 47, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Tag> crateApiRemoteReadReadFromUrl({
+    required String url,
+    required UrlReadStrategy strategy,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(url, serializer);
+          sse_encode_url_read_strategy(strategy, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 47,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiRemoteReadReadFromUrlConstMeta,
+        argValues: [url, strategy],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiRemoteReadReadFromUrlConstMeta,
-      argValues: [url, strategy],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiRemoteReadReadFromUrlConstMeta =>
@@ -1595,24 +1979,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Picture?> crateApiApiReadPictureByType(
-      {required String path, required PictureType pictureType}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_picture_type(pictureType, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 48, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_box_autoadd_picture,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Picture?> crateApiApiReadPictureByType({
+    required String path,
+    required PictureType pictureType,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_picture_type(pictureType, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 48,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_picture,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadPictureByTypeConstMeta,
+        argValues: [path, pictureType],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadPictureByTypeConstMeta,
-      argValues: [path, pictureType],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiReadPictureByTypeConstMeta =>
@@ -1622,24 +2014,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Picture?> crateApiApiReadPictureByTypeFromBytes(
-      {required List<int> bytes, required PictureType pictureType}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_picture_type(pictureType, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 49, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_opt_box_autoadd_picture,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Picture?> crateApiApiReadPictureByTypeFromBytes({
+    required List<int> bytes,
+    required PictureType pictureType,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_picture_type(pictureType, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 49,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_box_autoadd_picture,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadPictureByTypeFromBytesConstMeta,
+        argValues: [bytes, pictureType],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadPictureByTypeFromBytesConstMeta,
-      argValues: [bytes, pictureType],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiReadPictureByTypeFromBytesConstMeta =>
@@ -1650,46 +2050,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<List<Picture>> crateApiApiReadPictures({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 50, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_picture,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 50,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_picture,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadPicturesConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadPicturesConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiReadPicturesConstMeta => const TaskConstMeta(
-        debugName: "read_pictures",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiReadPicturesConstMeta =>
+      const TaskConstMeta(debugName: "read_pictures", argNames: ["path"]);
 
   @override
-  Future<List<Picture>> crateApiApiReadPicturesFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 51, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_picture,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<List<Picture>> crateApiApiReadPicturesFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 51,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_picture,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiReadPicturesFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiReadPicturesFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiReadPicturesFromBytesConstMeta =>
@@ -1699,49 +2110,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<AudioProperties> crateApiAudioPropertiesReadProperties(
-      {required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 52, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_audio_properties,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<AudioProperties> crateApiAudioPropertiesReadProperties({
+    required String path,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 52,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_audio_properties,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiAudioPropertiesReadPropertiesConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiAudioPropertiesReadPropertiesConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiAudioPropertiesReadPropertiesConstMeta =>
-      const TaskConstMeta(
-        debugName: "read_properties",
-        argNames: ["path"],
-      );
+      const TaskConstMeta(debugName: "read_properties", argNames: ["path"]);
 
   @override
-  Future<AudioProperties> crateApiAudioPropertiesReadPropertiesFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 53, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_audio_properties,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<AudioProperties> crateApiAudioPropertiesReadPropertiesFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 53,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_audio_properties,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiAudioPropertiesReadPropertiesFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiAudioPropertiesReadPropertiesFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiAudioPropertiesReadPropertiesFromBytesConstMeta =>
@@ -1751,50 +2173,64 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiApiRemove(
-      {required String path, required List<TagField> fields}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_list_tag_field(fields, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 54, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiApiRemove({
+    required String path,
+    required List<TagField> fields,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_list_tag_field(fields, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 54,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRemoveConstMeta,
+        argValues: [path, fields],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRemoveConstMeta,
-      argValues: [path, fields],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiRemoveConstMeta => const TaskConstMeta(
-        debugName: "remove",
-        argNames: ["path", "fields"],
-      );
+  TaskConstMeta get kCrateApiApiRemoveConstMeta =>
+      const TaskConstMeta(debugName: "remove", argNames: ["path", "fields"]);
 
   @override
-  Future<void> crateApiApiRemoveCustomTag(
-      {required String path, required String key}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_String(key, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 55, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiApiRemoveCustomTag({
+    required String path,
+    required String key,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_String(key, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 55,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRemoveCustomTagConstMeta,
+        argValues: [path, key],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRemoveCustomTagConstMeta,
-      argValues: [path, key],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiRemoveCustomTagConstMeta => const TaskConstMeta(
@@ -1803,24 +2239,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiApiRemoveCustomTagFromBytes(
-      {required List<int> bytes, required String key}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_String(key, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 56, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiRemoveCustomTagFromBytes({
+    required List<int> bytes,
+    required String key,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_String(key, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 56,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRemoveCustomTagFromBytesConstMeta,
+        argValues: [bytes, key],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRemoveCustomTagFromBytesConstMeta,
-      argValues: [bytes, key],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiRemoveCustomTagFromBytesConstMeta =>
@@ -1831,47 +2275,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<void> crateApiExtendedRemoveExtended({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 57, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 57,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedRemoveExtendedConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedRemoveExtendedConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedRemoveExtendedConstMeta =>
-      const TaskConstMeta(
-        debugName: "remove_extended",
-        argNames: ["path"],
-      );
+      const TaskConstMeta(debugName: "remove_extended", argNames: ["path"]);
 
   @override
-  Future<Uint8List> crateApiExtendedRemoveExtendedFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 58, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiExtendedRemoveExtendedFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 58,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedRemoveExtendedFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedRemoveExtendedFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedRemoveExtendedFromBytesConstMeta =>
@@ -1881,24 +2335,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiApiRemoveFromBytes(
-      {required List<int> bytes, required List<TagField> fields}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_list_tag_field(fields, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 59, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiRemoveFromBytes({
+    required List<int> bytes,
+    required List<TagField> fields,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_list_tag_field(fields, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 59,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRemoveFromBytesConstMeta,
+        argValues: [bytes, fields],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRemoveFromBytesConstMeta,
-      argValues: [bytes, fields],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiRemoveFromBytesConstMeta => const TaskConstMeta(
@@ -1908,46 +2370,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<void> crateApiApiRemoveId3V1({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 60, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 60,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRemoveId3V1ConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRemoveId3V1ConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiRemoveId3V1ConstMeta => const TaskConstMeta(
-        debugName: "remove_id3v1",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiRemoveId3V1ConstMeta =>
+      const TaskConstMeta(debugName: "remove_id3v1", argNames: ["path"]);
 
   @override
-  Future<Uint8List> crateApiApiRemoveId3V1FromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 61, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiRemoveId3V1FromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 61,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRemoveId3V1FromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRemoveId3V1FromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiRemoveId3V1FromBytesConstMeta =>
@@ -1957,24 +2430,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<String> crateApiApiRenameFile(
-      {required String path, required String pattern}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_String(pattern, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 62, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_String,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<String> crateApiApiRenameFile({
+    required String path,
+    required String pattern,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_String(pattern, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 62,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_String,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiRenameFileConstMeta,
+        argValues: [path, pattern],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiRenameFileConstMeta,
-      argValues: [path, pattern],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiRenameFileConstMeta => const TaskConstMeta(
@@ -1983,24 +2464,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiChaptersSetChapters(
-      {required String path, required List<Chapter> chapters}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_list_chapter(chapters, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 63, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiChaptersSetChapters({
+    required String path,
+    required List<Chapter> chapters,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_list_chapter(chapters, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 63,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiChaptersSetChaptersConstMeta,
+        argValues: [path, chapters],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiChaptersSetChaptersConstMeta,
-      argValues: [path, chapters],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiChaptersSetChaptersConstMeta =>
@@ -2010,25 +2499,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiApiSetCustomTag(
-      {required String path, required String key, required String value}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_String(key, serializer);
-        sse_encode_String(value, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 64, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiApiSetCustomTag({
+    required String path,
+    required String key,
+    required String value,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_String(key, serializer);
+          sse_encode_String(value, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 64,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiSetCustomTagConstMeta,
+        argValues: [path, key, value],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiSetCustomTagConstMeta,
-      argValues: [path, key, value],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiSetCustomTagConstMeta => const TaskConstMeta(
@@ -2037,25 +2535,34 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiApiSetCustomTagFromBytes(
-      {required List<int> bytes, required String key, required String value}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_String(key, serializer);
-        sse_encode_String(value, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 65, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiSetCustomTagFromBytes({
+    required List<int> bytes,
+    required String key,
+    required String value,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_String(key, serializer);
+          sse_encode_String(value, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 65,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiSetCustomTagFromBytesConstMeta,
+        argValues: [bytes, key, value],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiSetCustomTagFromBytesConstMeta,
-      argValues: [bytes, key, value],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiSetCustomTagFromBytesConstMeta =>
@@ -2066,45 +2573,54 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<TagChanges> crateApiTagChangesTagChangesDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 66, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag_changes,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 66,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag_changes,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiTagChangesTagChangesDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiTagChangesTagChangesDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiTagChangesTagChangesDefaultConstMeta =>
-      const TaskConstMeta(
-        debugName: "tag_changes_default",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "tag_changes_default", argNames: []);
 
   @override
   Future<bool> crateApiTagChangesTagChangesIsEmpty({required TagChanges that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag_changes(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 67, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag_changes(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 67,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiTagChangesTagChangesIsEmptyConstMeta,
+        argValues: [that],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiTagChangesTagChangesIsEmptyConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiTagChangesTagChangesIsEmptyConstMeta =>
@@ -2115,46 +2631,58 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<Tag> crateApiTagTagDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 68, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 68,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiTagTagDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiTagTagDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiTagTagDefaultConstMeta => const TaskConstMeta(
-        debugName: "tag_default",
-        argNames: [],
-      );
+  TaskConstMeta get kCrateApiTagTagDefaultConstMeta =>
+      const TaskConstMeta(debugName: "tag_default", argNames: []);
 
   @override
-  Future<Tag> crateApiPipelineTagPipelineApply(
-      {required TagPipeline that, required Tag tag}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag_pipeline(that, serializer);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 69, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag,
-        decodeErrorData: null,
+  Future<Tag> crateApiPipelineTagPipelineApply({
+    required TagPipeline that,
+    required Tag tag,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag_pipeline(that, serializer);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 69,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineTagPipelineApplyConstMeta,
+        argValues: [that, tag],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineTagPipelineApplyConstMeta,
-      argValues: [that, tag],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineTagPipelineApplyConstMeta =>
@@ -2165,46 +2693,56 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<TagPipeline> crateApiPipelineTagPipelineDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 70, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag_pipeline,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 70,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag_pipeline,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineTagPipelineDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineTagPipelineDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineTagPipelineDefaultConstMeta =>
-      const TaskConstMeta(
-        debugName: "tag_pipeline_default",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "tag_pipeline_default", argNames: []);
 
   @override
-  Future<TagPipeline> crateApiPipelineTagPipelineFromRules(
-      {required List<TransformRule> rules}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_transform_rule(rules, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 71, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag_pipeline,
-        decodeErrorData: null,
+  Future<TagPipeline> crateApiPipelineTagPipelineFromRules({
+    required List<TransformRule> rules,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_transform_rule(rules, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 71,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag_pipeline,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineTagPipelineFromRulesConstMeta,
+        argValues: [rules],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineTagPipelineFromRulesConstMeta,
-      argValues: [rules],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineTagPipelineFromRulesConstMeta =>
@@ -2215,21 +2753,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<bool> crateApiPipelineTagPipelineIsEmpty({required TagPipeline that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag_pipeline(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 72, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag_pipeline(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 72,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineTagPipelineIsEmptyConstMeta,
+        argValues: [that],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineTagPipelineIsEmptyConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineTagPipelineIsEmptyConstMeta =>
@@ -2240,98 +2784,118 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<BigInt> crateApiPipelineTagPipelineLen({required TagPipeline that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag_pipeline(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 73, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_usize,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag_pipeline(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 73,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_usize,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineTagPipelineLenConstMeta,
+        argValues: [that],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineTagPipelineLenConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineTagPipelineLenConstMeta =>
-      const TaskConstMeta(
-        debugName: "tag_pipeline_len",
-        argNames: ["that"],
-      );
+      const TaskConstMeta(debugName: "tag_pipeline_len", argNames: ["that"]);
 
   @override
   Future<TagPipeline> crateApiPipelineTagPipelineNew() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 74, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_tag_pipeline,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 74,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_tag_pipeline,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiPipelineTagPipelineNewConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiPipelineTagPipelineNewConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiPipelineTagPipelineNewConstMeta =>
-      const TaskConstMeta(
-        debugName: "tag_pipeline_new",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "tag_pipeline_new", argNames: []);
 
   @override
-  Future<void> crateApiTagChangesUpdate(
-      {required String path, required TagChanges changes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_box_autoadd_tag_changes(changes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 75, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiTagChangesUpdate({
+    required String path,
+    required TagChanges changes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_box_autoadd_tag_changes(changes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 75,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiTagChangesUpdateConstMeta,
+        argValues: [path, changes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiTagChangesUpdateConstMeta,
-      argValues: [path, changes],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiTagChangesUpdateConstMeta => const TaskConstMeta(
-        debugName: "update",
-        argNames: ["path", "changes"],
-      );
+  TaskConstMeta get kCrateApiTagChangesUpdateConstMeta =>
+      const TaskConstMeta(debugName: "update", argNames: ["path", "changes"]);
 
   @override
-  Future<void> crateApiExtendedUpdateExtended(
-      {required String path, required ExtendedChanges changes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_box_autoadd_extended_changes(changes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 76, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiExtendedUpdateExtended({
+    required String path,
+    required ExtendedChanges changes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_box_autoadd_extended_changes(changes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 76,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedUpdateExtendedConstMeta,
+        argValues: [path, changes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedUpdateExtendedConstMeta,
-      argValues: [path, changes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedUpdateExtendedConstMeta =>
@@ -2341,24 +2905,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiExtendedUpdateExtendedFromBytes(
-      {required List<int> bytes, required ExtendedChanges changes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_box_autoadd_extended_changes(changes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 77, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiExtendedUpdateExtendedFromBytes({
+    required List<int> bytes,
+    required ExtendedChanges changes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_box_autoadd_extended_changes(changes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 77,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedUpdateExtendedFromBytesConstMeta,
+        argValues: [bytes, changes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedUpdateExtendedFromBytesConstMeta,
-      argValues: [bytes, changes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedUpdateExtendedFromBytesConstMeta =>
@@ -2368,24 +2940,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiTagChangesUpdateFromBytes(
-      {required List<int> bytes, required TagChanges changes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_box_autoadd_tag_changes(changes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 78, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiTagChangesUpdateFromBytes({
+    required List<int> bytes,
+    required TagChanges changes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_box_autoadd_tag_changes(changes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 78,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiTagChangesUpdateFromBytesConstMeta,
+        argValues: [bytes, changes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiTagChangesUpdateFromBytesConstMeta,
-      argValues: [bytes, changes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiTagChangesUpdateFromBytesConstMeta =>
@@ -2396,94 +2976,112 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<UrlReadStrategy> crateApiRemoteReadUrlReadStrategyDefault() {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 79, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_url_read_strategy,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 79,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_url_read_strategy,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiRemoteReadUrlReadStrategyDefaultConstMeta,
+        argValues: [],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiRemoteReadUrlReadStrategyDefaultConstMeta,
-      argValues: [],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiRemoteReadUrlReadStrategyDefaultConstMeta =>
-      const TaskConstMeta(
-        debugName: "url_read_strategy_default",
-        argNames: [],
-      );
+      const TaskConstMeta(debugName: "url_read_strategy_default", argNames: []);
 
   @override
   Future<ValidationResult> crateApiApiValidate({required String path}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 80, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_validation_result,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 80,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_validation_result,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiValidateConstMeta,
+        argValues: [path],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiValidateConstMeta,
-      argValues: [path],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiValidateConstMeta => const TaskConstMeta(
-        debugName: "validate",
-        argNames: ["path"],
-      );
+  TaskConstMeta get kCrateApiApiValidateConstMeta =>
+      const TaskConstMeta(debugName: "validate", argNames: ["path"]);
 
   @override
   Future<ValidationResult> crateApiValidationValidate({required Tag tag}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 81, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_validation_result,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 81,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_validation_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiValidationValidateConstMeta,
+        argValues: [tag],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiValidationValidateConstMeta,
-      argValues: [tag],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiValidationValidateConstMeta => const TaskConstMeta(
-        debugName: "validate",
-        argNames: ["tag"],
-      );
+  TaskConstMeta get kCrateApiValidationValidateConstMeta =>
+      const TaskConstMeta(debugName: "validate", argNames: ["tag"]);
 
   @override
-  Future<ValidationResult> crateApiApiValidateFromBytes(
-      {required List<int> bytes}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 82, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_validation_result,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<ValidationResult> crateApiApiValidateFromBytes({
+    required List<int> bytes,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 82,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_validation_result,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiValidateFromBytesConstMeta,
+        argValues: [bytes],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiValidateFromBytesConstMeta,
-      argValues: [bytes],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiValidateFromBytesConstMeta =>
@@ -2494,46 +3092,57 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<ValidationResult> crateApiApiValidateTag({required Tag tag}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_tag(tag, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 83, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_validation_result,
-        decodeErrorData: null,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_tag(tag, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 83,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_validation_result,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiApiValidateTagConstMeta,
+        argValues: [tag],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiValidateTagConstMeta,
-      argValues: [tag],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiValidateTagConstMeta => const TaskConstMeta(
-        debugName: "validate_tag",
-        argNames: ["tag"],
-      );
+  TaskConstMeta get kCrateApiApiValidateTagConstMeta =>
+      const TaskConstMeta(debugName: "validate_tag", argNames: ["tag"]);
 
   @override
-  Future<bool> crateApiValidationValidationResultIsValid(
-      {required ValidationResult that}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_box_autoadd_validation_result(that, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 84, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_bool,
-        decodeErrorData: null,
+  Future<bool> crateApiValidationValidationResultIsValid({
+    required ValidationResult that,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_box_autoadd_validation_result(that, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 84,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_bool,
+          decodeErrorData: null,
+        ),
+        constMeta: kCrateApiValidationValidationResultIsValidConstMeta,
+        argValues: [that],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiValidationValidationResultIsValidConstMeta,
-      argValues: [that],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiValidationValidationResultIsValidConstMeta =>
@@ -2544,48 +3153,60 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @override
   Future<void> crateApiApiWrite({required String path, required Tag data}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_box_autoadd_tag(data, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 85, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_box_autoadd_tag(data, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 85,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiWriteConstMeta,
+        argValues: [path, data],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiWriteConstMeta,
-      argValues: [path, data],
-      apiImpl: this,
-    ));
+    );
   }
 
-  TaskConstMeta get kCrateApiApiWriteConstMeta => const TaskConstMeta(
-        debugName: "write",
-        argNames: ["path", "data"],
-      );
+  TaskConstMeta get kCrateApiApiWriteConstMeta =>
+      const TaskConstMeta(debugName: "write", argNames: ["path", "data"]);
 
   @override
-  Future<Uint8List> crateApiChaptersWriteChaptersToBytes(
-      {required List<int> bytes, required List<Chapter> chapters}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_list_chapter(chapters, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 86, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiChaptersWriteChaptersToBytes({
+    required List<int> bytes,
+    required List<Chapter> chapters,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_list_chapter(chapters, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 86,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiChaptersWriteChaptersToBytesConstMeta,
+        argValues: [bytes, chapters],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiChaptersWriteChaptersToBytesConstMeta,
-      argValues: [bytes, chapters],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiChaptersWriteChaptersToBytesConstMeta =>
@@ -2595,24 +3216,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiChaptersWriteChaptersToMp3Bytes(
-      {required List<int> bytes, required List<Chapter> chapters}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_list_chapter(chapters, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 87, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiChaptersWriteChaptersToMp3Bytes({
+    required List<int> bytes,
+    required List<Chapter> chapters,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_list_chapter(chapters, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 87,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiChaptersWriteChaptersToMp3BytesConstMeta,
+        argValues: [bytes, chapters],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiChaptersWriteChaptersToMp3BytesConstMeta,
-      argValues: [bytes, chapters],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiChaptersWriteChaptersToMp3BytesConstMeta =>
@@ -2622,24 +3251,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<void> crateApiExtendedWriteExtended(
-      {required String path, required ExtendedTag data}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_String(path, serializer);
-        sse_encode_box_autoadd_extended_tag(data, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 88, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_unit,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<void> crateApiExtendedWriteExtended({
+    required String path,
+    required ExtendedTag data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_String(path, serializer);
+          sse_encode_box_autoadd_extended_tag(data, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 88,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_unit,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedWriteExtendedConstMeta,
+        argValues: [path, data],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedWriteExtendedConstMeta,
-      argValues: [path, data],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedWriteExtendedConstMeta =>
@@ -2649,24 +3286,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiExtendedWriteExtendedToBytes(
-      {required List<int> bytes, required ExtendedTag data}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_box_autoadd_extended_tag(data, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 89, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiExtendedWriteExtendedToBytes({
+    required List<int> bytes,
+    required ExtendedTag data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_box_autoadd_extended_tag(data, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 89,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiExtendedWriteExtendedToBytesConstMeta,
+        argValues: [bytes, data],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiExtendedWriteExtendedToBytesConstMeta,
-      argValues: [bytes, data],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiExtendedWriteExtendedToBytesConstMeta =>
@@ -2676,24 +3321,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
-  Future<Uint8List> crateApiApiWriteToBytes(
-      {required List<int> bytes, required Tag data}) {
-    return handler.executeNormal(NormalTask(
-      callFfi: (port_) {
-        final serializer = SseSerializer(generalizedFrbRustBinding);
-        sse_encode_list_prim_u_8_loose(bytes, serializer);
-        sse_encode_box_autoadd_tag(data, serializer);
-        pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 90, port: port_);
-      },
-      codec: SseCodec(
-        decodeSuccessData: sse_decode_list_prim_u_8_strict,
-        decodeErrorData: sse_decode_haudiotagger_error,
+  Future<Uint8List> crateApiApiWriteToBytes({
+    required List<int> bytes,
+    required Tag data,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_list_prim_u_8_loose(bytes, serializer);
+          sse_encode_box_autoadd_tag(data, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 90,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_list_prim_u_8_strict,
+          decodeErrorData: sse_decode_haudiotagger_error,
+        ),
+        constMeta: kCrateApiApiWriteToBytesConstMeta,
+        argValues: [bytes, data],
+        apiImpl: this,
       ),
-      constMeta: kCrateApiApiWriteToBytesConstMeta,
-      argValues: [bytes, data],
-      apiImpl: this,
-    ));
+    );
   }
 
   TaskConstMeta get kCrateApiApiWriteToBytesConstMeta => const TaskConstMeta(
@@ -2704,8 +3357,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   @protected
   Map<String, String> dco_decode_Map_String_String_None(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
-    return Map.fromEntries(dco_decode_list_record_string_string(raw)
-        .map((e) => MapEntry(e.$1, e.$2)));
+    return Map.fromEntries(
+      dco_decode_list_record_string_string(raw)
+          .map((e) => MapEntry(e.$1, e.$2)),
+    );
   }
 
   @protected
@@ -3050,21 +3705,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 1:
         return HaudiotaggerError_NoTags();
       case 2:
-        return HaudiotaggerError_OpenFile(
-          message: dco_decode_String(raw[1]),
-        );
+        return HaudiotaggerError_OpenFile(message: dco_decode_String(raw[1]));
       case 3:
-        return HaudiotaggerError_Read(
-          message: dco_decode_String(raw[1]),
-        );
+        return HaudiotaggerError_Read(message: dco_decode_String(raw[1]));
       case 4:
-        return HaudiotaggerError_Write(
-          message: dco_decode_String(raw[1]),
-        );
+        return HaudiotaggerError_Write(message: dco_decode_String(raw[1]));
       case 5:
-        return HaudiotaggerError_Remote(
-          message: dco_decode_String(raw[1]),
-        );
+        return HaudiotaggerError_Remote(message: dco_decode_String(raw[1]));
       default:
         throw Exception("unreachable");
     }
@@ -3260,10 +3907,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (arr.length != 2) {
       throw Exception('Expected 2 elements, got ${arr.length}');
     }
-    return (
-      dco_decode_String(arr[0]),
-      dco_decode_String(arr[1]),
-    );
+    return (dco_decode_String(arr[0]), dco_decode_String(arr[1]));
   }
 
   @protected
@@ -3273,10 +3917,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     if (arr.length != 2) {
       throw Exception('Expected 2 elements, got ${arr.length}');
     }
-    return (
-      dco_decode_u_32(arr[0]),
-      dco_decode_String(arr[1]),
-    );
+    return (dco_decode_u_32(arr[0]), dco_decode_String(arr[1]));
   }
 
   @protected
@@ -3348,9 +3989,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     final arr = raw as List<dynamic>;
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return TagPipeline(
-      rules: dco_decode_list_transform_rule(arr[0]),
-    );
+    return TagPipeline(rules: dco_decode_list_transform_rule(arr[0]));
   }
 
   @protected
@@ -3364,53 +4003,29 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 2:
         return TransformRule_NormalizeUnicode();
       case 3:
-        return TransformRule_SetTitle(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetTitle(dco_decode_String(raw[1]));
       case 4:
-        return TransformRule_SetArtist(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetArtist(dco_decode_String(raw[1]));
       case 5:
-        return TransformRule_SetAlbum(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetAlbum(dco_decode_String(raw[1]));
       case 6:
-        return TransformRule_SetAlbumArtist(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetAlbumArtist(dco_decode_String(raw[1]));
       case 7:
-        return TransformRule_SetGenre(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetGenre(dco_decode_String(raw[1]));
       case 8:
-        return TransformRule_SetYear(
-          dco_decode_u_32(raw[1]),
-        );
+        return TransformRule_SetYear(dco_decode_u_32(raw[1]));
       case 9:
-        return TransformRule_SetTrackNumber(
-          dco_decode_u_32(raw[1]),
-        );
+        return TransformRule_SetTrackNumber(dco_decode_u_32(raw[1]));
       case 10:
-        return TransformRule_SetDiscNumber(
-          dco_decode_u_32(raw[1]),
-        );
+        return TransformRule_SetDiscNumber(dco_decode_u_32(raw[1]));
       case 11:
-        return TransformRule_SetTrackTotal(
-          dco_decode_u_32(raw[1]),
-        );
+        return TransformRule_SetTrackTotal(dco_decode_u_32(raw[1]));
       case 12:
-        return TransformRule_SetDiscTotal(
-          dco_decode_u_32(raw[1]),
-        );
+        return TransformRule_SetDiscTotal(dco_decode_u_32(raw[1]));
       case 13:
-        return TransformRule_SetBpm(
-          dco_decode_f_32(raw[1]),
-        );
+        return TransformRule_SetBpm(dco_decode_f_32(raw[1]));
       case 14:
-        return TransformRule_SetComment(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetComment(dco_decode_String(raw[1]));
       case 15:
         return TransformRule_RemoveLyrics();
       case 16:
@@ -3450,29 +4065,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       case 33:
         return TransformRule_CopyTitleToComment();
       case 34:
-        return TransformRule_PrefixTitle(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_PrefixTitle(dco_decode_String(raw[1]));
       case 35:
-        return TransformRule_SuffixTitle(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SuffixTitle(dco_decode_String(raw[1]));
       case 36:
-        return TransformRule_PrefixAlbum(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_PrefixAlbum(dco_decode_String(raw[1]));
       case 37:
-        return TransformRule_SuffixAlbum(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SuffixAlbum(dco_decode_String(raw[1]));
       case 38:
-        return TransformRule_PrefixArtist(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_PrefixArtist(dco_decode_String(raw[1]));
       case 39:
-        return TransformRule_SuffixArtist(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SuffixArtist(dco_decode_String(raw[1]));
       case 40:
         return TransformRule_TitleCaseTitle();
       case 41:
@@ -3504,25 +4107,15 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           replace: dco_decode_String(raw[2]),
         );
       case 49:
-        return TransformRule_SetTitleIfEmpty(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetTitleIfEmpty(dco_decode_String(raw[1]));
       case 50:
-        return TransformRule_SetArtistIfEmpty(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetArtistIfEmpty(dco_decode_String(raw[1]));
       case 51:
-        return TransformRule_SetAlbumIfEmpty(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetAlbumIfEmpty(dco_decode_String(raw[1]));
       case 52:
-        return TransformRule_SetGenreIfEmpty(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetGenreIfEmpty(dco_decode_String(raw[1]));
       case 53:
-        return TransformRule_SetAlbumArtistIfEmpty(
-          dco_decode_String(raw[1]),
-        );
+        return TransformRule_SetAlbumArtistIfEmpty(dco_decode_String(raw[1]));
       case 54:
         return TransformRule_RemoveEmptyFields();
       case 55:
@@ -3587,9 +4180,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     final arr = raw as List<dynamic>;
     if (arr.length != 1)
       throw Exception('unexpected arr length: expect 1 but see ${arr.length}');
-    return ValidationResult(
-      issues: dco_decode_list_validation_issue(arr[0]),
-    );
+    return ValidationResult(issues: dco_decode_list_validation_issue(arr[0]));
   }
 
   @protected
@@ -3600,7 +4191,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   Map<String, String> sse_decode_Map_String_String_None(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_list_record_string_string(deserializer);
     return Map.fromEntries(inner.map((e) => MapEntry(e.$1, e.$2)));
@@ -3623,12 +4215,13 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_pictures = sse_decode_list_picture(deserializer);
     var var_size = sse_decode_u_64(deserializer);
     return AudioFileInfo(
-        format: var_format,
-        tagFormat: var_tagFormat,
-        properties: var_properties,
-        metadata: var_metadata,
-        pictures: var_pictures,
-        size: var_size);
+      format: var_format,
+      tagFormat: var_tagFormat,
+      properties: var_properties,
+      metadata: var_metadata,
+      pictures: var_pictures,
+      size: var_size,
+    );
   }
 
   @protected
@@ -3645,16 +4238,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_bitrateMode = sse_decode_bitrate_mode(deserializer);
     var var_fileSize = sse_decode_opt_box_autoadd_u_64(deserializer);
     return AudioProperties(
-        durationMicros: var_durationMicros,
-        bitrate: var_bitrate,
-        sampleRate: var_sampleRate,
-        channels: var_channels,
-        bitsPerSample: var_bitsPerSample,
-        codec: var_codec,
-        containerFormat: var_containerFormat,
-        lossless: var_lossless,
-        bitrateMode: var_bitrateMode,
-        fileSize: var_fileSize);
+      durationMicros: var_durationMicros,
+      bitrate: var_bitrate,
+      sampleRate: var_sampleRate,
+      channels: var_channels,
+      bitsPerSample: var_bitsPerSample,
+      codec: var_codec,
+      containerFormat: var_containerFormat,
+      lossless: var_lossless,
+      bitrateMode: var_bitrateMode,
+      fileSize: var_fileSize,
+    );
   }
 
   @protected
@@ -3664,7 +4258,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_failures = sse_decode_u_32(deserializer);
     var var_errors = sse_decode_list_record_u_32_string(deserializer);
     return BatchBytesResult(
-        results: var_results, failures: var_failures, errors: var_errors);
+      results: var_results,
+      failures: var_failures,
+      errors: var_errors,
+    );
   }
 
   @protected
@@ -3674,7 +4271,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_failures = sse_decode_u_32(deserializer);
     var var_errors = sse_decode_list_record_string_string(deserializer);
     return BatchResult(
-        successes: var_successes, failures: var_failures, errors: var_errors);
+      successes: var_successes,
+      failures: var_failures,
+      errors: var_errors,
+    );
   }
 
   @protected
@@ -3692,14 +4292,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   ExtendedChanges sse_decode_box_autoadd_extended_changes(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_extended_changes(deserializer));
   }
 
   @protected
   ExtendedTag sse_decode_box_autoadd_extended_tag(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_extended_tag(deserializer));
   }
@@ -3718,7 +4320,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   Id3v2Version sse_decode_box_autoadd_id_3_v_2_version(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_id_3_v_2_version(deserializer));
   }
@@ -3731,7 +4334,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   NormalizeOptions sse_decode_box_autoadd_normalize_options(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_normalize_options(deserializer));
   }
@@ -3756,14 +4360,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   TagPipeline sse_decode_box_autoadd_tag_pipeline(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_tag_pipeline(deserializer));
   }
 
   @protected
   TransformRule sse_decode_box_autoadd_transform_rule(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_transform_rule(deserializer));
   }
@@ -3782,7 +4388,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   ValidationResult sse_decode_box_autoadd_validation_result(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_validation_result(deserializer));
   }
@@ -3862,68 +4469,69 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_encoderSoftware = sse_decode_opt_String(deserializer);
     var var_encoderSettings = sse_decode_opt_String(deserializer);
     return ExtendedChanges(
-        musicBrainzRecordingId: var_musicBrainzRecordingId,
-        musicBrainzTrackId: var_musicBrainzTrackId,
-        musicBrainzReleaseId: var_musicBrainzReleaseId,
-        musicBrainzReleaseGroupId: var_musicBrainzReleaseGroupId,
-        musicBrainzArtistId: var_musicBrainzArtistId,
-        musicBrainzReleaseArtistId: var_musicBrainzReleaseArtistId,
-        musicBrainzWorkId: var_musicBrainzWorkId,
-        musicBrainzReleaseType: var_musicBrainzReleaseType,
-        acoustId: var_acoustId,
-        acoustIdFingerprint: var_acoustIdFingerprint,
-        isrc: var_isrc,
-        barcode: var_barcode,
-        catalogNumber: var_catalogNumber,
-        arranger: var_arranger,
-        conductor: var_conductor,
-        director: var_director,
-        engineer: var_engineer,
-        lyricist: var_lyricist,
-        mixDj: var_mixDj,
-        mixEngineer: var_mixEngineer,
-        performer: var_performer,
-        producer: var_producer,
-        publisher: var_publisher,
-        label: var_label,
-        remixer: var_remixer,
-        writer: var_writer,
-        composer: var_composer,
-        originalLyricist: var_originalLyricist,
-        recordingDate: var_recordingDate,
-        releaseDate: var_releaseDate,
-        originalReleaseDate: var_originalReleaseDate,
-        initialKey: var_initialKey,
-        color: var_color,
-        mood: var_mood,
-        audioFileUrl: var_audioFileUrl,
-        audioSourceUrl: var_audioSourceUrl,
-        commercialInformationUrl: var_commercialInformationUrl,
-        copyrightUrl: var_copyrightUrl,
-        trackArtistUrl: var_trackArtistUrl,
-        radioStationUrl: var_radioStationUrl,
-        paymentUrl: var_paymentUrl,
-        publisherUrl: var_publisherUrl,
-        copyrightMessage: var_copyrightMessage,
-        license: var_license,
-        podcastDescription: var_podcastDescription,
-        podcastSeriesCategory: var_podcastSeriesCategory,
-        podcastUrl: var_podcastUrl,
-        podcastGlobalUniqueId: var_podcastGlobalUniqueId,
-        podcastKeywords: var_podcastKeywords,
-        setSubtitle: var_setSubtitle,
-        showName: var_showName,
-        contentGroup: var_contentGroup,
-        trackSubtitle: var_trackSubtitle,
-        language: var_language,
-        script: var_script,
-        parentalAdvisory: var_parentalAdvisory,
-        fileOwner: var_fileOwner,
-        originalFileName: var_originalFileName,
-        originalMediaType: var_originalMediaType,
-        encodedBy: var_encodedBy,
-        encoderSoftware: var_encoderSoftware,
-        encoderSettings: var_encoderSettings);
+      musicBrainzRecordingId: var_musicBrainzRecordingId,
+      musicBrainzTrackId: var_musicBrainzTrackId,
+      musicBrainzReleaseId: var_musicBrainzReleaseId,
+      musicBrainzReleaseGroupId: var_musicBrainzReleaseGroupId,
+      musicBrainzArtistId: var_musicBrainzArtistId,
+      musicBrainzReleaseArtistId: var_musicBrainzReleaseArtistId,
+      musicBrainzWorkId: var_musicBrainzWorkId,
+      musicBrainzReleaseType: var_musicBrainzReleaseType,
+      acoustId: var_acoustId,
+      acoustIdFingerprint: var_acoustIdFingerprint,
+      isrc: var_isrc,
+      barcode: var_barcode,
+      catalogNumber: var_catalogNumber,
+      arranger: var_arranger,
+      conductor: var_conductor,
+      director: var_director,
+      engineer: var_engineer,
+      lyricist: var_lyricist,
+      mixDj: var_mixDj,
+      mixEngineer: var_mixEngineer,
+      performer: var_performer,
+      producer: var_producer,
+      publisher: var_publisher,
+      label: var_label,
+      remixer: var_remixer,
+      writer: var_writer,
+      composer: var_composer,
+      originalLyricist: var_originalLyricist,
+      recordingDate: var_recordingDate,
+      releaseDate: var_releaseDate,
+      originalReleaseDate: var_originalReleaseDate,
+      initialKey: var_initialKey,
+      color: var_color,
+      mood: var_mood,
+      audioFileUrl: var_audioFileUrl,
+      audioSourceUrl: var_audioSourceUrl,
+      commercialInformationUrl: var_commercialInformationUrl,
+      copyrightUrl: var_copyrightUrl,
+      trackArtistUrl: var_trackArtistUrl,
+      radioStationUrl: var_radioStationUrl,
+      paymentUrl: var_paymentUrl,
+      publisherUrl: var_publisherUrl,
+      copyrightMessage: var_copyrightMessage,
+      license: var_license,
+      podcastDescription: var_podcastDescription,
+      podcastSeriesCategory: var_podcastSeriesCategory,
+      podcastUrl: var_podcastUrl,
+      podcastGlobalUniqueId: var_podcastGlobalUniqueId,
+      podcastKeywords: var_podcastKeywords,
+      setSubtitle: var_setSubtitle,
+      showName: var_showName,
+      contentGroup: var_contentGroup,
+      trackSubtitle: var_trackSubtitle,
+      language: var_language,
+      script: var_script,
+      parentalAdvisory: var_parentalAdvisory,
+      fileOwner: var_fileOwner,
+      originalFileName: var_originalFileName,
+      originalMediaType: var_originalMediaType,
+      encodedBy: var_encodedBy,
+      encoderSoftware: var_encoderSoftware,
+      encoderSettings: var_encoderSettings,
+    );
   }
 
   @protected
@@ -3992,68 +4600,69 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_encoderSoftware = sse_decode_opt_String(deserializer);
     var var_encoderSettings = sse_decode_opt_String(deserializer);
     return ExtendedTag(
-        musicBrainzRecordingId: var_musicBrainzRecordingId,
-        musicBrainzTrackId: var_musicBrainzTrackId,
-        musicBrainzReleaseId: var_musicBrainzReleaseId,
-        musicBrainzReleaseGroupId: var_musicBrainzReleaseGroupId,
-        musicBrainzArtistId: var_musicBrainzArtistId,
-        musicBrainzReleaseArtistId: var_musicBrainzReleaseArtistId,
-        musicBrainzWorkId: var_musicBrainzWorkId,
-        musicBrainzReleaseType: var_musicBrainzReleaseType,
-        acoustId: var_acoustId,
-        acoustIdFingerprint: var_acoustIdFingerprint,
-        isrc: var_isrc,
-        barcode: var_barcode,
-        catalogNumber: var_catalogNumber,
-        arranger: var_arranger,
-        conductor: var_conductor,
-        director: var_director,
-        engineer: var_engineer,
-        lyricist: var_lyricist,
-        mixDj: var_mixDj,
-        mixEngineer: var_mixEngineer,
-        performer: var_performer,
-        producer: var_producer,
-        publisher: var_publisher,
-        label: var_label,
-        remixer: var_remixer,
-        writer: var_writer,
-        composer: var_composer,
-        originalLyricist: var_originalLyricist,
-        recordingDate: var_recordingDate,
-        releaseDate: var_releaseDate,
-        originalReleaseDate: var_originalReleaseDate,
-        initialKey: var_initialKey,
-        color: var_color,
-        mood: var_mood,
-        audioFileUrl: var_audioFileUrl,
-        audioSourceUrl: var_audioSourceUrl,
-        commercialInformationUrl: var_commercialInformationUrl,
-        copyrightUrl: var_copyrightUrl,
-        trackArtistUrl: var_trackArtistUrl,
-        radioStationUrl: var_radioStationUrl,
-        paymentUrl: var_paymentUrl,
-        publisherUrl: var_publisherUrl,
-        copyrightMessage: var_copyrightMessage,
-        license: var_license,
-        podcastDescription: var_podcastDescription,
-        podcastSeriesCategory: var_podcastSeriesCategory,
-        podcastUrl: var_podcastUrl,
-        podcastGlobalUniqueId: var_podcastGlobalUniqueId,
-        podcastKeywords: var_podcastKeywords,
-        setSubtitle: var_setSubtitle,
-        showName: var_showName,
-        contentGroup: var_contentGroup,
-        trackSubtitle: var_trackSubtitle,
-        language: var_language,
-        script: var_script,
-        parentalAdvisory: var_parentalAdvisory,
-        fileOwner: var_fileOwner,
-        originalFileName: var_originalFileName,
-        originalMediaType: var_originalMediaType,
-        encodedBy: var_encodedBy,
-        encoderSoftware: var_encoderSoftware,
-        encoderSettings: var_encoderSettings);
+      musicBrainzRecordingId: var_musicBrainzRecordingId,
+      musicBrainzTrackId: var_musicBrainzTrackId,
+      musicBrainzReleaseId: var_musicBrainzReleaseId,
+      musicBrainzReleaseGroupId: var_musicBrainzReleaseGroupId,
+      musicBrainzArtistId: var_musicBrainzArtistId,
+      musicBrainzReleaseArtistId: var_musicBrainzReleaseArtistId,
+      musicBrainzWorkId: var_musicBrainzWorkId,
+      musicBrainzReleaseType: var_musicBrainzReleaseType,
+      acoustId: var_acoustId,
+      acoustIdFingerprint: var_acoustIdFingerprint,
+      isrc: var_isrc,
+      barcode: var_barcode,
+      catalogNumber: var_catalogNumber,
+      arranger: var_arranger,
+      conductor: var_conductor,
+      director: var_director,
+      engineer: var_engineer,
+      lyricist: var_lyricist,
+      mixDj: var_mixDj,
+      mixEngineer: var_mixEngineer,
+      performer: var_performer,
+      producer: var_producer,
+      publisher: var_publisher,
+      label: var_label,
+      remixer: var_remixer,
+      writer: var_writer,
+      composer: var_composer,
+      originalLyricist: var_originalLyricist,
+      recordingDate: var_recordingDate,
+      releaseDate: var_releaseDate,
+      originalReleaseDate: var_originalReleaseDate,
+      initialKey: var_initialKey,
+      color: var_color,
+      mood: var_mood,
+      audioFileUrl: var_audioFileUrl,
+      audioSourceUrl: var_audioSourceUrl,
+      commercialInformationUrl: var_commercialInformationUrl,
+      copyrightUrl: var_copyrightUrl,
+      trackArtistUrl: var_trackArtistUrl,
+      radioStationUrl: var_radioStationUrl,
+      paymentUrl: var_paymentUrl,
+      publisherUrl: var_publisherUrl,
+      copyrightMessage: var_copyrightMessage,
+      license: var_license,
+      podcastDescription: var_podcastDescription,
+      podcastSeriesCategory: var_podcastSeriesCategory,
+      podcastUrl: var_podcastUrl,
+      podcastGlobalUniqueId: var_podcastGlobalUniqueId,
+      podcastKeywords: var_podcastKeywords,
+      setSubtitle: var_setSubtitle,
+      showName: var_showName,
+      contentGroup: var_contentGroup,
+      trackSubtitle: var_trackSubtitle,
+      language: var_language,
+      script: var_script,
+      parentalAdvisory: var_parentalAdvisory,
+      fileOwner: var_fileOwner,
+      originalFileName: var_originalFileName,
+      originalMediaType: var_originalMediaType,
+      encodedBy: var_encodedBy,
+      encoderSoftware: var_encoderSoftware,
+      encoderSettings: var_encoderSettings,
+    );
   }
 
   @protected
@@ -4064,7 +4673,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   HaudiotaggerError sse_decode_haudiotagger_error(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var tag_ = sse_decode_i_32(deserializer);
@@ -4135,7 +4745,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<Uint8List> sse_decode_list_list_prim_u_8_strict(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -4174,7 +4785,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<(String, String)> sse_decode_list_record_string_string(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -4187,7 +4799,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<(int, String)> sse_decode_list_record_u_32_string(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -4212,7 +4825,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<TransformRule> sse_decode_list_transform_rule(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -4225,7 +4839,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   List<ValidationIssue> sse_decode_list_validation_issue(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     var len_ = sse_decode_i_32(deserializer);
@@ -4251,10 +4866,11 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_normalizeUnicode = sse_decode_bool(deserializer);
     var var_removeEmptyValues = sse_decode_bool(deserializer);
     return NormalizeOptions(
-        trimValues: var_trimValues,
-        normalizeWhitespace: var_normalizeWhitespace,
-        normalizeUnicode: var_normalizeUnicode,
-        removeEmptyValues: var_removeEmptyValues);
+      trimValues: var_trimValues,
+      normalizeWhitespace: var_normalizeWhitespace,
+      normalizeUnicode: var_normalizeUnicode,
+      removeEmptyValues: var_removeEmptyValues,
+    );
   }
 
   @protected
@@ -4292,7 +4908,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   Id3v2Version? sse_decode_opt_box_autoadd_id_3_v_2_version(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     if (sse_decode_bool(deserializer)) {
@@ -4375,7 +4992,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_mimeType = sse_decode_opt_box_autoadd_mime_type(deserializer);
     var var_bytes = sse_decode_list_prim_u_8_strict(deserializer);
     return Picture(
-        pictureType: var_pictureType, mimeType: var_mimeType, bytes: var_bytes);
+      pictureType: var_pictureType,
+      mimeType: var_mimeType,
+      bytes: var_bytes,
+    );
   }
 
   @protected
@@ -4387,7 +5007,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   (String, String) sse_decode_record_string_string(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var var_field0 = sse_decode_String(deserializer);
     var var_field1 = sse_decode_String(deserializer);
@@ -4425,25 +5046,26 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_replayGainAlbumGain = sse_decode_opt_String(deserializer);
     var var_replayGainAlbumPeak = sse_decode_opt_String(deserializer);
     return Tag(
-        title: var_title,
-        trackArtist: var_trackArtist,
-        album: var_album,
-        albumArtist: var_albumArtist,
-        year: var_year,
-        genre: var_genre,
-        trackNumber: var_trackNumber,
-        trackTotal: var_trackTotal,
-        discNumber: var_discNumber,
-        discTotal: var_discTotal,
-        lyrics: var_lyrics,
-        comment: var_comment,
-        duration: var_duration,
-        pictures: var_pictures,
-        bpm: var_bpm,
-        replayGainTrackGain: var_replayGainTrackGain,
-        replayGainTrackPeak: var_replayGainTrackPeak,
-        replayGainAlbumGain: var_replayGainAlbumGain,
-        replayGainAlbumPeak: var_replayGainAlbumPeak);
+      title: var_title,
+      trackArtist: var_trackArtist,
+      album: var_album,
+      albumArtist: var_albumArtist,
+      year: var_year,
+      genre: var_genre,
+      trackNumber: var_trackNumber,
+      trackTotal: var_trackTotal,
+      discNumber: var_discNumber,
+      discTotal: var_discTotal,
+      lyrics: var_lyrics,
+      comment: var_comment,
+      duration: var_duration,
+      pictures: var_pictures,
+      bpm: var_bpm,
+      replayGainTrackGain: var_replayGainTrackGain,
+      replayGainTrackPeak: var_replayGainTrackPeak,
+      replayGainAlbumGain: var_replayGainAlbumGain,
+      replayGainAlbumPeak: var_replayGainAlbumPeak,
+    );
   }
 
   @protected
@@ -4468,24 +5090,25 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_replayGainAlbumGain = sse_decode_opt_String(deserializer);
     var var_replayGainAlbumPeak = sse_decode_opt_String(deserializer);
     return TagChanges(
-        title: var_title,
-        trackArtist: var_trackArtist,
-        album: var_album,
-        albumArtist: var_albumArtist,
-        year: var_year,
-        genre: var_genre,
-        trackNumber: var_trackNumber,
-        trackTotal: var_trackTotal,
-        discNumber: var_discNumber,
-        discTotal: var_discTotal,
-        lyrics: var_lyrics,
-        comment: var_comment,
-        pictures: var_pictures,
-        bpm: var_bpm,
-        replayGainTrackGain: var_replayGainTrackGain,
-        replayGainTrackPeak: var_replayGainTrackPeak,
-        replayGainAlbumGain: var_replayGainAlbumGain,
-        replayGainAlbumPeak: var_replayGainAlbumPeak);
+      title: var_title,
+      trackArtist: var_trackArtist,
+      album: var_album,
+      albumArtist: var_albumArtist,
+      year: var_year,
+      genre: var_genre,
+      trackNumber: var_trackNumber,
+      trackTotal: var_trackTotal,
+      discNumber: var_discNumber,
+      discTotal: var_discTotal,
+      lyrics: var_lyrics,
+      comment: var_comment,
+      pictures: var_pictures,
+      bpm: var_bpm,
+      replayGainTrackGain: var_replayGainTrackGain,
+      replayGainTrackPeak: var_replayGainTrackPeak,
+      replayGainAlbumGain: var_replayGainAlbumGain,
+      replayGainAlbumPeak: var_replayGainAlbumPeak,
+    );
   }
 
   @protected
@@ -4620,17 +5243,23 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         var var_find = sse_decode_String(deserializer);
         var var_replace = sse_decode_String(deserializer);
         return TransformRule_ReplaceInTitle(
-            find: var_find, replace: var_replace);
+          find: var_find,
+          replace: var_replace,
+        );
       case 46:
         var var_find = sse_decode_String(deserializer);
         var var_replace = sse_decode_String(deserializer);
         return TransformRule_ReplaceInArtist(
-            find: var_find, replace: var_replace);
+          find: var_find,
+          replace: var_replace,
+        );
       case 47:
         var var_find = sse_decode_String(deserializer);
         var var_replace = sse_decode_String(deserializer);
         return TransformRule_ReplaceInAlbum(
-            find: var_find, replace: var_replace);
+          find: var_find,
+          replace: var_replace,
+        );
       case 48:
         var var_find = sse_decode_String(deserializer);
         var var_replace = sse_decode_String(deserializer);
@@ -4702,7 +5331,10 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_message = sse_decode_String(deserializer);
     var var_severity = sse_decode_validation_severity(deserializer);
     return ValidationIssue(
-        field: var_field, message: var_message, severity: var_severity);
+      field: var_field,
+      message: var_message,
+      severity: var_severity,
+    );
   }
 
   @protected
@@ -4714,7 +5346,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   ValidationSeverity sse_decode_validation_severity(
-      SseDeserializer deserializer) {
+    SseDeserializer deserializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var inner = sse_decode_i_32(deserializer);
     return ValidationSeverity.values[inner];
@@ -4722,10 +5355,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_Map_String_String_None(
-      Map<String, String> self, SseSerializer serializer) {
+    Map<String, String> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_record_string_string(
-        self.entries.map((e) => (e.key, e.value)).toList(), serializer);
+      self.entries.map((e) => (e.key, e.value)).toList(),
+      serializer,
+    );
   }
 
   @protected
@@ -4736,7 +5373,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_audio_file_info(
-      AudioFileInfo self, SseSerializer serializer) {
+    AudioFileInfo self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.format, serializer);
     sse_encode_String(self.tagFormat, serializer);
@@ -4748,7 +5387,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_audio_properties(
-      AudioProperties self, SseSerializer serializer) {
+    AudioProperties self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_opt_box_autoadd_i_64(self.durationMicros, serializer);
     sse_encode_opt_box_autoadd_u_32(self.bitrate, serializer);
@@ -4764,7 +5405,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_batch_bytes_result(
-      BatchBytesResult self, SseSerializer serializer) {
+    BatchBytesResult self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_list_prim_u_8_strict(self.results, serializer);
     sse_encode_u_32(self.failures, serializer);
@@ -4793,14 +5436,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_box_autoadd_extended_changes(
-      ExtendedChanges self, SseSerializer serializer) {
+    ExtendedChanges self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_extended_changes(self, serializer);
   }
 
   @protected
   void sse_encode_box_autoadd_extended_tag(
-      ExtendedTag self, SseSerializer serializer) {
+    ExtendedTag self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_extended_tag(self, serializer);
   }
@@ -4813,28 +5460,36 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_box_autoadd_i_64(
-      PlatformInt64 self, SseSerializer serializer) {
+    PlatformInt64 self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_64(self, serializer);
   }
 
   @protected
   void sse_encode_box_autoadd_id_3_v_2_version(
-      Id3v2Version self, SseSerializer serializer) {
+    Id3v2Version self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_id_3_v_2_version(self, serializer);
   }
 
   @protected
   void sse_encode_box_autoadd_mime_type(
-      MimeType self, SseSerializer serializer) {
+    MimeType self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_mime_type(self, serializer);
   }
 
   @protected
   void sse_encode_box_autoadd_normalize_options(
-      NormalizeOptions self, SseSerializer serializer) {
+    NormalizeOptions self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_normalize_options(self, serializer);
   }
@@ -4853,21 +5508,27 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_box_autoadd_tag_changes(
-      TagChanges self, SseSerializer serializer) {
+    TagChanges self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_tag_changes(self, serializer);
   }
 
   @protected
   void sse_encode_box_autoadd_tag_pipeline(
-      TagPipeline self, SseSerializer serializer) {
+    TagPipeline self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_tag_pipeline(self, serializer);
   }
 
   @protected
   void sse_encode_box_autoadd_transform_rule(
-      TransformRule self, SseSerializer serializer) {
+    TransformRule self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_transform_rule(self, serializer);
   }
@@ -4886,7 +5547,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_box_autoadd_validation_result(
-      ValidationResult self, SseSerializer serializer) {
+    ValidationResult self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_validation_result(self, serializer);
   }
@@ -4901,7 +5564,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_extended_changes(
-      ExtendedChanges self, SseSerializer serializer) {
+    ExtendedChanges self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_opt_String(self.musicBrainzRecordingId, serializer);
     sse_encode_opt_String(self.musicBrainzTrackId, serializer);
@@ -5042,7 +5707,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_haudiotagger_error(
-      HaudiotaggerError self, SseSerializer serializer) {
+    HaudiotaggerError self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     switch (self) {
       case HaudiotaggerError_InvalidPath():
@@ -5078,7 +5745,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_id_3_v_2_version(
-      Id3v2Version self, SseSerializer serializer) {
+    Id3v2Version self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
@@ -5103,7 +5772,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_list_prim_u_8_strict(
-      List<Uint8List> self, SseSerializer serializer) {
+    List<Uint8List> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -5122,16 +5793,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_prim_u_8_loose(
-      List<int> self, SseSerializer serializer) {
+    List<int> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
-    serializer.buffer
-        .putUint8List(self is Uint8List ? self : Uint8List.fromList(self));
+    serializer.buffer.putUint8List(
+      self is Uint8List ? self : Uint8List.fromList(self),
+    );
   }
 
   @protected
   void sse_encode_list_prim_u_8_strict(
-      Uint8List self, SseSerializer serializer) {
+    Uint8List self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
@@ -5139,7 +5815,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_record_string_string(
-      List<(String, String)> self, SseSerializer serializer) {
+    List<(String, String)> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -5149,7 +5827,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_record_u_32_string(
-      List<(int, String)> self, SseSerializer serializer) {
+    List<(int, String)> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -5159,7 +5839,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_tag_field(
-      List<TagField> self, SseSerializer serializer) {
+    List<TagField> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -5169,7 +5851,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_transform_rule(
-      List<TransformRule> self, SseSerializer serializer) {
+    List<TransformRule> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -5179,7 +5863,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_list_validation_issue(
-      List<ValidationIssue> self, SseSerializer serializer) {
+    List<ValidationIssue> self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
@@ -5195,7 +5881,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_normalize_options(
-      NormalizeOptions self, SseSerializer serializer) {
+    NormalizeOptions self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_bool(self.trimValues, serializer);
     sse_encode_bool(self.normalizeWhitespace, serializer);
@@ -5225,7 +5913,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_opt_box_autoadd_i_64(
-      PlatformInt64? self, SseSerializer serializer) {
+    PlatformInt64? self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
@@ -5236,7 +5926,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_opt_box_autoadd_id_3_v_2_version(
-      Id3v2Version? self, SseSerializer serializer) {
+    Id3v2Version? self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
@@ -5247,7 +5939,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_opt_box_autoadd_mime_type(
-      MimeType? self, SseSerializer serializer) {
+    MimeType? self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
@@ -5258,7 +5952,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_opt_box_autoadd_picture(
-      Picture? self, SseSerializer serializer) {
+    Picture? self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
@@ -5299,7 +5995,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_opt_list_picture(
-      List<Picture>? self, SseSerializer serializer) {
+    List<Picture>? self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
 
     sse_encode_bool(self != null, serializer);
@@ -5324,7 +6022,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_record_string_string(
-      (String, String) self, SseSerializer serializer) {
+    (String, String) self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.$1, serializer);
     sse_encode_String(self.$2, serializer);
@@ -5332,7 +6032,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_record_u_32_string(
-      (int, String) self, SseSerializer serializer) {
+    (int, String) self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_u_32(self.$1, serializer);
     sse_encode_String(self.$2, serializer);
@@ -5511,21 +6213,21 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_i_32(44, serializer);
       case TransformRule_ReplaceInTitle(
           find: final find,
-          replace: final replace
+          replace: final replace,
         ):
         sse_encode_i_32(45, serializer);
         sse_encode_String(find, serializer);
         sse_encode_String(replace, serializer);
       case TransformRule_ReplaceInArtist(
           find: final find,
-          replace: final replace
+          replace: final replace,
         ):
         sse_encode_i_32(46, serializer);
         sse_encode_String(find, serializer);
         sse_encode_String(replace, serializer);
       case TransformRule_ReplaceInAlbum(
           find: final find,
-          replace: final replace
+          replace: final replace,
         ):
         sse_encode_i_32(47, serializer);
         sse_encode_String(find, serializer);
@@ -5581,7 +6283,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_url_read_strategy(
-      UrlReadStrategy self, SseSerializer serializer) {
+    UrlReadStrategy self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }
@@ -5594,7 +6298,9 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_validation_issue(
-      ValidationIssue self, SseSerializer serializer) {
+    ValidationIssue self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_String(self.field, serializer);
     sse_encode_String(self.message, serializer);
@@ -5603,14 +6309,18 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
 
   @protected
   void sse_encode_validation_result(
-      ValidationResult self, SseSerializer serializer) {
+    ValidationResult self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_list_validation_issue(self.issues, serializer);
   }
 
   @protected
   void sse_encode_validation_severity(
-      ValidationSeverity self, SseSerializer serializer) {
+    ValidationSeverity self,
+    SseSerializer serializer,
+  ) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.index, serializer);
   }

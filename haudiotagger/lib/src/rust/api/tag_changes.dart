@@ -5,7 +5,9 @@
 
 import '../frb_generated.dart';
 import 'error.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
+
 import 'picture.dart';
 
 // These functions are ignored because they are not marked as `pub`: `merge`, `read_bytes_or_empty`, `read_or_empty`
@@ -16,10 +18,14 @@ Future<void> update({required String path, required TagChanges changes}) =>
     RustLib.instance.api.crateApiTagChangesUpdate(path: path, changes: changes);
 
 /// Apply [changes] to a tag held in `bytes`, returning the modified bytes.
-Future<Uint8List> updateFromBytes(
-        {required List<int> bytes, required TagChanges changes}) =>
-    RustLib.instance.api
-        .crateApiTagChangesUpdateFromBytes(bytes: bytes, changes: changes);
+Future<Uint8List> updateFromBytes({
+  required List<int> bytes,
+  required TagChanges changes,
+}) =>
+    RustLib.instance.api.crateApiTagChangesUpdateFromBytes(
+      bytes: bytes,
+      changes: changes,
+    );
 
 /// A partial set of tag fields to apply on top of an existing tag.
 ///
@@ -71,9 +77,7 @@ class TagChanges {
 
   /// Returns `true` if no fields are set.
   Future<bool> isEmpty() =>
-      RustLib.instance.api.crateApiTagChangesTagChangesIsEmpty(
-        that: this,
-      );
+      RustLib.instance.api.crateApiTagChangesTagChangesIsEmpty(that: this);
 
   @override
   int get hashCode =>

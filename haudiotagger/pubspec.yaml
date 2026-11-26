@@ -38,6 +38,9 @@ dev_dependencies:
 
 resolution: workspace
 
+funding:
+  - https://ko-fi.com/hirdayashrestha
+
 flutter:
   plugin:
     platforms:

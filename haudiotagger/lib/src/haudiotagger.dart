@@ -19,6 +19,7 @@ import 'rust/api/extended.dart' show ExtendedTag, ExtendedChanges;
 import 'rust/api/picture.dart' show Picture, PictureType;
 import 'rust/api/remote_read.dart' as rr;
 import 'rust/api/remote_read.dart' show UrlReadStrategy;
+
 import 'package:haudiotagger_interface/haudiotagger_interface.dart'
     show AudioFingerprint, CancellationToken, FingerprintRegistry;
 
@@ -132,10 +133,14 @@ class Haudiotagger {
   /// throws [StateError]. Pure metadata users pay nothing for this.
   ///
   /// Pass a [CancellationToken] to abort long scans.
-  static Future<AudioFingerprint> fingerprint(String path,
-          {CancellationToken? cancellationToken}) =>
-      FingerprintRegistry.instance
-          .fingerprint(path, cancellationToken: cancellationToken);
+  static Future<AudioFingerprint> fingerprint(
+    String path, {
+    CancellationToken? cancellationToken,
+  }) =>
+      FingerprintRegistry.instance.fingerprint(
+        path,
+        cancellationToken: cancellationToken,
+      );
 
   /// Fingerprint in-memory audio [bytes] by content (for web/WASM).
   ///
@@ -143,10 +148,14 @@ class Haudiotagger {
   /// throws [StateError].
   ///
   /// Pass a [CancellationToken] to abort long scans.
-  static Future<AudioFingerprint> fingerprintFromBytes(Uint8List bytes,
-          {CancellationToken? cancellationToken}) =>
-      FingerprintRegistry.instance
-          .fingerprintFromBytes(bytes, cancellationToken: cancellationToken);
+  static Future<AudioFingerprint> fingerprintFromBytes(
+    Uint8List bytes, {
+    CancellationToken? cancellationToken,
+  }) =>
+      FingerprintRegistry.instance.fingerprintFromBytes(
+        bytes,
+        cancellationToken: cancellationToken,
+      );
 
   /// Compare two fingerprints: `1.0` is (near-)identical audio, `0.0` is
   /// unrelated.
@@ -166,7 +175,9 @@ class Haudiotagger {
   /// Requires the `haudiotagger_fingerprint` package installed, otherwise
   /// throws [StateError].
   static Future<double> contains(
-          AudioFingerprint haystack, AudioFingerprint clip) =>
+    AudioFingerprint haystack,
+    AudioFingerprint clip,
+  ) =>
       FingerprintRegistry.instance.contains(haystack, clip);
 
   /// Read a single tag field from the file at [path].
@@ -187,7 +198,9 @@ class Haudiotagger {
   /// Throws [HaudiotaggerError] if the bytes cannot be read or have no tags.
   /// Throws [HaudiotaggerError] if [field] is [TagField.pictures] (use [readFromBytes] instead).
   static Future<String?> readFieldFromBytes(
-      Uint8List bytes, TagField field) async {
+    Uint8List bytes,
+    TagField field,
+  ) async {
     await _ensureInit();
     return await api.readFieldFromBytes(bytes: bytes, field: field);
   }
@@ -207,7 +220,9 @@ class Haudiotagger {
   /// Read a single picture by type from the file at [path].
   /// Returns `null` if no picture of the given type exists.
   static Future<Picture?> readPictureByType(
-      String path, PictureType pictureType) async {
+    String path,
+    PictureType pictureType,
+  ) async {
     await _ensureInit();
     return await api.readPictureByType(path: path, pictureType: pictureType);
   }
@@ -215,10 +230,14 @@ class Haudiotagger {
   /// Read a single picture by type from in-memory [bytes].
   /// Returns `null` if no picture of the given type exists.
   static Future<Picture?> readPictureByTypeFromBytes(
-      Uint8List bytes, PictureType pictureType) async {
+    Uint8List bytes,
+    PictureType pictureType,
+  ) async {
     await _ensureInit();
     return await api.readPictureByTypeFromBytes(
-        bytes: bytes, pictureType: pictureType);
+      bytes: bytes,
+      pictureType: pictureType,
+    );
   }
 
   /// Write the metadata at the given path. Previous metadata will
@@ -247,7 +266,8 @@ class Haudiotagger {
   /// Read the technical audio properties from in-memory [bytes].
   /// Read-only; works on web and native.
   static Future<ap.AudioProperties> readPropertiesFromBytes(
-      Uint8List bytes) async {
+    Uint8List bytes,
+  ) async {
     await _ensureInit();
     return await ap.readPropertiesFromBytes(bytes: bytes);
   }
@@ -262,7 +282,9 @@ class Haudiotagger {
   /// Apply [changes] to metadata held in [bytes], returning the modified bytes.
   /// Works on web and native.
   static Future<Uint8List> updateFromBytes(
-      Uint8List bytes, tc.TagChanges changes) async {
+    Uint8List bytes,
+    tc.TagChanges changes,
+  ) async {
     await _ensureInit();
     return await tc.updateFromBytes(bytes: bytes, changes: changes);
   }
@@ -277,7 +299,9 @@ class Haudiotagger {
   /// Remove the given [fields] from metadata held in [bytes], returning the
   /// modified bytes. Works on web and native.
   static Future<Uint8List> removeFromBytes(
-      Uint8List bytes, List<TagField> fields) async {
+    Uint8List bytes,
+    List<TagField> fields,
+  ) async {
     await _ensureInit();
     return await api.removeFromBytes(bytes: bytes, fields: fields);
   }
@@ -299,10 +323,7 @@ class Haudiotagger {
   ///
   /// Returns a [BatchResult] with counts of successes/failures.
   /// Works on native only.
-  static Future<BatchResult> batchWrite(
-    List<String> paths,
-    Tag tag,
-  ) async {
+  static Future<BatchResult> batchWrite(List<String> paths, Tag tag) async {
     await _ensureInit();
     return await api.batchWrite(paths: paths, data: tag);
   }
@@ -352,10 +373,7 @@ class Haudiotagger {
         errors.add((path, e.toString()));
       }
       completed++;
-      onProgress?.call(BatchProgress(
-        completed: completed,
-        total: total,
-      ));
+      onProgress?.call(BatchProgress(completed: completed, total: total));
     }
 
     return BatchResult(
@@ -415,8 +433,10 @@ class Haudiotagger {
       try {
         final currentTag = await api.readFromBytes(bytes: byteArrays[i]);
         final newTag = updater(i, currentTag);
-        final modified =
-            await api.writeToBytes(bytes: byteArrays[i], data: newTag);
+        final modified = await api.writeToBytes(
+          bytes: byteArrays[i],
+          data: newTag,
+        );
         results.add(modified);
       } on HaudiotaggerError catch (e) {
         failures++;
@@ -426,10 +446,7 @@ class Haudiotagger {
         errors.add((i, e.toString()));
       }
       completed++;
-      onProgress?.call(BatchProgress(
-        completed: completed,
-        total: total,
-      ));
+      onProgress?.call(BatchProgress(completed: completed, total: total));
     }
 
     return BatchBytesResult(
@@ -466,7 +483,8 @@ class Haudiotagger {
   /// Get all custom tags from in-memory [bytes].
   /// Works on web and native.
   static Future<Map<String, String>> getCustomTagsFromBytes(
-      Uint8List bytes) async {
+    Uint8List bytes,
+  ) async {
     await _ensureInit();
     return await api.getCustomTagsFromBytes(bytes: bytes);
   }
@@ -476,7 +494,10 @@ class Haudiotagger {
   /// For Vorbis Comments: inserts with the key directly.
   /// Works on native only.
   static Future<void> setCustomTag(
-      String path, String key, String value) async {
+    String path,
+    String key,
+    String value,
+  ) async {
     await _ensureInit();
     return await api.setCustomTag(path: path, key: key, value: value);
   }
@@ -490,7 +511,10 @@ class Haudiotagger {
   ) async {
     await _ensureInit();
     return await api.setCustomTagFromBytes(
-        bytes: bytes, key: key, value: value);
+      bytes: bytes,
+      key: key,
+      value: value,
+    );
   }
 
   /// Remove a custom tag from the file at [path].
@@ -503,7 +527,9 @@ class Haudiotagger {
   /// Remove a custom tag from in-memory [bytes], returning the modified bytes.
   /// Works on web and native.
   static Future<Uint8List> removeCustomTagFromBytes(
-      Uint8List bytes, String key) async {
+    Uint8List bytes,
+    String key,
+  ) async {
     await _ensureInit();
     return await api.removeCustomTagFromBytes(bytes: bytes, key: key);
   }
@@ -545,7 +571,9 @@ class Haudiotagger {
   ///
   /// Works on web and native.
   static Future<Uint8List> convertId3v2FromBytes(
-      Uint8List bytes, Id3v2Version version) async {
+    Uint8List bytes,
+    Id3v2Version version,
+  ) async {
     await _ensureInit();
     return await api.convertId3V2FromBytes(bytes: bytes, version: version);
   }
@@ -675,23 +703,32 @@ class Haudiotagger {
     void check<T>(TagField field, T? oldVal, T? newVal) {
       if (oldVal == newVal) return;
       if (oldVal == null) {
-        changes.add(MetadataChange(
+        changes.add(
+          MetadataChange(
             field: field,
             oldValue: null,
             newValue: newVal,
-            type: ChangeType.added));
+            type: ChangeType.added,
+          ),
+        );
       } else if (newVal == null) {
-        changes.add(MetadataChange(
+        changes.add(
+          MetadataChange(
             field: field,
             oldValue: oldVal,
             newValue: null,
-            type: ChangeType.removed));
+            type: ChangeType.removed,
+          ),
+        );
       } else {
-        changes.add(MetadataChange(
+        changes.add(
+          MetadataChange(
             field: field,
             oldValue: oldVal,
             newValue: newVal,
-            type: ChangeType.updated));
+            type: ChangeType.updated,
+          ),
+        );
       }
     }
 
@@ -841,7 +878,9 @@ class Haudiotagger {
   /// Currently supports MP3 (ID3v2 CHAP frames).
   /// Works on web and native.
   static Future<Uint8List> setChaptersFromBytes(
-      Uint8List bytes, List<Chapter> chapters) async {
+    Uint8List bytes,
+    List<Chapter> chapters,
+  ) async {
     await _ensureInit();
     return await ch.writeChaptersToBytes(bytes: bytes, chapters: chapters);
   }
@@ -868,21 +907,27 @@ class Haudiotagger {
 
   /// Write [data] to the extended tag bytes, returning modified bytes.
   static Future<Uint8List> setExtendedFromBytes(
-      Uint8List bytes, ExtendedTag data) async {
+    Uint8List bytes,
+    ExtendedTag data,
+  ) async {
     await _ensureInit();
     return await ext.writeExtendedToBytes(bytes: bytes, data: data);
   }
 
   /// Apply partial [changes] to the extended tag at [path].
   static Future<void> updateExtended(
-      String path, ExtendedChanges changes) async {
+    String path,
+    ExtendedChanges changes,
+  ) async {
     await _ensureInit();
     return await ext.updateExtended(path: path, changes: changes);
   }
 
   /// Apply partial [changes] to extended tag bytes, returning modified bytes.
   static Future<Uint8List> updateExtendedFromBytes(
-      Uint8List bytes, ExtendedChanges changes) async {
+    Uint8List bytes,
+    ExtendedChanges changes,
+  ) async {
     await _ensureInit();
     return await ext.updateExtendedFromBytes(bytes: bytes, changes: changes);
   }

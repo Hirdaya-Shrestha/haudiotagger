@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'haudiotagger.dart';
 import 'rust/api/api.dart' as api;
 import 'rust/api/pipeline.dart' as rpc;
@@ -33,11 +34,7 @@ class FieldChange {
   final String? oldValue;
   final String? newValue;
 
-  const FieldChange({
-    required this.field,
-    this.oldValue,
-    this.newValue,
-  });
+  const FieldChange({required this.field, this.oldValue, this.newValue});
 
   @override
   String toString() => '$field: $oldValue → $newValue';
@@ -536,11 +533,13 @@ class TagPipeline {
     check('bpm', a.bpm?.toString(), b.bpm?.toString());
 
     if (a.pictures.length != b.pictures.length) {
-      changes.add(FieldChange(
-        field: 'pictures',
-        oldValue: '${a.pictures.length} pictures',
-        newValue: '${b.pictures.length} pictures',
-      ));
+      changes.add(
+        FieldChange(
+          field: 'pictures',
+          oldValue: '${a.pictures.length} pictures',
+          newValue: '${b.pictures.length} pictures',
+        ),
+      );
     }
 
     return changes;

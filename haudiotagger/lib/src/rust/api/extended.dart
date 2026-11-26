@@ -5,6 +5,7 @@
 
 import '../frb_generated.dart';
 import 'error.dart';
+
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
 // These functions are ignored because they are not marked as `pub`: `apply_to_lofty_tag`, `from_lofty_tag`, `get_str`, `merge`, `set_str`, `write_extended_to_bytes_inner`
@@ -23,22 +24,34 @@ Future<void> writeExtended({required String path, required ExtendedTag data}) =>
     RustLib.instance.api.crateApiExtendedWriteExtended(path: path, data: data);
 
 /// Write extended metadata to bytes, returning the modified bytes.
-Future<Uint8List> writeExtendedToBytes(
-        {required List<int> bytes, required ExtendedTag data}) =>
-    RustLib.instance.api
-        .crateApiExtendedWriteExtendedToBytes(bytes: bytes, data: data);
+Future<Uint8List> writeExtendedToBytes({
+  required List<int> bytes,
+  required ExtendedTag data,
+}) =>
+    RustLib.instance.api.crateApiExtendedWriteExtendedToBytes(
+      bytes: bytes,
+      data: data,
+    );
 
 /// Apply partial changes to the extended tag at `path`.
-Future<void> updateExtended(
-        {required String path, required ExtendedChanges changes}) =>
-    RustLib.instance.api
-        .crateApiExtendedUpdateExtended(path: path, changes: changes);
+Future<void> updateExtended({
+  required String path,
+  required ExtendedChanges changes,
+}) =>
+    RustLib.instance.api.crateApiExtendedUpdateExtended(
+      path: path,
+      changes: changes,
+    );
 
 /// Apply partial changes to extended tag bytes, returning modified bytes.
-Future<Uint8List> updateExtendedFromBytes(
-        {required List<int> bytes, required ExtendedChanges changes}) =>
+Future<Uint8List> updateExtendedFromBytes({
+  required List<int> bytes,
+  required ExtendedChanges changes,
+}) =>
     RustLib.instance.api.crateApiExtendedUpdateExtendedFromBytes(
-        bytes: bytes, changes: changes);
+      bytes: bytes,
+      changes: changes,
+    );
 
 /// Remove all extended fields from the file, preserving standard fields.
 Future<void> removeExtended({required String path}) =>
@@ -182,9 +195,7 @@ class ExtendedChanges {
       RustLib.instance.api.crateApiExtendedExtendedChangesDefault();
 
   Future<bool> isEmpty() =>
-      RustLib.instance.api.crateApiExtendedExtendedChangesIsEmpty(
-        that: this,
-      );
+      RustLib.instance.api.crateApiExtendedExtendedChangesIsEmpty(that: this);
 
   @override
   int get hashCode =>
@@ -459,9 +470,7 @@ class ExtendedTag {
       RustLib.instance.api.crateApiExtendedExtendedTagDefault();
 
   Future<bool> isEmpty() =>
-      RustLib.instance.api.crateApiExtendedExtendedTagIsEmpty(
-        that: this,
-      );
+      RustLib.instance.api.crateApiExtendedExtendedTagIsEmpty(that: this);
 
   @override
   int get hashCode =>
