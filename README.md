@@ -29,6 +29,10 @@
   <a href="https://pub.dev/packages/haudiotagger"><strong>pub.dev</strong></a>
 </p>
 
+<p align="center">
+  <a href="https://ko-fi.com/F4W525RGP7"><img src="https://ko-fi.com/img/githubbutton_sm.svg"></a>
+</p>
+
 ---
 
 ## Why hAudiotagger?
